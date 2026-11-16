@@ -1,0 +1,322 @@
+---
+import Base from '../layouts/Base.astro';
+import ObraCard from '../components/ObraCard.astro';
+import { OBRA } from '../data/obra';
+
+const muestras = OBRA.filter((p) => p.categoria === 'publicidad');
+
+const entregables = [
+  {
+    nombre: 'Música original',
+    texto: 'Compuesta para la idea y el ritmo del corte. Si la campaña lo pide, jingle con letra y voces.',
+  },
+  {
+    nombre: 'Diseño sonoro',
+    texto: 'Sonido de producto, transiciones, ambientes y efectos, hechos a la medida de cada plano.',
+  },
+  {
+    nombre: 'Versiones por duración',
+    texto: 'La misma pieza resuelta en 6, 10, 15, 20, 30 y 60 segundos, sin cortes bruscos en ninguna.',
+  },
+  {
+    nombre: 'Mezcla para cada medio',
+    texto: 'Televisión, sala de cine, radio, plataformas y redes, cada una con la sonoridad que exige.',
+  },
+  {
+    nombre: 'Pistas separadas',
+    texto: 'Música, efectos y voces por aparte, para que la posproducción pueda hacer ajustes de última hora.',
+  },
+  {
+    nombre: 'Identidad sonora',
+    texto: 'Logo sonoro y una paleta de música para que la marca suene igual en un comercial, un pódcast o un evento.',
+  },
+  {
+    nombre: 'Locución',
+    texto: 'Grabación y dirección de voces. Juan es locutor y trabajamos con voces asociadas.',
+  },
+  {
+    nombre: 'Licencia clara',
+    texto: 'Por escrito desde la propuesta: medios, territorio y tiempo de uso, o cesión total de derechos.',
+  },
+];
+
+const piezas = [
+  'Comerciales para televisión y cine',
+  'Campañas para redes y plataformas',
+  'Campañas institucionales y de entidades públicas',
+  'Video corporativo y de producto',
+  'Eventos, lanzamientos y activaciones',
+  'Cuñas de radio',
+];
+
+const pasos = [
+  { nombre: 'Brief', texto: 'Idea, guion o animatic, referencias y medios donde va a salir.' },
+  { nombre: 'Maquetas', texto: 'Dos o tres direcciones cortas sobre la imagen para escoger el tono.' },
+  { nombre: 'Producción', texto: 'Grabamos con los músicos que pida la pieza y hacemos el diseño sonoro.' },
+  { nombre: 'Ajuste al corte final', texto: 'Seguimos los cambios de montaje hasta que el corte quede cerrado.' },
+  { nombre: 'Entrega', texto: 'Versiones, mezclas, pistas separadas y la licencia firmada.' },
+];
+
+const cotizar = [
+  'Cuántas piezas y de qué duración',
+  'Dónde y por cuánto tiempo van a circular',
+  'Si hay voces, letra o locución',
+  'Referencias de música o de sonido',
+  'La fecha de entrega',
+];
+---
+
+<Base titulo="Publicidad" descripcion="Música original, jingles, diseño sonoro, identidad sonora y mezcla para comerciales, campañas y contenido de marca.">
+  <div class="papel">
+    <section class="seccion publi-heroe">
+      <div class="envoltura heroe-rejilla">
+        <div>
+          <p class="etq">Publicidad y marcas</p>
+          <h1>Música y sonido para comerciales</h1>
+          <p class="lead">
+            Componemos para la idea de la campaña, grabamos con músicos reales y entregamos lo que pide la pauta: versiones
+            por duración, mezclas por medio, pistas separadas y una licencia clara.
+          </p>
+          <div class="botones">
+            <a class="boton lleno flecha" href="/contacto?tema=publicidad">Pedir una propuesta</a>
+            <a class="boton" href="#entregables">Qué entregamos</a>
+          </div>
+        </div>
+        <ul class="tipos rv">
+          {piezas.map((p) => <li>{p}</li>)}
+        </ul>
+      </div>
+    </section>
+
+    <section class="seccion muestras">
+      <div class="envoltura">
+        <p class="etq rv">Muestras</p>
+        <div class="muestras-rejilla">
+          {
+            muestras.map((p) => (
+              <div class="rv">
+                <ObraCard pieza={p} />
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="seccion" id="entregables">
+      <div class="envoltura">
+        <div class="cabeza-seccion rv">
+          <div>
+            <p class="etq">Qué entregamos</p>
+            <h2>Todo lo que necesita la posproducción</h2>
+          </div>
+          <p class="lead">
+            Una pieza de publicidad no termina en la música: tiene que funcionar en varias duraciones, en varios medios y
+            con cambios hasta el último día.
+          </p>
+        </div>
+        <dl class="entregables">
+          {
+            entregables.map((e) => (
+              <div class="entregable rv">
+                <dt>{e.nombre}</dt>
+                <dd>{e.texto}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </section>
+
+    <section class="seccion">
+      <div class="envoltura proceso">
+        <div class="rv">
+          <p class="etq">Cómo trabajamos</p>
+          <h2>Del brief a la entrega</h2>
+        </div>
+        <ol class="linea">
+          {
+            pasos.map((p) => (
+              <li class="rv">
+                <h3>{p.nombre}</h3>
+                <p>{p.texto}</p>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </section>
+
+    <section class="seccion cotizar">
+      <div class="envoltura cotizar-rejilla">
+        <div class="rv">
+          <p class="etq">Para cotizar</p>
+          <h2>Cuéntanos esto y te mandamos una propuesta</h2>
+          <p class="lead">Sin precios fijos: el valor depende de la duración, los medios, el tiempo de pauta y los músicos que haga falta convocar.</p>
+          <a class="boton lleno flecha" href="/contacto?tema=publicidad">Escribirnos</a>
+        </div>
+        <ul class="lista-cotizar rv">
+          {cotizar.map((c) => <li>{c}</li>)}
+        </ul>
+      </div>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .papel {
+    background: var(--papel);
+  }
+  .papel .seccion + .seccion {
+    border-top: 1px solid var(--linea-papel);
+  }
+  .heroe-rejilla {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 3rem 5rem;
+    align-items: end;
+  }
+  h1 {
+    margin-bottom: 1.6rem;
+    max-width: 9em;
+  }
+  .botones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 2.2rem;
+  }
+  .tipos {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--tinta);
+  }
+  .tipos li {
+    font-family: var(--serif);
+    font-size: 1.2rem;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--linea-papel);
+  }
+  @media (max-width: 860px) {
+    .heroe-rejilla {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .muestras-rejilla {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2.5rem;
+  }
+  @media (max-width: 700px) {
+    .muestras-rejilla {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .entregables {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0 2rem;
+    margin: 0;
+  }
+  .entregable {
+    padding: 1.5rem 0 2rem;
+    border-top: 1px solid var(--tinta);
+  }
+  .entregable dt {
+    font-family: var(--serif);
+    font-size: 1.35rem;
+    margin-bottom: 0.5rem;
+  }
+  .entregable dd {
+    margin: 0;
+    color: var(--tinta-2);
+    font-size: 0.97rem;
+  }
+  @media (max-width: 980px) {
+    .entregables {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 560px) {
+    .entregables {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .proceso {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: 3rem;
+  }
+  .linea {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .linea li {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr);
+    gap: 1rem 2rem;
+    padding: 1.3rem 0;
+    border-top: 1px solid var(--linea-papel);
+  }
+  .linea li:last-child {
+    border-bottom: 1px solid var(--linea-papel);
+  }
+  .linea h3 {
+    font-size: 1.35rem;
+  }
+  .linea p {
+    margin: 0;
+    color: var(--tinta-2);
+  }
+  @media (max-width: 860px) {
+    .proceso,
+    .linea li {
+      grid-template-columns: 1fr;
+    }
+    .linea li {
+      gap: 0.4rem;
+    }
+  }
+
+  .cotizar {
+    background: var(--papel-2);
+  }
+  .cotizar-rejilla {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 3rem 5rem;
+    align-items: center;
+  }
+  .cotizar h2 {
+    margin-bottom: 1.2rem;
+  }
+  .cotizar .lead {
+    margin-bottom: 2rem;
+  }
+  .lista-cotizar {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .lista-cotizar li {
+    position: relative;
+    padding: 0.7rem 0 0.7rem 1.5rem;
+    border-bottom: 1px solid var(--linea-papel);
+  }
+  .lista-cotizar li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--tinta-2);
+  }
+  @media (max-width: 860px) {
+    .cotizar-rejilla {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

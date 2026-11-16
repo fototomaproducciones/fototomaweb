@@ -1,0 +1,216 @@
+---
+import Base from '../layouts/Base.astro';
+import { CORREO } from '../data/equipo';
+const dev = import.meta.env.DEV;
+const temas = [
+  { id: 'cine', texto: 'Película, serie o documental' },
+  { id: 'publicidad', texto: 'Comercial o campaña' },
+  { id: 'sesiones', texto: 'Sesión en vivo, disco o videoclip' },
+  { id: 'medios', texto: 'Podcast, radio o programa' },
+  { id: 'musico', texto: 'Soy músico y quiero sumarme' },
+  { id: 'otro', texto: 'Otra cosa' },
+];
+---
+
+<Base titulo="Contacto" descripcion="Escríbele a Fototoma Producciones: cuéntanos tu película, serie, documental, comercial o sesión.">
+  <section class="seccion">
+    <div class="envoltura contacto">
+      <div>
+        <p class="etq">Contacto</p>
+        <h1>Cuéntanos qué estás haciendo</h1>
+        <p class="lead">
+          Un guion, un corte, una referencia o una idea suelta sirven para empezar. Te respondemos con preguntas, una
+          propuesta y tiempos.
+        </p>
+        <div class="directo">
+          <p class="etq">Directo</p>
+          <a class="correo enlace" href={`mailto:${CORREO}`}>{CORREO}</a>
+        </div>
+      </div>
+
+      <form class="formulario" id="formulario" novalidate>
+        <label>
+          <span>Nombre</span>
+          <input name="nombre" autocomplete="name" required />
+        </label>
+        <label>
+          <span>Correo</span>
+          <input name="correo" type="email" autocomplete="email" required />
+        </label>
+        <label>
+          <span>Empresa o proyecto <em>(opcional)</em></span>
+          <input name="empresa" autocomplete="organization" />
+        </label>
+        <fieldset>
+          <legend>¿De qué se trata?</legend>
+          <div class="temas">
+            {
+              temas.map((t, i) => (
+                <label class="tema">
+                  <input type="radio" name="tema" value={t.texto} data-id={t.id} checked={i === 0} />
+                  <span>{t.texto}</span>
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+        <label>
+          <span>Cuéntanos</span>
+          <textarea name="mensaje" rows="6" required placeholder="Qué es, en qué etapa va, para cuándo lo necesitas…"></textarea>
+        </label>
+        <label>
+          <span>Enlace a material <em>(opcional)</em></span>
+          <input name="enlace" type="url" placeholder="Guion, corte, referencias…" />
+        </label>
+        <button class="boton lleno flecha" type="submit">Enviar</button>
+        <p class="nota" aria-live="polite"></p>
+        {dev && <p class="pendiente">PENDIENTE: por ahora el formulario abre el correo; conectar envío directo al publicar</p>}
+      </form>
+    </div>
+  </section>
+</Base>
+
+<script define:vars={{ CORREO }}>
+  const form = document.getElementById('formulario');
+  const tema = new URLSearchParams(location.search).get('tema');
+  if (tema) {
+    const r = form.querySelector(`input[data-id="${tema}"]`);
+    if (r) r.checked = true;
+  }
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const nota = form.querySelector('.nota');
+    if (!form.checkValidity()) {
+      nota.textContent = 'Falta tu nombre, tu correo o el mensaje.';
+      form.reportValidity();
+      return;
+    }
+    const d = new FormData(form);
+    const asunto = `${d.get('tema')} — ${d.get('nombre')}`;
+    const cuerpo = [
+      `Nombre: ${d.get('nombre')}`,
+      `Correo: ${d.get('correo')}`,
+      d.get('empresa') ? `Empresa o proyecto: ${d.get('empresa')}` : '',
+      `Tema: ${d.get('tema')}`,
+      '',
+      d.get('mensaje'),
+      d.get('enlace') ? `\nMaterial: ${d.get('enlace')}` : '',
+    ]
+      .filter((x) => x !== '')
+      .join('\n');
+    location.href = `mailto:${CORREO}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
+    nota.textContent = 'Se abrió tu programa de correo con el mensaje listo para enviar.';
+  });
+</script>
+
+<style>
+  .contacto {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: 3rem 6rem;
+    align-items: start;
+  }
+  h1 {
+    margin-bottom: 1.6rem;
+    max-width: 9em;
+  }
+  .directo {
+    margin-top: 3rem;
+  }
+  .correo {
+    overflow-wrap: anywhere;
+    font-family: var(--serif);
+    font-size: clamp(1.5rem, 2.6vw, 2rem);
+  }
+  .formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+  }
+  .formulario label:not(.tema) > span,
+  legend {
+    display: block;
+    font-size: var(--t-etq);
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gris);
+    margin-bottom: 0.5rem;
+  }
+  .formulario em {
+    font-style: normal;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 400;
+  }
+  input:not([type='radio']),
+  textarea {
+    width: 100%;
+    font: inherit;
+    color: var(--plata);
+    background: transparent;
+    border-radius: 0;
+    border: 0;
+    border-bottom: 1px solid var(--linea);
+    padding: 0.6rem 0;
+    outline: none;
+    transition: border-color 0.2s;
+    resize: vertical;
+  }
+  input:focus,
+  textarea:focus {
+    border-color: var(--plata);
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: #5f5c56;
+  }
+  fieldset {
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+  .temas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .tema {
+    cursor: pointer;
+  }
+  .tema input {
+    position: absolute;
+    opacity: 0;
+  }
+  .tema span {
+    display: inline-block;
+    font-size: 0.9rem;
+    padding: 0.45rem 0.85rem;
+    border: 1px solid var(--linea);
+    color: var(--plata-2);
+    transition: all 0.2s;
+  }
+  .tema input:checked + span {
+    background: var(--plata);
+    border-color: var(--plata);
+    color: var(--noche);
+  }
+  .tema input:focus-visible + span {
+    outline: 2px solid var(--plata);
+    outline-offset: 2px;
+  }
+  .formulario .boton {
+    align-self: flex-start;
+    margin-top: 0.6rem;
+  }
+  .nota {
+    color: var(--plata-2);
+    min-height: 1.5em;
+    margin: 0;
+  }
+  @media (max-width: 860px) {
+    .contacto {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

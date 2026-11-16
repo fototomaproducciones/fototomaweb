@@ -1,0 +1,177 @@
+---
+import Base from '../layouts/Base.astro';
+import ObraCard from '../components/ObraCard.astro';
+import { OBRA, CATEGORIAS, type Categoria } from '../data/obra';
+
+const orden: Categoria[] = ['documental', 'cine', 'publicidad', 'sesiones', 'medios', 'discos'];
+const grupos = orden.map((c) => ({ id: c, nombre: CATEGORIAS[c], piezas: OBRA.filter((p) => p.categoria === c) }));
+const personas = [
+  { id: 'martin', nombre: 'Martín' },
+  { id: 'santiago', nombre: 'Santiago' },
+  { id: 'juan', nombre: 'Juan' },
+];
+---
+
+<Base titulo="Obra" descripcion="Documentales, cortometrajes, animación, comerciales, sesiones en vivo y discos de Fototoma Producciones.">
+  <section class="seccion obra-cabeza">
+    <div class="envoltura">
+      <p class="etq">Obra</p>
+      <h1>Lo que hemos hecho</h1>
+      <p class="lead">
+        Trabajos de los tres codirectores antes y después de juntarnos en Fototoma. En cada pieza decimos quién la hizo y
+        qué hizo: música, diseño sonoro, ingeniería, dirección o cámara.
+      </p>
+
+      <div class="filtros" role="group" aria-label="Filtrar la obra">
+        <div class="filtro-fila">
+          <span class="filtro-nombre">Tipo</span>
+          <button class="filtro activo" data-filtro-cat="todo">Todo</button>
+          {grupos.map((g) => <button class="filtro" data-filtro-cat={g.id}>{g.nombre}</button>)}
+        </div>
+        <div class="filtro-fila">
+          <span class="filtro-nombre">Quién</span>
+          <button class="filtro activo" data-filtro-quien="todo">Los tres</button>
+          {personas.map((p) => <button class="filtro" data-filtro-quien={p.id}>{p.nombre}</button>)}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="envoltura grupos">
+    {
+      grupos.map((g) => (
+        <section class="grupo" data-grupo={g.id} id={g.id}>
+          <h2 class="grupo-titulo">{g.nombre}</h2>
+          <div class="rejilla">
+            {g.piezas.map((p) => (
+              <div class="celda" data-cat={p.categoria} data-quien={p.quien.join(' ')}>
+                <ObraCard pieza={p} />
+              </div>
+            ))}
+          </div>
+        </section>
+      ))
+    }
+    <p class="vacio" hidden>No hay piezas con esa combinación todavía.</p>
+  </div>
+</Base>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    if (!document.querySelector('.filtros')) return;
+    const estado: Record<string, string> = { cat: 'todo', quien: 'todo' };
+    const aplicar = () => {
+      let visibles = 0;
+      document.querySelectorAll<HTMLElement>('.grupo').forEach((g) => {
+        let n = 0;
+        g.querySelectorAll<HTMLElement>('.celda').forEach((c) => {
+          const ok =
+            (estado.cat === 'todo' || c.dataset.cat === estado.cat) &&
+            (estado.quien === 'todo' || (c.dataset.quien || '').split(' ').includes(estado.quien));
+          c.hidden = !ok;
+          if (ok) n++;
+        });
+        g.hidden = n === 0;
+        visibles += n;
+      });
+      const vacio = document.querySelector<HTMLElement>('.vacio');
+      if (vacio) vacio.hidden = visibles > 0;
+    };
+    document.querySelectorAll<HTMLButtonElement>('[data-filtro-cat],[data-filtro-quien]').forEach((b) => {
+      b.addEventListener('click', () => {
+        const tipo = b.dataset.filtroCat !== undefined ? 'cat' : 'quien';
+        estado[tipo] = (tipo === 'cat' ? b.dataset.filtroCat : b.dataset.filtroQuien) || 'todo';
+        b.parentElement?.querySelectorAll('.filtro').forEach((o) => {
+          o.classList.toggle('activo', o === b);
+          o.setAttribute('aria-pressed', o === b ? 'true' : 'false');
+        });
+        aplicar();
+      });
+    });
+    const q = new URLSearchParams(location.search).get('quien');
+    if (q) document.querySelector<HTMLButtonElement>(`[data-filtro-quien="${q}"]`)?.click();
+  });
+</script>
+
+<style>
+  .obra-cabeza {
+    padding-bottom: 3rem;
+  }
+  .obra-cabeza h1 {
+    margin-bottom: 1.4rem;
+  }
+  .filtros {
+    margin-top: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+  .filtro-fila {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.4rem;
+  }
+  .filtro-nombre {
+    width: 4.5rem;
+    font-size: var(--t-etq);
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gris);
+  }
+  .filtro {
+    font: inherit;
+    font-size: 0.9rem;
+    color: var(--plata-2);
+    background: none;
+    border: 1px solid var(--linea);
+    padding: 0.4rem 0.85rem;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+  }
+  .filtro:hover {
+    border-color: var(--plata-2);
+    color: var(--plata);
+  }
+  .filtro.activo {
+    background: var(--plata);
+    border-color: var(--plata);
+    color: var(--noche);
+  }
+  .grupos {
+    padding-bottom: 7rem;
+  }
+  .grupo {
+    padding-top: 3.5rem;
+    border-top: 1px solid var(--linea);
+    margin-top: 1rem;
+  }
+  .grupo-titulo {
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    margin-bottom: 2.2rem;
+  }
+  .rejilla {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 3rem 2rem;
+    padding-bottom: 3rem;
+  }
+  @media (max-width: 980px) {
+    .rejilla {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 620px) {
+    .rejilla {
+      grid-template-columns: 1fr;
+    }
+    .filtro-nombre {
+      width: 100%;
+    }
+  }
+  .vacio {
+    color: var(--gris);
+    padding: 3rem 0;
+  }
+</style>

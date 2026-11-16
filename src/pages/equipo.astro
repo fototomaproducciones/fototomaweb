@@ -1,0 +1,251 @@
+---
+import Base from '../layouts/Base.astro';
+import { DIRECTORES, ASOCIADOS } from '../data/equipo';
+import { dePersona } from '../data/obra';
+import Foto from '../components/Foto.astro';
+const dev = import.meta.env.DEV;
+---
+
+<Base titulo="Equipo" descripcion="Martín Perea Tobón, Santiago García y Juan Rizoma codirigen Fototoma Producciones, con una red de músicos asociados.">
+  <section class="seccion cabeza">
+    <div class="envoltura">
+      <p class="etq">Equipo</p>
+      <h1>Tres codirectores y una red de músicos</h1>
+      <p class="lead">
+        Venimos de la composición, el diseño sonoro, la ingeniería y la realización audiovisual. Cada proyecto lo dirige
+        quien más sabe de lo que pide, y para cada uno convocamos a los intérpretes que hagan falta.
+      </p>
+    </div>
+  </section>
+
+  {
+    DIRECTORES.map((d, i) => {
+      const obra = dePersona(d.id).slice(0, 6);
+      return (
+        <section class:list={['seccion perfil', { invertido: i % 2 === 1 }]} id={d.id}>
+          <div class="envoltura perfil-rejilla">
+            <figure class="perfil-foto rv">
+              <Foto src={`equipo/${d.foto}`} alt={d.nombre} sizes="(max-width: 860px) 90vw, 40vw" anchos={[480, 800, 1200]} prioridad={i === 0} />
+            </figure>
+            <div class="perfil-texto rv">
+              <p class="etq perfil-rol">Codirector · {d.rol}</p>
+              <h2>{d.nombre}</h2>
+              {d.formacion && <p class="perfil-formacion">{d.formacion}</p>}
+              {dev && d.pendiente && <p class="pendiente">PENDIENTE: {d.pendiente}</p>}
+              {d.bio.map((b) => (
+                <p class="perfil-bio">{b}</p>
+              ))}
+
+              {d.discos && (
+                <div class="perfil-bloque">
+                  <p class="etq">Discos</p>
+                  <ul class="perfil-lista">
+                    {d.discos.map((x) => (
+                      <li>
+                        {x.url ? (
+                          <a class="enlace" href={x.url} target="_blank" rel="noopener">
+                            {x.titulo}
+                          </a>
+                        ) : (
+                          x.titulo
+                        )}
+                        {x.anio && <span class="gris"> · {x.anio}</span>}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <div class="perfil-bloque">
+                <p class="etq">En Fototoma</p>
+                <ul class="perfil-lista">
+                  {obra.map((p) => (
+                    <li>
+                      {p.titulo} <span class="gris">· {p.rol}</span>
+                    </li>
+                  ))}
+                </ul>
+                <a class="enlace" href={`/obra?quien=${d.id}`}>
+                  Ver su obra
+                </a>
+              </div>
+
+              <p class="perfil-enlaces">
+                {d.enlaces.map((e) => (
+                  <a class="enlace" href={e.url} target="_blank" rel="noopener">
+                    {e.texto} ↗
+                  </a>
+                ))}
+              </p>
+            </div>
+          </div>
+        </section>
+      );
+    })
+  }
+
+  <section class="seccion carbon" id="asociados">
+    <div class="envoltura asociados">
+      <div class="rv">
+        <p class="etq">Músicos asociados</p>
+        <h2>Los que tocan</h2>
+        <p class="lead">
+          Una red de intérpretes que crece con cada proyecto: cuerdas, vientos, voces, percusiones e instrumentos
+          tradicionales, para poder responder a cualquier música que pida una película o una campaña.
+        </p>
+      </div>
+      <div class="rv">
+        <ul class="asociados-lista">
+          {
+            ASOCIADOS.map((a) => (
+              <li>
+                <span class="asociado-nombre">{a.nombre}</span>
+                <span class="gris">{a.instrumentos ?? a.nota}</span>
+              </li>
+            ))
+          }
+        </ul>
+        {dev && <p class="pendiente">PENDIENTE: portafolio e instrumentos de luci le</p>}
+        <div class="sumate">
+          <h3>¿Tocas y quieres trabajar con nosotros?</h3>
+          <p>Cuéntanos qué instrumentos tocas, qué músicas conoces y mándanos grabaciones o videos.</p>
+          <a class="boton flecha" href="/contacto?tema=musico">Escribirnos</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .cabeza h1 {
+    max-width: 12em;
+    margin-bottom: 1.6rem;
+  }
+  .perfil-rejilla {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: clamp(2.5rem, 6vw, 5.5rem);
+    align-items: start;
+  }
+  .invertido .perfil-foto {
+    order: 2;
+  }
+  .perfil-foto {
+    margin: 0;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: var(--grafito);
+    position: sticky;
+    top: 100px;
+  }
+  .perfil-foto :global(picture),
+  .perfil-foto :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .perfil-formacion {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--plata-2);
+    margin: -0.6rem 0 1.6rem;
+  }
+  .perfil-rol {
+    color: var(--sol);
+  }
+  .perfil.invertido {
+    background: var(--carbon);
+  }
+  .perfil-texto h2 {
+    margin-bottom: 1.6rem;
+  }
+  .perfil-bio {
+    color: var(--plata-2);
+    max-width: 36em;
+  }
+  .perfil-bio:first-of-type {
+    font-size: 1.15rem;
+    color: var(--plata);
+  }
+  .perfil-bloque {
+    margin-top: 2.2rem;
+    padding-top: 1.4rem;
+    border-top: 1px solid var(--linea);
+  }
+  .perfil-lista {
+    list-style: none;
+    margin: 0 0 1rem;
+    padding: 0;
+  }
+  .perfil-lista li {
+    padding: 0.25rem 0;
+  }
+  .gris {
+    color: var(--gris);
+  }
+  .perfil-enlaces {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.6rem;
+    margin-top: 2rem;
+    font-size: 0.95rem;
+    color: var(--plata-2);
+  }
+  @media (max-width: 860px) {
+    .perfil-rejilla {
+      grid-template-columns: 1fr;
+    }
+    .invertido .perfil-foto {
+      order: 0;
+    }
+    .perfil-foto {
+      position: static;
+      max-width: 26rem;
+    }
+  }
+
+  .asociados {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 3rem 5rem;
+  }
+  .asociados h2 {
+    margin-bottom: 1.4rem;
+  }
+  .asociados-lista {
+    list-style: none;
+    margin: 0 0 1rem;
+    padding: 0;
+    border-top: 1px solid var(--linea);
+  }
+  .asociados-lista li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 1.1rem 0;
+    border-bottom: 1px solid var(--linea);
+  }
+  .asociado-nombre {
+    font-family: var(--serif);
+    font-size: 2.2rem;
+    line-height: 1.1;
+  }
+  .sumate {
+    margin-top: 3rem;
+  }
+  .sumate h3 {
+    margin-bottom: 0.6rem;
+  }
+  .sumate p {
+    color: var(--plata-2);
+  }
+  @media (max-width: 860px) {
+    .asociados {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

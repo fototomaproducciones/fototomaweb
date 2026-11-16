@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /marca
+Disallow: /og
+
+Sitemap: https://fototomaproducciones.com/sitemap-index.xml

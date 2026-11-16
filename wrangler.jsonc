@@ -1,0 +1,21 @@
+{
+  // Fototoma Producciones en Cloudflare: un Worker que sirve el sitio estático
+  // (dist/) y manda www.fototomaproducciones.com al dominio sin www.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "fototoma-web",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": true
+  },
+  "routes": [
+    { "pattern": "fototomaproducciones.com", "custom_domain": true },
+    { "pattern": "www.fototomaproducciones.com", "custom_domain": true }
+  ],
+  "workers_dev": false,
+  "preview_urls": false,
+  "observability": { "enabled": true }
+}

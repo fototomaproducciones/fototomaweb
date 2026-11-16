@@ -1,0 +1,571 @@
+---
+import '@fontsource-variable/newsreader/opsz.css';
+import '@fontsource-variable/newsreader/opsz-italic.css';
+import '@fontsource/lato/400.css';
+import '@fontsource/lato/700.css';
+import '../styles/global.css';
+import serifUrl from '@fontsource-variable/newsreader/files/newsreader-latin-opsz-normal.woff2?url';
+import latoUrl from '@fontsource/lato/files/lato-latin-400-normal.woff2?url';
+import { ClientRouter } from 'astro:transitions';
+import Logo from '../components/Logo.astro';
+import { CORREO } from '../data/equipo';
+
+interface Props {
+  titulo?: string;
+  descripcion?: string;
+  noindex?: boolean;
+  cabeceraSobreFoto?: boolean;
+  imagen?: string; // imagen para compartir (en public/)
+}
+const {
+  titulo,
+  descripcion = 'Productora de música para cine, documental, series, publicidad y medios. Música original, diseño sonoro, mezcla y sesiones en vivo.',
+  noindex = false,
+  cabeceraSobreFoto = false,
+  imagen = '/og.jpg',
+} = Astro.props;
+const tituloCompleto = titulo ? `${titulo} · Fototoma Producciones` : 'Fototoma Producciones · Música para la imagen';
+const ruta = Astro.url.pathname.replace(/\/$/, '') || '/';
+const canonica = new URL(Astro.url.pathname, Astro.site);
+const menu = [
+  { url: '/obra', texto: 'Obra' },
+  { url: '/servicios', texto: 'Servicios' },
+  { url: '/publicidad', texto: 'Publicidad' },
+  { url: '/equipo', texto: 'Equipo' },
+];
+const dev = import.meta.env.DEV;
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Fototoma Producciones',
+  description: 'Productora de música para medios audiovisuales.',
+  url: Astro.site?.href,
+  email: CORREO,
+  logo: new URL('/marca/fototoma-simbolo-negro.png', Astro.site).href,
+  areaServed: 'CO',
+  founder: ['Martín Perea Tobón', 'Santiago García', 'Juan Rizoma'].map((n) => ({ '@type': 'Person', name: n })),
+};
+---
+
+<!doctype html>
+<html lang="es-CO" class={dev ? 'dev' : ''}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    <title>{tituloCompleto}</title>
+    <meta name="description" content={descripcion} />
+    <link rel="canonical" href={canonica} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="preload" href={serifUrl} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={latoUrl} as="font" type="font/woff2" crossorigin />
+    <link rel="preconnect" href="https://i.ytimg.com" />
+    <meta property="og:title" content={tituloCompleto} />
+    <meta property="og:description" content={descripcion} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_CO" />
+    <meta property="og:image" content={new URL(imagen, Astro.site)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#14120f" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <script type="application/ld+json" set:html={JSON.stringify(ld)} />
+    <ClientRouter fallback="swap" />
+  </head>
+  <body>
+    <a class="saltar" href="#contenido">Ir al contenido</a>
+    <header class:list={['cabecera', { 'sobre-foto': cabeceraSobreFoto }]}>
+      <div class="envoltura cabecera-fila">
+        <a href="/" class="cabecera-logo" aria-label="Fototoma Producciones, inicio">
+          <Logo tam={40} />
+        </a>
+        <nav id="menu" class="menu" aria-label="Principal">
+          {
+            menu.map((m) => (
+              <a href={m.url} aria-current={ruta.startsWith(m.url) ? 'page' : undefined}>
+                {m.texto}
+              </a>
+            ))
+          }
+          <a class="menu-cta" href="/contacto" aria-current={ruta === '/contacto' ? 'page' : undefined}>Escríbenos</a>
+        </nav>
+        <button class="menu-boton" aria-expanded="false" aria-controls="menu">
+          <span class="sr">Menú</span>
+          <span class="menu-rayas" aria-hidden="true"></span>
+        </button>
+      </div>
+    </header>
+
+    <main id="contenido">
+      <slot />
+    </main>
+
+    <footer class="pie">
+      <div class="envoltura pie-arriba">
+        <p class="pie-llamado serif">¿Tienes una película, un comercial o una sesión entre manos?</p>
+        <a class="pie-correo" href={`mailto:${CORREO}`}>{CORREO}</a>
+      </div>
+      <div class="envoltura pie-rejilla">
+        <Logo modo="apilado" tam={84} class="pie-logo" />
+        <p class="pie-texto">
+          Música y sonido para cine, documental, series, publicidad y medios. Tres codirectores y una red de músicos
+          asociados en Colombia.
+        </p>
+        <nav class="pie-menu" aria-label="Pie">
+          {menu.map((m) => <a href={m.url}>{m.texto}</a>)}
+          <a href="/contacto">Contacto</a>
+          <a href="/fotofono">El fotófono</a>
+        </nav>
+      </div>
+      <div class="envoltura pie-final">
+        <span>© {new Date().getFullYear()} Fototoma Producciones</span>
+        <span>Grabados del fotófono de Bell y Tainter, 1880 · dominio público</span>
+      </div>
+    </footer>
+
+    <!-- reproductor: abre los videos en grande sin salir de la página -->
+    <dialog class="sala" id="sala" aria-label="Reproductor de video">
+      <div class="sala-caja">
+        <div class="sala-pantalla"></div>
+        <div class="sala-pie">
+          <div>
+            <p class="sala-titulo serif"></p>
+            <p class="sala-credito"></p>
+          </div>
+          <button class="sala-cerrar" aria-label="Cerrar">Cerrar <span aria-hidden="true">×</span></button>
+        </div>
+      </div>
+    </dialog>
+
+    <script>
+      // Una sola vez por visita (los listeners de documento sobreviven a la navegación)
+      const w = window as any;
+      if (!w.__fototoma) {
+        w.__fototoma = true;
+
+        const sala = () => document.getElementById('sala') as HTMLDialogElement | null;
+        const cerrarSala = () => {
+          const d = sala();
+          if (!d) return;
+          d.querySelector('.sala-pantalla')!.innerHTML = '';
+          if (d.open) d.close();
+        };
+
+        document.addEventListener('click', (e) => {
+          const t = e.target as HTMLElement;
+
+          // abrir video
+          const b = t.closest<HTMLElement>('[data-yt]');
+          if (b) {
+            e.preventDefault();
+            const d = sala();
+            if (!d) return;
+            const marco = document.createElement('iframe');
+            marco.src = `https://www.youtube-nocookie.com/embed/${b.dataset.yt}?autoplay=1&rel=0&modestbranding=1`;
+            marco.title = b.dataset.titulo || 'Video';
+            marco.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+            marco.allowFullscreen = true;
+            d.querySelector('.sala-pantalla')!.replaceChildren(marco);
+            d.querySelector('.sala-titulo')!.textContent = b.dataset.titulo || '';
+            d.querySelector('.sala-credito')!.textContent = b.dataset.credito || '';
+            d.showModal();
+            // el foco queda en «Cerrar» (si se va al video, YouTube se queda con la tecla Escape)
+            d.querySelector<HTMLElement>('.sala-cerrar')?.focus();
+            return;
+          }
+
+          // cerrar: botón o clic fuera de la caja
+          if (t.closest('.sala-cerrar') || t.id === 'sala') cerrarSala();
+
+          // menú móvil
+          if (t.closest('.menu-boton')) {
+            const cab = document.querySelector('.cabecera');
+            const abierto = cab?.classList.toggle('abierto');
+            t.closest('.menu-boton')!.setAttribute('aria-expanded', abierto ? 'true' : 'false');
+          }
+        });
+
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') document.querySelector('.cabecera')?.classList.remove('abierto');
+        });
+        document.addEventListener('close', (e) => {
+          if ((e.target as HTMLElement).id === 'sala') cerrarSala();
+        }, true);
+
+        window.addEventListener(
+          'scroll',
+          () => document.querySelector('.cabecera')?.classList.toggle('solida', window.scrollY > 40),
+          { passive: true },
+        );
+      }
+
+      // En cada página
+      document.addEventListener('astro:page-load', () => {
+        document.querySelector('.cabecera')?.classList.toggle('solida', window.scrollY > 40);
+        const io = new IntersectionObserver(
+          (entradas) =>
+            entradas.forEach((en) => {
+              if (en.isIntersecting) {
+                en.target.classList.add('in');
+                io.unobserve(en.target);
+              }
+            }),
+          { rootMargin: '0px 0px -6% 0px' },
+        );
+        document.querySelectorAll('.rv:not(.in)').forEach((el) => io.observe(el));
+      });
+    </script>
+
+    <style>
+      .saltar {
+        position: absolute;
+        left: 1rem;
+        top: -4rem;
+        z-index: 100;
+        background: var(--plata);
+        color: var(--tinta);
+        padding: 0.6rem 1rem;
+      }
+      .saltar:focus {
+        top: 1rem;
+      }
+
+      .cabecera {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(20, 18, 15, 0.9);
+        backdrop-filter: blur(10px) saturate(1.2);
+        border-bottom: 1px solid var(--linea);
+        transition:
+          background 0.4s var(--suave),
+          border-color 0.4s var(--suave);
+      }
+      .cabecera.sobre-foto {
+        position: fixed;
+        inset: 0 0 auto;
+        background: transparent;
+        border-color: transparent;
+        backdrop-filter: none;
+      }
+      .cabecera.sobre-foto.solida,
+      .cabecera.sobre-foto.abierto {
+        background: rgba(20, 18, 15, 0.92);
+        border-color: var(--linea);
+        backdrop-filter: blur(10px) saturate(1.2);
+      }
+      .cabecera-fila {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 2rem;
+        height: 80px;
+      }
+      .cabecera-logo {
+        text-decoration: none;
+        color: var(--plata);
+      }
+      .menu {
+        display: flex;
+        align-items: center;
+        gap: clamp(1.2rem, 2.6vw, 2.5rem);
+      }
+      .menu a {
+        position: relative;
+        font-size: 0.76rem;
+        font-weight: 700;
+        letter-spacing: 0.17em;
+        text-transform: uppercase;
+        text-decoration: none;
+        color: var(--plata-2);
+        padding: 0.5rem 0;
+        transition: color 0.25s;
+      }
+      .menu a:not(.menu-cta)::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 1px;
+        background: var(--sol);
+        scale: 0 1;
+        transform-origin: left;
+        transition: scale 0.35s var(--suave);
+      }
+      .menu a:hover,
+      .menu a[aria-current='page'] {
+        color: var(--plata);
+      }
+      .menu a:hover::after,
+      .menu a[aria-current='page']::after {
+        scale: 1 1;
+      }
+      .menu .menu-cta {
+        border: 1px solid rgba(243, 238, 228, 0.5);
+        padding: 0.65rem 1.1rem;
+        color: var(--plata);
+        transition:
+          background 0.3s,
+          color 0.3s,
+          border-color 0.3s;
+      }
+      .menu .menu-cta:hover,
+      .menu .menu-cta[aria-current='page'] {
+        background: var(--plata);
+        color: var(--tinta);
+        border-color: var(--plata);
+      }
+      .menu-boton {
+        display: none;
+        background: none;
+        border: 0;
+        width: 44px;
+        height: 44px;
+        color: var(--plata);
+        cursor: pointer;
+        position: relative;
+      }
+      .menu-rayas,
+      .menu-rayas::before {
+        position: absolute;
+        left: 10px;
+        right: 10px;
+        height: 1.5px;
+        background: currentColor;
+        transition:
+          transform 0.3s var(--suave),
+          top 0.3s var(--suave);
+      }
+      .menu-rayas {
+        top: 18px;
+      }
+      .menu-rayas::before {
+        content: '';
+        left: 0;
+        right: 0;
+        top: 8px;
+      }
+      .abierto .menu-rayas {
+        top: 22px;
+        transform: rotate(45deg);
+      }
+      .abierto .menu-rayas::before {
+        top: 0;
+        transform: rotate(-90deg);
+      }
+      @media (max-width: 900px) {
+        .menu-boton {
+          display: block;
+        }
+        .menu {
+          position: absolute;
+          top: 80px;
+          left: 0;
+          right: 0;
+          flex-direction: column;
+          align-items: stretch;
+          gap: 0;
+          padding: 0.5rem var(--margen) 1.8rem;
+          background: rgba(20, 18, 15, 0.98);
+          border-bottom: 1px solid var(--linea);
+          clip-path: inset(0 0 100% 0);
+          visibility: hidden;
+          transition:
+            clip-path 0.45s var(--suave),
+            visibility 0s 0.45s;
+        }
+        .abierto .menu {
+          clip-path: inset(0 0 0 0);
+          visibility: visible;
+          transition: clip-path 0.45s var(--suave);
+        }
+        .menu a {
+          font-family: var(--serif);
+          font-size: 1.7rem;
+          font-weight: 400;
+          letter-spacing: 0;
+          text-transform: none;
+          padding: 0.9rem 0;
+          border-bottom: 1px solid var(--linea);
+        }
+        .menu a::after {
+          display: none;
+        }
+        .menu .menu-cta {
+          margin-top: 1.4rem;
+          text-align: center;
+          font-family: var(--sans);
+          font-size: 0.8rem;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
+          font-weight: 700;
+          padding: 1rem;
+        }
+        .cabecera-logo :global(.logo-sub) {
+          display: none;
+        }
+      }
+
+      /* pie */
+      .pie {
+        background: var(--noche);
+        border-top: 1px solid var(--linea);
+        padding: clamp(4.5rem, 9vw, 7rem) 0 2rem;
+        color: var(--plata-2);
+      }
+      .pie-arriba {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 1.5rem 3rem;
+        padding-bottom: clamp(3.5rem, 7vw, 5.5rem);
+        margin-bottom: clamp(3.5rem, 7vw, 5rem);
+        border-bottom: 1px solid var(--linea);
+      }
+      .pie-llamado {
+        font-size: clamp(1.8rem, 3.6vw, 3rem);
+        color: var(--plata);
+        max-width: 15em;
+        margin: 0;
+        line-height: 1.1;
+      }
+      .pie-correo {
+        font-family: var(--serif);
+        font-style: italic;
+        font-size: clamp(1.15rem, 2vw, 1.6rem);
+        color: var(--sol);
+        text-decoration: none;
+        border-bottom: 1px solid rgba(224, 168, 78, 0.4);
+        padding-bottom: 0.2rem;
+        overflow-wrap: anywhere;
+        transition: border-color 0.3s;
+      }
+      .pie-correo:hover {
+        border-color: var(--sol);
+      }
+      .pie-rejilla {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1.2fr) minmax(0, 0.8fr);
+        gap: 3rem 5rem;
+        align-items: start;
+      }
+      .pie :global(.pie-logo) {
+        color: var(--plata);
+      }
+      .pie-texto {
+        max-width: 28em;
+        margin: 0;
+      }
+      .pie-menu {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.55rem 2rem;
+      }
+      .pie-menu a {
+        text-decoration: none;
+        font-size: 0.95rem;
+        transition: color 0.2s;
+      }
+      .pie-menu a:hover {
+        color: var(--plata);
+      }
+      .pie-final {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: 4.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--linea);
+        font-size: 0.82rem;
+        color: var(--gris);
+      }
+      @media (max-width: 860px) {
+        .pie-rejilla {
+          grid-template-columns: 1fr;
+          gap: 2.5rem;
+        }
+      }
+
+      /* sala de proyección */
+      .sala {
+        width: min(1180px, 94vw);
+        max-width: none;
+        max-height: 94vh;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: var(--plata);
+        overflow: visible;
+      }
+      .sala::backdrop {
+        background: rgba(8, 7, 6, 0.9);
+        backdrop-filter: blur(6px);
+      }
+      .sala[open] {
+        animation: abrir 0.45s var(--suave);
+      }
+      @keyframes abrir {
+        from {
+          opacity: 0;
+          translate: 0 14px;
+        }
+      }
+      .sala-pantalla {
+        position: relative;
+        aspect-ratio: 16 / 9;
+        max-height: 80vh;
+        margin: 0 auto;
+        background: #000;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+      }
+      .sala-pantalla :global(iframe) {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+      }
+      .sala-pie {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1.5rem;
+        padding-top: 1rem;
+      }
+      .sala-titulo {
+        font-size: 1.5rem;
+        margin: 0 0 0.2rem;
+      }
+      .sala-credito {
+        margin: 0;
+        color: var(--plata-2);
+        font-size: 0.95rem;
+      }
+      .sala-cerrar {
+        flex: none;
+        background: none;
+        border: 1px solid var(--linea);
+        color: var(--plata);
+        font: 700 0.75rem/1 var(--sans);
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        padding: 0.75rem 1rem;
+        cursor: pointer;
+      }
+      .sala-cerrar span {
+        font-size: 1.1rem;
+        margin-left: 0.3rem;
+      }
+      .sala-cerrar:hover {
+        border-color: var(--plata);
+      }
+    </style>
+  </body>
+</html>

@@ -1,0 +1,703 @@
+---
+import Base from '../layouts/Base.astro';
+import ObraCard from '../components/ObraCard.astro';
+import Foto from '../components/Foto.astro';
+import Logo from '../components/Logo.astro';
+import Creditos from '../components/Creditos.astro';
+import Escuchar from '../components/Escuchar.astro';
+import { destacadas, OBRA } from '../data/obra';
+import { DIRECTORES, ASOCIADOS } from '../data/equipo';
+
+const fotogramas = [
+  { img: '2xwhnGZxArw.jpg', pie: 'Los últimos nómadas de Mongolia · música y diseño sonoro de Martín Perea Tobón', pos: 'center 60%' },
+  { img: '17IYYByXjKk.jpg', pie: 'Currulao y músicas del Pacífico Sur · Dial, 2026', pos: 'center 30%' },
+  { img: '5lgpy6H5sTU.jpg', pie: 'Arrabal Gentío — Mangorito', pos: 'center' },
+  { img: '4bftwkKm06U.jpg', pie: 'Tierra sin sol ni luna · música de Juan Rizoma', pos: 'center' },
+];
+const mongolia = OBRA.find((p) => p.id === 'mongolia')!;
+
+const frentes = [
+  {
+    id: 'cine',
+    titulo: 'Cine, series y documental',
+    img: '6uWk6G-3VYs.jpg',
+    texto: 'Música original, diseño sonoro y mezcla final. Llegamos cuando se escribe, cuando se filma o con el corte casi listo.',
+    lista: ['Música original a la imagen', 'Diseño sonoro y foley', 'Mezcla para sala, TV y plataformas', 'Supervisión musical', 'Animación y videojuegos'],
+    url: '/servicios#cine',
+  },
+  {
+    id: 'publicidad',
+    titulo: 'Publicidad y marcas',
+    img: 'FQ1OpRNI6bM.jpg',
+    texto: 'Música y sonido para comerciales y campañas, con las versiones y los formatos que pide cada medio.',
+    lista: ['Música original y jingles', 'Diseño sonoro', 'Identidad y logo sonoro', 'Cortes de 6 a 60 segundos', 'Locución y mezcla por medio'],
+    url: '/publicidad',
+  },
+  {
+    id: 'sesiones',
+    titulo: 'Artistas, sesiones y medios',
+    img: 'W32TI7o8XM0.jpg',
+    texto: 'Grabamos y filmamos sesiones en vivo, producimos discos y hacemos el sonido de podcasts y programas.',
+    lista: ['Sesiones grabadas y filmadas', 'Producción y arreglos', 'Videoclips', 'Podcast y radio', 'Mezcla y masterización'],
+    url: '/servicios#sesiones',
+  },
+];
+
+const principal = OBRA.find((p) => p.id === 'currulao')!;
+const resto = destacadas().filter((p) => p.id !== 'mongolia' && p.id !== 'currulao');
+---
+
+<Base cabeceraSobreFoto>
+  <!-- héroe -->
+  <section class="heroe">
+    <div class="heroe-fotos">
+      {
+        fotogramas.map((f, i) => (
+          <figure class:list={['heroe-foto', { activa: i === 0 }]} aria-hidden={i === 0 ? undefined : 'true'}>
+            <Foto src={`obra/${f.img}`} sizes="100vw" anchos={[800, 1280, 1920]} prioridad={i === 0} posicion={f.pos} />
+            <figcaption class="pie-foto">{f.pie}</figcaption>
+          </figure>
+        ))
+      }
+    </div>
+    <div class="envoltura heroe-texto">
+      <div class="heroe-marca">
+        <Logo modo="simbolo" tam={64} animado />
+      </div>
+      <p class="etq">Productora de música para medios audiovisuales</p>
+      <h1>Música para <em>la imagen</em></h1>
+      <p class="lead">
+        Componemos, grabamos y mezclamos la música y el sonido de películas, documentales, series, comerciales y
+        sesiones en vivo. Somos tres codirectores con una red de músicos asociados.
+      </p>
+      <div class="botones">
+        <button
+          class="boton lleno heroe-play"
+          data-yt={mongolia.video}
+          data-titulo={mongolia.titulo}
+          data-credito={`${mongolia.rol} — Martín Perea Tobón · ${mongolia.ficha}`}
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg>
+          Ver el corto
+        </button>
+        <a class="boton flecha" href="/obra">Toda la obra</a>
+      </div>
+    </div>
+    <a class="heroe-bajar" href="#hacemos" aria-label="Bajar a qué hacemos"><span></span></a>
+  </section>
+
+  <Creditos />
+
+  <!-- qué hacemos (papel) -->
+  <section class="seccion papel" id="hacemos">
+    <div class="envoltura">
+      <div class="cabeza-seccion rv">
+        <div>
+          <p class="etq">Qué hacemos</p>
+          <h2>Del guion a la <em>mezcla final</em></h2>
+        </div>
+        <p class="lead">
+          Una partitura para cuerdas, el ruido de una calle, un jingle de quince segundos o una banda grabada en vivo.
+          Cada proyecto lo armamos con el equipo que haga falta.
+        </p>
+      </div>
+      <div class="frentes">
+        {
+          frentes.map((fr, i) => (
+            <a class="frente rv" href={fr.url} style={`--d:${i * 0.08}s`}>
+              <div class="frente-foto marco">
+                <Foto src={`obra/${fr.img}`} sizes="(max-width: 900px) 100vw, 33vw" />
+              </div>
+              <h3>{fr.titulo}</h3>
+              <p>{fr.texto}</p>
+              <ul class="lista-raya">
+                {fr.lista.map((l) => (
+                  <li>{l}</li>
+                ))}
+              </ul>
+              <span class="frente-mas flecha">Ver más</span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- obra -->
+  <section class="seccion">
+    <div class="envoltura">
+      <div class="cabeza-seccion rv">
+        <div>
+          <p class="etq">Obra</p>
+          <h2>Algunos trabajos</h2>
+        </div>
+        <p class="lead">
+          Documentales, cortometrajes, animación, comerciales y sesiones. Cada pieza dice quién de nosotros la hizo y qué
+          hizo.
+        </p>
+      </div>
+      <div class="obra-principal rv">
+        <ObraCard pieza={principal} grande />
+      </div>
+      <div class="rejilla-obra">
+        {
+          resto.map((p, i) => (
+            <div class="rv" style={`--d:${(i % 3) * 0.08}s`}>
+              <ObraCard pieza={p} />
+            </div>
+          ))
+        }
+      </div>
+      <p class="ver-mas rv">
+        <a class="boton flecha" href="/obra">Toda la obra · {OBRA.length} piezas</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- escuchar -->
+  <section class="seccion carbon" id="escuchar">
+    <div class="envoltura escuchar">
+      <div class="rv">
+        <p class="etq">Escuchar</p>
+        <h2>Lo que suena cuando <em>no hay imagen</em></h2>
+        <p class="lead">
+          Música propia de los codirectores: las aves de Santiago (una de ellas, «Diostedé», con luci le) y piezas de
+          Martín que van del jazz a la música experimental.
+        </p>
+      </div>
+      <Escuchar />
+    </div>
+  </section>
+
+  <!-- el nombre (papel) -->
+  <section class="seccion hueso fotofono">
+    <div class="envoltura fotofono-rejilla">
+      <figure class="fotofono-grabado rv">
+        <Foto src="fotofono/transmisor.jpg" alt="Grabado de 1880: un hombre habla hacia el transmisor del fotófono, que refleja un rayo de sol." sizes="(max-width: 820px) 100vw, 50vw" />
+        <figcaption class="pie-foto">El transmisor del fotófono · grabado de 1880</figcaption>
+      </figure>
+      <div class="fotofono-texto rv">
+        <p class="etq">El nombre</p>
+        <h2>Una voz que viajó en un <em>rayo de sol</em></h2>
+        <p>
+          En junio de 1880, Alexander Graham Bell y Charles Sumner Tainter mandaron una voz de un edificio a otro, en
+          Washington, sin cables. El sonido hacía vibrar un espejo delgado, el espejo movía un rayo de sol y, a unos 200
+          metros, un espejo parabólico con una celda de selenio volvía esa luz a sonido. Lo llamaron fotófono.
+        </p>
+        <p>Nuestro logo es ese espejo recibiendo la luz.</p>
+        <a class="enlace" href="/fotofono">La historia completa</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- equipo -->
+  <section class="seccion">
+    <div class="envoltura">
+      <div class="cabeza-seccion rv">
+        <div>
+          <p class="etq">Codirección</p>
+          <h2>Tres oficios, <em>una mesa</em></h2>
+        </div>
+        <p class="lead">
+          Composición y arreglos, diseño sonoro, producción musical, ingeniería y realización audiovisual. Cada proyecto lo
+          dirige quien más sabe de lo que pide.
+        </p>
+      </div>
+      <div class="directores">
+        {
+          DIRECTORES.map((d, i) => (
+            <a class="director rv" href={`/equipo#${d.id}`} style={`--d:${i * 0.08}s`}>
+              <div class="director-foto">
+                <Foto src={`equipo/${d.foto}`} alt={d.nombre} sizes="(max-width: 820px) 90vw, 30vw" anchos={[400, 640, 900]} />
+              </div>
+              <p class="director-rol">{d.rol}</p>
+              <h3>{d.nombre}</h3>
+              <p class="director-corta">{d.corta}</p>
+            </a>
+          ))
+        }
+      </div>
+
+      <div class="asociados rv">
+        <div>
+          <p class="etq">Músicos asociados</p>
+          <p class="asociados-texto">
+            Para cada proyecto convocamos a los intérpretes que pide la música: cuerdas, vientos, voces, percusiones,
+            instrumentos tradicionales.
+          </p>
+        </div>
+        <ul class="asociados-lista">
+          {
+            ASOCIADOS.map((a) => (
+              <li>
+                <span class="asociado-nombre">{a.nombre}</span>
+                <span class="asociado-nota">{a.instrumentos ?? a.nota}</span>
+              </li>
+            ))
+          }
+          <li>
+            <a class="enlace" href="/contacto?tema=musico">¿Tocas y quieres sumarte? Escríbenos</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- publicidad (papel) -->
+  <section class="seccion papel">
+    <div class="envoltura publi">
+      <div class="publi-texto rv">
+        <p class="etq">Para agencias y marcas</p>
+        <h2>Música para comerciales, <em>lista para la pauta</em></h2>
+        <p class="lead">
+          Versiones por duración, pistas separadas, mezcla para cada medio y una licencia de uso clara desde la propuesta.
+        </p>
+        <div class="botones">
+          <a class="boton lleno flecha" href="/publicidad">Cómo trabajamos con marcas</a>
+          <a class="boton" href="/contacto?tema=publicidad">Pedir una propuesta</a>
+        </div>
+      </div>
+      <div class="publi-pieza rv">
+        <ObraCard pieza={OBRA.find((p) => p.id === 'mazda-un-color')!} />
+      </div>
+    </div>
+  </section>
+
+  <!-- cierre sobre imagen -->
+  <section class="cierre">
+    <div class="cierre-fondo paralaje">
+      <Foto src="obra/17IYYByXjKk.jpg" sizes="100vw" anchos={[800, 1280]} posicion="center 30%" />
+    </div>
+    <div class="envoltura cierre-caja rv">
+      <p class="etq">Contacto</p>
+      <h2>Cuéntanos qué estás <em>haciendo</em></h2>
+      <p class="lead">
+        Un guion, un corte, una referencia o una idea suelta sirven para empezar. Respondemos con preguntas, una propuesta
+        y tiempos.
+      </p>
+      <div class="botones">
+        <a class="boton lleno flecha" href="/contacto">Escribirnos</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    const fotos = [...document.querySelectorAll<HTMLElement>('.heroe-foto')];
+    if (fotos.length < 2 || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    let i = 0;
+    const t = setInterval(() => {
+      if (!document.body.contains(fotos[0])) return clearInterval(t);
+      fotos[i].classList.remove('activa');
+      i = (i + 1) % fotos.length;
+      fotos[i].classList.add('activa');
+    }, 7000);
+  });
+</script>
+
+<style>
+  /* héroe */
+  .heroe {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    align-items: flex-end;
+    padding: 9rem 0 clamp(5rem, 11vh, 8rem);
+    overflow: hidden;
+    background: var(--noche);
+  }
+  .heroe-fotos,
+  .heroe-foto {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+  }
+  .heroe-foto {
+    opacity: 0;
+    transition: opacity 2.4s ease;
+  }
+  .heroe-foto.activa {
+    opacity: 1;
+  }
+  .heroe-foto :global(picture),
+  .heroe-foto :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .heroe-foto :global(img) {
+    filter: saturate(0.85) contrast(1.04);
+    scale: 1.08;
+    transition: scale 9s linear;
+  }
+  .heroe-foto.activa :global(img) {
+    scale: 1;
+  }
+  .heroe-fotos::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(20, 18, 15, 0.86) 0%, rgba(20, 18, 15, 0.5) 40%, rgba(20, 18, 15, 0) 72%),
+      linear-gradient(0deg, rgba(20, 18, 15, 0.9) 0%, rgba(20, 18, 15, 0) 42%),
+      linear-gradient(180deg, rgba(20, 18, 15, 0.55) 0%, rgba(20, 18, 15, 0) 22%);
+  }
+  .heroe-foto figcaption {
+    position: absolute;
+    right: var(--margen);
+    bottom: 1.6rem;
+    z-index: 1;
+    text-align: right;
+    max-width: 22rem;
+  }
+  .heroe-texto {
+    position: relative;
+    z-index: 2;
+  }
+  .heroe-marca {
+    color: var(--plata);
+    margin-bottom: 1.8rem;
+  }
+  .heroe-texto h1 {
+    max-width: 8em;
+    margin-bottom: 1.6rem;
+  }
+  .heroe-texto .lead {
+    max-width: 31em;
+    color: rgba(243, 238, 228, 0.88);
+  }
+  .heroe-play svg {
+    width: 0.95rem;
+    height: 0.95rem;
+  }
+  .heroe-bajar {
+    position: absolute;
+    left: 50%;
+    bottom: 1.4rem;
+    z-index: 2;
+    width: 1px;
+    height: 3.2rem;
+    background: rgba(243, 238, 228, 0.25);
+    overflow: hidden;
+  }
+  .heroe-bajar span {
+    position: absolute;
+    left: 0;
+    width: 1px;
+    height: 40%;
+    background: var(--sol);
+    animation: bajar 2.4s var(--suave) infinite;
+  }
+  @keyframes bajar {
+    from {
+      top: -40%;
+    }
+    to {
+      top: 100%;
+    }
+  }
+  @media (max-width: 700px) {
+    .heroe-foto figcaption,
+    .heroe-bajar {
+      display: none;
+    }
+  }
+
+  /* frentes */
+  .frentes {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(1.5rem, 3vw, 2.8rem);
+  }
+  .frente {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    padding-bottom: 1.6rem;
+    border-bottom: 1px solid var(--linea-papel);
+  }
+  .frente-foto {
+    aspect-ratio: 4 / 3;
+    margin-bottom: 1.6rem;
+  }
+  .frente-foto::after {
+    display: none;
+  }
+  .frente-foto :global(img) {
+    transition: scale 1.4s var(--suave);
+  }
+  .frente:hover .frente-foto :global(img) {
+    scale: 1.05;
+  }
+  .frente h3 {
+    font-size: clamp(1.6rem, 2.3vw, 2rem);
+    margin-bottom: 0.8rem;
+  }
+  .frente > p {
+    color: var(--tinta-2);
+    margin-bottom: 1.2rem;
+  }
+  .frente .lista-raya {
+    margin-bottom: 1.6rem;
+    font-size: 0.97rem;
+  }
+  .frente-mas {
+    margin-top: auto;
+    display: inline-flex;
+    gap: 0.6rem;
+    font: 700 0.75rem/1 var(--sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .frente:hover .frente-mas::after {
+    translate: 4px 0;
+  }
+  @media (max-width: 900px) {
+    .frentes {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+    }
+  }
+
+  /* obra */
+  .obra-principal {
+    margin-bottom: clamp(3.5rem, 7vw, 5rem);
+  }
+  .obra-principal :global(.obra) {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: 2.5rem;
+    align-items: end;
+  }
+  .rejilla-obra {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 3.5rem 2rem;
+  }
+  @media (max-width: 980px) {
+    .rejilla-obra {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 820px) {
+    .obra-principal :global(.obra) {
+      grid-template-columns: 1fr;
+      gap: 1.1rem;
+    }
+  }
+  @media (max-width: 620px) {
+    .rejilla-obra {
+      grid-template-columns: 1fr;
+    }
+  }
+  .ver-mas {
+    margin: 4.5rem 0 0;
+  }
+
+  /* escuchar */
+  .escuchar {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr);
+    gap: 3rem 5rem;
+    align-items: start;
+  }
+  .escuchar h2 {
+    margin-bottom: 1.4rem;
+  }
+  @media (max-width: 980px) {
+    .escuchar {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* fotófono */
+  .fotofono-rejilla {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: clamp(2.5rem, 6vw, 6rem);
+    align-items: center;
+  }
+  .fotofono-grabado {
+    margin: 0;
+  }
+  .fotofono-grabado :global(img) {
+    mix-blend-mode: multiply;
+    filter: grayscale(1) contrast(1.15) sepia(0.12);
+  }
+  .fotofono-grabado figcaption {
+    margin-top: 0.8rem;
+    color: var(--tinta-2);
+  }
+  .fotofono-texto h2 {
+    margin-bottom: 1.5rem;
+  }
+  .fotofono-texto p {
+    color: var(--tinta-2);
+    font-size: 1.08rem;
+  }
+  @media (max-width: 820px) {
+    .fotofono-rejilla {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* directores */
+  .directores {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(1.5rem, 3vw, 2.8rem);
+  }
+  .director {
+    text-decoration: none;
+    display: block;
+  }
+  .director-foto {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: var(--grafito);
+    margin-bottom: 1.4rem;
+  }
+  .director-foto :global(picture),
+  .director-foto :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .director-foto :global(img) {
+    transition: scale 1.4s var(--suave);
+  }
+  .director:hover .director-foto :global(img) {
+    scale: 1.035;
+  }
+  .director-rol {
+    font: 700 0.7rem/1.4 var(--sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--sol);
+    margin-bottom: 0.6rem;
+  }
+  .director h3 {
+    font-size: 1.75rem;
+    margin-bottom: 0.6rem;
+  }
+  .director-corta {
+    color: var(--plata-2);
+    font-size: 0.98rem;
+    margin: 0;
+  }
+  @media (max-width: 820px) {
+    .directores {
+      grid-template-columns: 1fr;
+      max-width: 28rem;
+    }
+  }
+
+  .asociados {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+    gap: 2rem 5rem;
+    margin-top: clamp(4.5rem, 9vw, 7rem);
+    padding-top: 2.8rem;
+    border-top: 1px solid var(--linea);
+  }
+  .asociados-texto {
+    color: var(--plata-2);
+    max-width: 26em;
+  }
+  .asociados-lista {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .asociados-lista li {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.4rem 1rem;
+    padding: 1.1rem 0;
+    border-bottom: 1px solid var(--linea);
+    color: var(--plata-2);
+  }
+  .asociado-nombre {
+    font-family: var(--serif);
+    font-size: 2.3rem;
+    line-height: 1.1;
+    color: var(--plata);
+  }
+  .asociado-nota {
+    font-size: 0.92rem;
+    color: var(--gris);
+  }
+  @media (max-width: 820px) {
+    .asociados {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* publicidad */
+  .publi {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: clamp(2.5rem, 6vw, 5.5rem);
+    align-items: center;
+  }
+  .publi h2 {
+    margin-bottom: 1.4rem;
+  }
+  @media (max-width: 860px) {
+    .publi {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* cierre */
+  .cierre {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(7rem, 16vw, 13rem) 0;
+    text-align: center;
+  }
+  .cierre-fondo {
+    position: absolute;
+    inset: 0;
+  }
+  .cierre-fondo :global(picture),
+  .cierre-fondo :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .cierre-fondo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(20, 18, 15, 0.72);
+  }
+  .cierre-caja {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .cierre-caja h2 {
+    font-size: clamp(2.4rem, 5.2vw, 4.6rem);
+    margin-bottom: 1.4rem;
+  }
+  .cierre-caja .lead {
+    color: rgba(243, 238, 228, 0.86);
+  }
+  .cierre .botones {
+    justify-content: center;
+    margin-top: 1.4rem;
+  }
+</style>

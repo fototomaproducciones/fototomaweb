@@ -1,0 +1,127 @@
+---
+// Logo de Fototoma: el receptor del fotófono (espejo parabólico, tres rayos
+// y el foco) + «FOTOTOMA / PRODUCCIONES». Las formas del símbolo salen de
+// scripts/generar-logo.py → logo-simbolos.json. Reglas en /marca y MANUAL.md.
+import simbolos from './logo-simbolos.json';
+
+interface Props {
+  modo?: 'horizontal' | 'simbolo' | 'apilado';
+  tam?: number; // alto del símbolo en px
+  animado?: boolean; // los rayos llegan al espejo al cargar
+  class?: string;
+}
+const { modo = 'horizontal', tam = 34, animado = false, class: clase = '' } = Astro.props;
+const partes = (simbolos as Record<string, any[]>).parabola;
+---
+
+<span class:list={['logo', `logo-${modo}`, { animado }, clase]} style={`--tam:${tam}px`}>
+  <svg class="logo-simbolo" viewBox="0 0 100 100" aria-hidden="true">
+    {
+      partes.map((p) =>
+        p[0] === 'stroke' ? (
+          <path d={p[1]} fill="none" stroke="currentColor" stroke-width={p[2]} pathLength="1" class={p[2] < 4 ? 'rayos' : 'espejo'} />
+        ) : p[0] === 'fill' ? (
+          <path d={p[1]} fill="currentColor" />
+        ) : (
+          <circle cx={p[1][0]} cy={p[1][1]} r={p[1][2]} fill="currentColor" class="foco" />
+        ),
+      )
+    }
+  </svg>
+  {
+    modo !== 'simbolo' && (
+      <span class="logo-letras">
+        <span class="logo-marca">Fototoma</span>
+        <span class="logo-sub">Producciones</span>
+      </span>
+    )
+  }
+</span>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(var(--tam) * 0.34);
+    color: inherit;
+    line-height: 1;
+  }
+  .logo-simbolo {
+    width: var(--tam);
+    height: var(--tam);
+    flex: none;
+  }
+  .logo-letras {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(var(--tam) * 0.15);
+  }
+  .logo-marca {
+    font-family: var(--serif);
+    font-variation-settings: 'opsz' 72;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: calc(var(--tam) * 0.6);
+    letter-spacing: 0.16em;
+    margin-right: -0.16em;
+  }
+  .logo-sub {
+    font-family: var(--sans);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: calc(var(--tam) * 0.15);
+    letter-spacing: 0.62em;
+    margin-right: -0.62em;
+  }
+  .logo-apilado {
+    flex-direction: column;
+    gap: calc(var(--tam) * 0.28);
+  }
+  .logo-apilado .logo-marca {
+    font-size: calc(var(--tam) * 0.42);
+  }
+  .logo-apilado .logo-sub {
+    font-size: calc(var(--tam) * 0.105);
+  }
+
+  /* animación: el espejo se dibuja, luego llegan los rayos y se enciende el foco */
+  @media (prefers-reduced-motion: no-preference) {
+    .animado .espejo {
+      stroke-dasharray: 1;
+      animation: trazo 1.3s var(--suave) 0.2s both;
+    }
+    .animado .rayos {
+      stroke-dasharray: 1;
+      animation: trazo 1.6s var(--suave) 0.9s both;
+    }
+    .animado .foco {
+      animation: foco 0.9s ease 2.2s both;
+      transform-origin: center;
+      transform-box: fill-box;
+    }
+  }
+  @keyframes trazo {
+    from {
+      stroke-dashoffset: 1;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes foco {
+    0% {
+      opacity: 0;
+      scale: 0.2;
+      fill: var(--sol);
+    }
+    55% {
+      opacity: 1;
+      scale: 1.5;
+      fill: var(--sol);
+    }
+    100% {
+      scale: 1;
+    }
+  }
+</style>

@@ -1,0 +1,149 @@
+---
+// Pistas de SoundCloud. El reproductor solo se carga al dar play, para que la
+// página no pese de entrada.
+import { PISTAS } from '../data/equipo';
+---
+
+<ol class="pistas">
+  {
+    PISTAS.map((p, i) => (
+      <li class="pista rv" style={`--d:${i * 0.05}s`}>
+        <button class="pista-fila" data-sc={p.url} aria-label={`Escuchar ${p.titulo}, de ${p.quien}`}>
+          <span class="pista-play" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M8 5.5v13l11-6.5z" fill="currentColor" />
+            </svg>
+          </span>
+          <span class="pista-titulo serif">{p.titulo}</span>
+          <span class="pista-quien">{p.quien}</span>
+          <span class="pista-ver">Escuchar</span>
+        </button>
+        <div class="pista-reproductor" />
+      </li>
+    ))
+  }
+</ol>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll<HTMLButtonElement>('.pista-fila').forEach((b) => {
+      if (b.dataset.listo) return;
+      b.dataset.listo = '1';
+      b.addEventListener('click', () => {
+        const li = b.closest('.pista')!;
+        const caja = li.querySelector('.pista-reproductor')!;
+        // una sola pista sonando a la vez
+        document.querySelectorAll('.pista.sonando').forEach((o) => {
+          if (o !== li) {
+            o.classList.remove('sonando');
+            o.querySelector('.pista-reproductor')!.innerHTML = '';
+          }
+        });
+        if (li.classList.contains('sonando')) return;
+        const f = document.createElement('iframe');
+        f.title = b.getAttribute('aria-label') || 'Pista';
+        f.allow = 'autoplay';
+        f.height = '120';
+        f.src =
+          'https://w.soundcloud.com/player/?url=' +
+          encodeURIComponent(b.dataset.sc!) +
+          '&color=%23e0a84e&auto_play=true&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false&visual=false';
+        caja.replaceChildren(f);
+        li.classList.add('sonando');
+      });
+    });
+  });
+</script>
+
+<style>
+  .pistas {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--linea);
+  }
+  .pista {
+    border-bottom: 1px solid var(--linea);
+  }
+  .pista-fila {
+    all: unset;
+    box-sizing: border-box;
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.15rem 0;
+    cursor: pointer;
+  }
+  .pista-fila:focus-visible {
+    outline: 2px solid var(--sol);
+    outline-offset: 2px;
+  }
+  .pista-play {
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 50%;
+    border: 1px solid var(--linea);
+    display: grid;
+    place-items: center;
+    color: var(--plata);
+    transition:
+      background 0.3s,
+      color 0.3s,
+      border-color 0.3s;
+  }
+  .pista-play svg {
+    width: 0.95rem;
+    margin-left: 2px;
+  }
+  .pista-fila:hover .pista-play,
+  .sonando .pista-play {
+    background: var(--sol);
+    border-color: var(--sol);
+    color: var(--tinta);
+  }
+  .pista-titulo {
+    font-size: clamp(1.35rem, 2.2vw, 1.75rem);
+    line-height: 1.15;
+  }
+  .pista-quien {
+    color: var(--plata-2);
+    font-size: 0.95rem;
+  }
+  .pista-ver {
+    justify-self: end;
+    font: 700 0.7rem/1 var(--sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gris);
+    transition: color 0.3s;
+  }
+  .pista-fila:hover .pista-ver,
+  .sonando .pista-ver {
+    color: var(--sol);
+  }
+  .pista-reproductor:empty {
+    display: none;
+  }
+  .pista-reproductor {
+    padding: 0 0 1.2rem;
+  }
+  .pista-reproductor :global(iframe) {
+    width: 100%;
+    border: 0;
+    display: block;
+  }
+  @media (max-width: 760px) {
+    .pista-fila {
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 0.2rem 1rem;
+    }
+    .pista-play {
+      grid-row: span 2;
+    }
+    .pista-ver {
+      display: none;
+    }
+  }
+</style>

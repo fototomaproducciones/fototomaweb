@@ -1,0 +1,333 @@
+---
+import Base from '../layouts/Base.astro';
+import Foto from '../components/Foto.astro';
+
+const bloques = [
+  {
+    id: 'cine',
+    etq: 'Cine, series y documental',
+    titulo: 'Música y sonido para películas, series y documentales',
+    img: '2xwhnGZxArw.jpg',
+    pie: 'Los últimos nómadas de Mongolia · música y diseño sonoro de Martín Perea Tobón',
+    servicios: [
+      {
+        nombre: 'Música original',
+        texto:
+          'Composición a la imagen: temas, ambientes musicales y piezas sincronizadas con el corte. Grabamos con músicos reales y entregamos partituras cuando hacen falta.',
+      },
+      {
+        nombre: 'Diseño sonoro',
+        texto:
+          'Ambientes, efectos, foley y texturas: el sonido de los lugares, los objetos y los movimientos de cada escena.',
+      },
+      {
+        nombre: 'Edición de diálogos y mezcla final',
+        texto:
+          'Limpieza de diálogos, edición de sonido directo y mezcla para sala de cine, televisión o plataformas, con las especificaciones de cada una.',
+      },
+      {
+        nombre: 'Supervisión musical',
+        texto:
+          'Si la película necesita canciones que ya existen, ayudamos a escogerlas, a pedir los permisos y a llevar el registro de la música usada.',
+      },
+      {
+        nombre: 'Animación y videojuegos',
+        texto: 'Música y efectos que siguen el movimiento cuadro a cuadro, y música por capas para juegos.',
+      },
+      {
+        nombre: 'Desde el rodaje',
+        texto:
+          'Martín también es realizador: podemos sumarnos desde el guion o el rodaje para pensar la música junto con los planos, o registrar sonido y música en campo.',
+      },
+    ],
+  },
+  {
+    id: 'publicidad',
+    etq: 'Publicidad y marcas',
+    titulo: 'Música para comerciales, campañas y contenido de marca',
+    img: 'x_8pQ2hT2iE.jpg',
+    pie: 'Mazda — Un color',
+    servicios: [
+      { nombre: 'Música original y jingles', texto: 'Compuesta para la idea y el ritmo del corte, con letra cuando la campaña la pide.' },
+      { nombre: 'Diseño sonoro', texto: 'Sonido de producto, transiciones y ambientes, hechos a la medida del corte.' },
+      { nombre: 'Identidad sonora', texto: 'Logo sonoro y un sistema de música para que la marca suene igual en todos sus canales.' },
+      {
+        nombre: 'Versiones y entregables',
+        texto: 'Cortes de 6, 10, 15, 20, 30 y 60 segundos, pistas separadas para la posproducción y mezclas para cada medio.',
+      },
+    ],
+    enlace: { url: '/publicidad', texto: 'Cómo trabajamos con agencias y marcas' },
+  },
+  {
+    id: 'sesiones',
+    etq: 'Artistas, sesiones y medios',
+    titulo: 'Sesiones en vivo, discos, videoclips y podcasts',
+    img: 'yfccCqJFOZU.jpg',
+    pie: 'Noisesion · La Noise',
+    servicios: [
+      {
+        nombre: 'Sesiones en vivo',
+        texto:
+          'Grabación multipista y filmación de bandas y solistas en vivo, con la mezcla y el video entregados juntos. Juan ha grabado series como Noisesion y Sesiones Macarena 360.',
+      },
+      {
+        nombre: 'Producción musical y arreglos',
+        texto: 'Producción de discos y sencillos, arreglos para ensambles y orquesta, y dirección de grabaciones.',
+      },
+      { nombre: 'Videoclips', texto: 'Idea, rodaje, cámara, dron y montaje, con la música en el centro.' },
+      {
+        nombre: 'Podcast y radio',
+        texto: 'Grabación, edición y mezcla de voz, música para el programa, cortinas y locución.',
+      },
+      { nombre: 'Mezcla y masterización', texto: 'Para discos, sesiones y piezas audiovisuales, al nivel que pide cada plataforma.' },
+    ],
+  },
+];
+
+const pasos = [
+  {
+    nombre: 'Conversación',
+    texto: 'Nos cuentas el proyecto y nos mandas lo que tengas: guion, corte, referencias. Preguntamos lo necesario.',
+  },
+  {
+    nombre: 'Propuesta',
+    texto: 'Te mandamos alcance, equipo, tiempos y valor. Si el proyecto lo pide, una primera maqueta corta.',
+  },
+  {
+    nombre: 'Maquetas',
+    texto: 'Bocetos sobre la imagen para acordar el tono antes de grabar. Aquí se hacen los cambios grandes.',
+  },
+  {
+    nombre: 'Grabación y producción',
+    texto: 'Convocamos a los músicos asociados que pida la música, grabamos y hacemos el diseño sonoro.',
+  },
+  {
+    nombre: 'Mezcla y entrega',
+    texto: 'Mezcla para cada medio, pistas separadas, partituras si aplica, y la licencia o cesión de derechos por escrito.',
+  },
+];
+---
+
+<Base titulo="Servicios" descripcion="Música original, diseño sonoro, mezcla, supervisión musical, publicidad, sesiones en vivo, producción musical y podcast.">
+  <section class="seccion">
+    <div class="envoltura">
+      <p class="etq">Servicios</p>
+      <h1>Todo el sonido de un proyecto, o la parte que falte</h1>
+      <p class="lead intro">
+        Podemos hacernos cargo de la banda sonora completa (música, efectos, diálogos y mezcla) o sumarnos a un equipo que
+        ya existe para resolver una parte. Trabajamos en tres frentes.
+      </p>
+      <nav class="indice" aria-label="En esta página">
+        {bloques.map((b) => <a class="enlace" href={`#${b.id}`}>{b.etq}</a>)}
+        <a class="enlace" href="#proceso">Cómo trabajamos</a>
+      </nav>
+    </div>
+  </section>
+
+  {
+    bloques.map((b, i) => (
+      <section class:list={['seccion bloque', { papel: b.id === 'publicidad' }]} id={b.id}>
+        <div class="envoltura">
+          <figure class="bloque-foto marco paralaje rv">
+            <Foto src={`obra/${b.img}`} sizes="100vw" anchos={[800, 1280, 1920]} prioridad={i === 0} />
+            <figcaption class="pie-foto">{b.pie}</figcaption>
+          </figure>
+          <div class="bloque-cabeza rv">
+            <p class="etq">{b.etq}</p>
+            <h2>{b.titulo}</h2>
+          </div>
+          <dl class="servicios">
+            {b.servicios.map((s) => (
+              <div class="servicio rv">
+                <dt>{s.nombre}</dt>
+                <dd>{s.texto}</dd>
+              </div>
+            ))}
+          </dl>
+          {b.enlace && (
+            <p class="bloque-enlace">
+              <a class="boton lleno flecha" href={b.enlace.url}>
+                {b.enlace.texto}
+              </a>
+            </p>
+          )}
+        </div>
+      </section>
+    ))
+  }
+
+  <section class="seccion carbon" id="proceso">
+    <div class="envoltura">
+      <div class="cabeza-seccion rv">
+        <div>
+          <p class="etq">Cómo trabajamos</p>
+          <h2>De la primera conversación a la entrega</h2>
+        </div>
+        <p class="lead">
+          El orden cambia según el proyecto, pero casi siempre pasa por aquí. Sin precios fijos: cada propuesta se arma con
+          lo que pide la pieza.
+        </p>
+      </div>
+      <ol class="pasos">
+        {
+          pasos.map((p) => (
+            <li class="paso rv">
+              <h3>{p.nombre}</h3>
+              <p>{p.texto}</p>
+            </li>
+          ))
+        }
+      </ol>
+      <p class="rv"><a class="boton lleno flecha" href="/contacto">Contarnos un proyecto</a></p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  h1 {
+    max-width: 14em;
+    margin-bottom: 1.6rem;
+  }
+  .intro {
+    margin-bottom: 2.5rem;
+  }
+  .indice {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 2rem;
+    color: var(--plata-2);
+  }
+  .bloque-foto {
+    position: relative;
+    margin: 0 0 clamp(2.5rem, 5vw, 4rem);
+    aspect-ratio: 21 / 9;
+    overflow: hidden;
+    background: var(--grafito);
+  }
+  .bloque-foto img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(0.8);
+  }
+  .bloque-foto::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.55), transparent 35%);
+  }
+  .bloque-foto figcaption {
+    position: absolute;
+    left: 1rem;
+    bottom: 0.8rem;
+    z-index: 1;
+  }
+  @media (max-width: 700px) {
+    .bloque-foto {
+      aspect-ratio: 16 / 10;
+    }
+  }
+  .bloque-cabeza {
+    max-width: 44rem;
+    margin-bottom: 3rem;
+  }
+  .servicios {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 4rem;
+    margin: 0;
+  }
+  .servicio {
+    padding: 1.6rem 0;
+    border-top: 1px solid var(--linea);
+  }
+  .papel .servicio {
+    border-color: var(--linea-papel);
+  }
+  .servicio dt {
+    font-family: var(--serif);
+    font-size: 1.45rem;
+    margin-bottom: 0.5rem;
+  }
+  .servicio dd {
+    margin: 0;
+    color: var(--plata-2);
+  }
+  .papel .servicio dd {
+    color: var(--tinta-2);
+  }
+  @media (max-width: 760px) {
+    .servicios {
+      grid-template-columns: 1fr;
+    }
+  }
+  .bloque-enlace {
+    margin: 2.5rem 0 0;
+  }
+
+  .pasos {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 3.5rem;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 2rem;
+  }
+  .paso {
+    position: relative;
+    padding-top: 1.6rem;
+  }
+  /* el haz: una línea que recorre los pasos */
+  .paso::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: -2rem;
+    height: 1px;
+    background: var(--linea);
+  }
+  .paso::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: 0;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--sol);
+  }
+  .paso:last-child::before {
+    right: 0;
+  }
+  .paso h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.6rem;
+  }
+  .paso p {
+    color: var(--plata-2);
+    font-size: 0.95rem;
+    margin: 0;
+  }
+  @media (max-width: 980px) {
+    .pasos {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+    .paso {
+      padding: 0 0 2rem 1.8rem;
+    }
+    .paso::before {
+      top: 0;
+      bottom: 0;
+      left: 3px;
+      right: auto;
+      width: 1px;
+      height: auto;
+    }
+    .paso::after {
+      top: 0.45rem;
+      left: 0;
+    }
+  }
+</style>

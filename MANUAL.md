@@ -1,0 +1,54 @@
+# Fototoma Producciones — sitio y marca
+
+Todo lo de Fototoma vive en `D:\Fototoma`:
+
+| Carpeta | Qué hay |
+|---|---|
+| `web` | El sitio (Astro). Este archivo. |
+| `Marca` | Manual de marca en PDF, logos en SVG y PNG, fotos de perfil, imagen para compartir. Se genera solo (ver abajo). |
+| `Datos Miembros` | Fotos y datos que mandan los integrantes. |
+
+## Correr el sitio en el computador
+
+```bash
+cd D:/Fototoma/web
+npm install        # solo la primera vez
+npm run dev        # abre http://localhost:4321 (o el puerto que indique)
+```
+
+En el panel de Claude se llama `fototoma-dev` (puerto 4350).
+
+## Dónde se cambia cada cosa
+
+| Qué | Archivo |
+|---|---|
+| Obras (videos, roles, quién hizo qué, destacadas) | `src/data/obra.ts` |
+| Equipo, músicos asociados, correo, pistas para escuchar | `src/data/equipo.ts` |
+| Cinta «Hemos trabajado para y con» | `src/components/Creditos.astro` |
+| Colores, letras, botones, rótulos | `src/styles/global.css` |
+| Manual de marca (la fuente del PDF) | `src/pages/marca.astro` → se ve en `/marca` |
+| Geometría del logo | `scripts/generar-logo.py` |
+
+Las imágenes van en `src/assets/` (`obra/`, `equipo/`, `fotofono/`). Al construir, Astro las convierte a AVIF y WebP en varios tamaños; no hay que optimizarlas a mano. Para una obra nueva: poner la miniatura en `src/assets/obra/<id-de-youtube>.jpg` y agregar la ficha en `obra.ts`.
+
+Mientras se trabaja en local se ven avisos amarillos «PENDIENTE»; no salen en el sitio publicado.
+
+## Rehacer la marca
+
+1. Si cambia el logo: editar `scripts/generar-logo.py` y correr `npm run logo` (necesita Python con `fonttools` y `brotli`).
+2. Con el sitio corriendo (`npm run dev`), en otra terminal: `npm run marca`.
+   Esto saca en `D:\Fototoma\Marca`: los PNG de los logos (3000 px, fondo transparente), las fotos de perfil, la imagen para compartir y **Manual de marca Fototoma.pdf**. También actualiza `public/og.jpg`, `favicon-32.png` y `apple-touch-icon.png`.
+   Si el sitio corre en otro puerto: `npm run marca -- http://localhost:4321`.
+
+## Publicar
+
+`npm run build` deja el sitio listo en `dist/`. Pendiente: crear el repositorio, comprar el dominio y montarlo en Cloudflare como los sitios de Dial y la RED Quynza.
+
+## Lo que hace el sitio por quien lo visita
+
+- Imágenes en AVIF/WebP del tamaño de cada pantalla, cargadas solo cuando se acercan.
+- Las dos letras se precargan; el resto de variantes solo si se usan.
+- Navegación con transición suave entre páginas y precarga de la página al pasar el mouse por un enlace.
+- Los videos de YouTube y las pistas de SoundCloud no se cargan hasta dar play (la página pesa poco de entrada). Los videos se abren en una sala oscura sin salir de la página.
+- Respeta «reducir movimiento» del sistema; se puede recorrer con teclado.
+- Mapa del sitio (`sitemap-index.xml`), datos de la organización para buscadores e imagen para compartir en redes.

@@ -1,0 +1,33 @@
+---
+import Base from '../layouts/Base.astro';
+import Logo from '../components/Logo.astro';
+---
+
+<Base titulo="Página no encontrada" noindex>
+  <section class="seccion perdida">
+    <div class="envoltura">
+      <Logo modo="simbolo" tam={90} animado />
+      <p class="etq">Error 404</p>
+      <h1>Aquí no llegó <em>la luz</em></h1>
+      <p class="lead">La página que buscas no existe o cambió de lugar.</p>
+      <div class="botones">
+        <a class="boton lleno flecha" href="/">Ir al inicio</a>
+        <a class="boton" href="/obra">Ver la obra</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .perdida {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+  }
+  .perdida :global(.logo) {
+    margin-bottom: 2.5rem;
+  }
+  h1 {
+    margin-bottom: 1.2rem;
+  }
+</style>

@@ -1,0 +1,44 @@
+---
+// Imagen optimizada: AVIF + WebP en varios anchos, con el tamaño correcto
+// para cada pantalla. `src` es relativo a src/assets (p. ej. 'obra/xyz.jpg').
+import { Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  src: string;
+  alt?: string;
+  sizes?: string;
+  anchos?: number[];
+  class?: string;
+  prioridad?: boolean;
+  posicion?: string;
+}
+
+const todas = import.meta.glob<{ default: ImageMetadata }>('/src/assets/**/*.{jpg,jpeg,png}', { eager: true });
+const {
+  src,
+  alt = '',
+  sizes = '(max-width: 700px) 100vw, 50vw',
+  anchos = [480, 800, 1200, 1600],
+  class: clase,
+  prioridad = false,
+  posicion,
+} = Astro.props;
+const meta = todas[`/src/assets/${src}`]?.default;
+if (!meta) throw new Error(`No existe la imagen src/assets/${src}`);
+const widths = anchos.filter((w) => w <= meta.width).concat(anchos.some((w) => w > meta.width) ? [meta.width] : []);
+---
+
+<Picture
+  src={meta}
+  alt={alt}
+  widths={[...new Set(widths)]}
+  sizes={sizes}
+  formats={['avif', 'webp']}
+  quality={72}
+  class={clase}
+  loading={prioridad ? 'eager' : 'lazy'}
+  decoding={prioridad ? 'sync' : 'async'}
+  fetchpriority={prioridad ? 'high' : 'auto'}
+  style={posicion ? `object-position:${posicion}` : undefined}
+/>

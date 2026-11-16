@@ -1,0 +1,163 @@
+---
+import type { Pieza } from '../data/obra';
+import { CATEGORIAS, NOMBRES } from '../data/obra';
+import Foto from './Foto.astro';
+
+interface Props {
+  pieza: Pieza;
+  grande?: boolean;
+  mostrarCategoria?: boolean;
+  sizes?: string;
+}
+const { pieza: p, grande = false, mostrarCategoria = false, sizes } = Astro.props;
+const firmas = p.quien.map((q) => NOMBRES[q]).join(' y ');
+const credito = `${p.rol} — ${firmas}${p.ficha ? ` · ${p.ficha}` : ''}`;
+const tam = sizes ?? (grande ? '(max-width: 820px) 100vw, 66vw' : '(max-width: 620px) 100vw, (max-width: 980px) 50vw, 33vw');
+---
+
+<article class:list={['obra', { grande }]}>
+  {
+    p.video ? (
+      <button class="obra-imagen marco" data-yt={p.video} data-titulo={p.titulo} data-credito={credito} aria-label={`Ver ${p.titulo}`}>
+        <Foto src={`obra/${p.img}`} sizes={tam} posicion={p.vertical ? 'center 35%' : undefined} />
+        <span class="obra-ver" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M8 5.5v13l11-6.5z" fill="currentColor" />
+          </svg>
+          <span>Ver</span>
+        </span>
+      </button>
+    ) : (
+      <a class="obra-imagen marco" href={p.enlace} target="_blank" rel="noopener">
+        <Foto src={`obra/${p.img}`} sizes={tam} posicion={p.vertical ? 'center 35%' : undefined} />
+        <span class="obra-ver" aria-hidden="true">
+          <span>{p.enlaceTexto} ↗</span>
+        </span>
+      </a>
+    )
+  }
+  <div class="obra-texto">
+    <p class="obra-cat">{mostrarCategoria ? CATEGORIAS[p.categoria] : p.rol}</p>
+    <h3>{p.titulo}</h3>
+    <p class="obra-firma">{mostrarCategoria ? `${p.rol} — ${firmas}` : firmas}</p>
+    {p.ficha && <p class="obra-ficha">{p.ficha}</p>}
+    {p.nota && grande && <p class="obra-ficha">{p.nota}</p>}
+  </div>
+</article>
+
+<style>
+  .obra {
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+  }
+  .obra-imagen {
+    all: unset;
+    position: relative;
+    display: block;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--grafito);
+    cursor: pointer;
+  }
+  .obra-imagen :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(0.88);
+    transition:
+      scale 1.4s var(--suave),
+      filter 0.6s var(--suave);
+  }
+  .obra-imagen:hover :global(img),
+  .obra-imagen:focus-visible :global(img) {
+    scale: 1.045;
+    filter: saturate(1.05);
+  }
+  .obra-imagen:focus-visible {
+    outline: 2px solid var(--sol);
+    outline-offset: 3px;
+  }
+  .obra-ver {
+    position: absolute;
+    left: 1rem;
+    bottom: 0.9rem;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font: 700 0.72rem/1 var(--sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--plata);
+  }
+  .obra-ver svg {
+    width: 2.4rem;
+    height: 2.4rem;
+    padding: 0.7rem 0.62rem 0.7rem 0.78rem;
+    border-radius: 50%;
+    border: 1px solid rgba(243, 238, 228, 0.65);
+    transition:
+      background 0.35s var(--suave),
+      color 0.35s var(--suave),
+      border-color 0.35s;
+  }
+  .obra-ver > span {
+    opacity: 0;
+    translate: -6px 0;
+    transition:
+      opacity 0.35s var(--suave),
+      translate 0.35s var(--suave);
+  }
+  .obra-imagen:hover .obra-ver svg {
+    background: var(--sol);
+    border-color: var(--sol);
+    color: var(--tinta);
+  }
+  .obra-imagen:hover .obra-ver > span,
+  a.obra-imagen .obra-ver > span {
+    opacity: 1;
+    translate: 0 0;
+  }
+  .grande .obra-ver svg {
+    width: 3.4rem;
+    height: 3.4rem;
+    padding: 1rem 0.9rem 1rem 1.1rem;
+  }
+
+  .obra-cat {
+    font: 700 0.7rem/1.3 var(--sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--sol);
+    margin: 0 0 0.55rem;
+  }
+  :global(.papel) .obra-cat,
+  :global(.hueso) .obra-cat {
+    color: var(--sol-tinta);
+  }
+  .obra-texto h3 {
+    font-size: 1.4rem;
+    margin-bottom: 0.35rem;
+  }
+  .grande .obra-texto h3 {
+    font-size: clamp(1.7rem, 2.8vw, 2.5rem);
+    margin-bottom: 0.6rem;
+  }
+  .obra-firma {
+    margin: 0 0 0.2rem;
+    font-size: 0.95rem;
+    color: inherit;
+  }
+  .obra-ficha {
+    margin: 0 0 0.2rem;
+    font-size: 0.88rem;
+    color: var(--gris);
+  }
+  .grande .obra-ficha {
+    font-size: 0.95rem;
+    max-width: 30em;
+  }
+</style>
