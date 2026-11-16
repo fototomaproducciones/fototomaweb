@@ -25,8 +25,10 @@ const {
   imagen = '/og.jpg',
 } = Astro.props;
 const tituloCompleto = titulo ? `${titulo} · Fototoma Producciones` : 'Fototoma Producciones · Música para la imagen';
-const ruta = Astro.url.pathname.replace(/\/$/, '') || '/';
-const canonica = new URL(Astro.url.pathname, Astro.site);
+// al construir, las páginas salen como obra.html, pero se publican como /obra
+const limpia = Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/').replace(/(.)\/$/, '$1') || '/';
+const ruta = limpia;
+const canonica = new URL(limpia, Astro.site);
 const menu = [
   { url: '/obra', texto: 'Obra' },
   { url: '/servicios', texto: 'Servicios' },

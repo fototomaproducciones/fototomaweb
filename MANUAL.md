@@ -42,7 +42,22 @@ Mientras se trabaja en local se ven avisos amarillos «PENDIENTE»; no salen en 
 
 ## Publicar
 
-`npm run build` deja el sitio listo en `dist/`. Pendiente: crear el repositorio, comprar el dominio y montarlo en Cloudflare como los sitios de Dial y la RED Quynza.
+El sitio está en **https://fototomaproducciones.com** (www lleva al dominio sin www).
+
+- Código: https://github.com/fototomaproducciones/fototomaweb (rama `main`).
+- Hosting: Cloudflare, cuenta de fototomaproducciones@gmail.com, Worker `fototoma-web` con los dominios `fototomaproducciones.com` y `www.fototomaproducciones.com`. Configuración en `wrangler.jsonc`; el Worker (`worker/index.ts`) hace la redirección de www y pone caché larga a imágenes y estilos.
+
+Para publicar un cambio:
+
+```bash
+cd D:/Fototoma/web
+npm run publicar        # construye y sube a Cloudflare
+git add -A && git commit -m "Qué cambió" && git push
+```
+
+La sesión de Cloudflare de Fototoma se guarda en `.cuenta-cloudflare/` (fuera de git) para no mezclarse con las cuentas de Dial y la RED Quynza. Si caduca: `npm run cloudflare-login` y aprobar en el navegador con la cuenta de Fototoma.
+
+Para subir a GitHub, el repositorio usa la cuenta `fototomaproducciones` de `gh` (ya configurado en este repo, no hay que cambiar de cuenta).
 
 ## Lo que hace el sitio por quien lo visita
 

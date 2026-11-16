@@ -3,6 +3,7 @@
   // (dist/) y manda www.fototomaproducciones.com al dominio sin www.
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "fototoma-web",
+  "account_id": "77b0eecfe29e2ed4a634455e81687063",
   "main": "worker/index.ts",
   "compatibility_date": "2026-11-01",
   "assets": {

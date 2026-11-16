@@ -8,7 +8,9 @@
     "build": "astro build",
     "preview": "astro preview",
     "logo": "python -I scripts/generar-logo.py",
-    "marca": "node scripts/exportar-marca.mjs"
+    "marca": "node scripts/exportar-marca.mjs",
+    "publicar": "node scripts/publicar.mjs",
+    "cloudflare-login": "node scripts/publicar.mjs login"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.5",
