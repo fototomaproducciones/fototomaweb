@@ -129,6 +129,30 @@ const ld = {
       </div>
     </footer>
 
+    <!-- tocadiscos: sigue sonando al cambiar de página -->
+    <aside class="tocadiscos" transition:persist="tocadiscos" hidden aria-label="Reproductor de música">
+      <img class="td-caratula" alt="" width="56" height="56" />
+      <div class="td-texto">
+        <p class="td-estado">Sonando</p>
+        <p class="td-titulo serif"></p>
+        <p class="td-quien"></p>
+      </div>
+      <div class="td-pantalla"></div>
+      <div class="td-botones">
+        <button class="td-siguiente" aria-label="Siguiente pista">Siguiente <span aria-hidden="true">→</span></button>
+        <button class="td-cerrar" aria-label="Cerrar el reproductor">×</button>
+      </div>
+    </aside>
+
+    {
+      ruta !== '/contacto' && (
+        <a class="flotante" href="/contacto" aria-label="Escríbenos sobre tu proyecto">
+          <span class="flotante-punto" aria-hidden="true" />
+          ¿Tienes un proyecto?
+        </a>
+      )
+    }
+
     <!-- reproductor: abre los videos en grande sin salir de la página -->
     <dialog class="sala" id="sala" aria-label="Reproductor de video">
       <div class="sala-caja">
@@ -157,8 +181,68 @@ const ld = {
           if (d.open) d.close();
         };
 
+        // --- tocadiscos
+        type Pista = { titulo: string; quien: string; tipo: string; id?: string; url?: string; img: string; clave: string };
+        const td = () => document.querySelector<HTMLElement>('.tocadiscos');
+        const marcar = () => {
+          const actual = td()?.dataset.clave || '';
+          document.querySelectorAll<HTMLElement>('[data-pista]').forEach((b) => {
+            const p = JSON.parse(b.dataset.pista!) as Pista;
+            b.classList.toggle('sonando', !!actual && p.clave === actual);
+          });
+        };
+        w.__marcarPistas = marcar;
+        const sonar = (p: Pista, lista?: Pista[]) => {
+          const caja = td();
+          if (!caja) return;
+          if (lista) caja.dataset.lista = JSON.stringify(lista);
+          caja.dataset.clave = p.clave;
+          caja.dataset.tipo = p.tipo;
+          (caja.querySelector('.td-caratula') as HTMLImageElement).src = p.img;
+          caja.querySelector('.td-titulo')!.textContent = p.titulo;
+          caja.querySelector('.td-quien')!.textContent = p.quien;
+          const f = document.createElement('iframe');
+          f.allow = 'autoplay; encrypted-media';
+          f.title = `${p.titulo}, de ${p.quien}`;
+          f.src =
+            p.tipo === 'youtube'
+              ? `https://www.youtube-nocookie.com/embed/${p.id}?autoplay=1&rel=0&modestbranding=1`
+              : `https://w.soundcloud.com/player/?url=${encodeURIComponent(p.url!)}&color=%23e0a84e&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false`;
+          caja.querySelector('.td-pantalla')!.replaceChildren(f);
+          caja.hidden = false;
+          document.documentElement.classList.add('con-musica');
+          marcar();
+        };
+        const apagar = () => {
+          const caja = td();
+          if (!caja) return;
+          caja.querySelector('.td-pantalla')!.innerHTML = '';
+          caja.hidden = true;
+          delete caja.dataset.clave;
+          document.documentElement.classList.remove('con-musica');
+          marcar();
+        };
+
         document.addEventListener('click', (e) => {
           const t = e.target as HTMLElement;
+
+          const disco = t.closest<HTMLElement>('[data-pista]');
+          if (disco) {
+            e.preventDefault();
+            const p = JSON.parse(disco.dataset.pista!) as Pista;
+            if (td()?.dataset.clave === p.clave) return apagar();
+            const lista = disco.closest<HTMLElement>('[data-lista]')?.dataset.lista;
+            sonar(p, lista ? JSON.parse(lista) : undefined);
+            return;
+          }
+          if (t.closest('.td-cerrar')) return apagar();
+          if (t.closest('.td-siguiente')) {
+            const caja = td()!;
+            const lista = JSON.parse(caja.dataset.lista || '[]') as Pista[];
+            const i = lista.findIndex((x) => x.clave === caja.dataset.clave);
+            if (lista.length) sonar(lista[(i + 1) % lista.length]);
+            return;
+          }
 
           // abrir video
           const b = t.closest<HTMLElement>('[data-yt]');
@@ -200,7 +284,10 @@ const ld = {
 
         window.addEventListener(
           'scroll',
-          () => document.querySelector('.cabecera')?.classList.toggle('solida', window.scrollY > 40),
+          () => {
+            document.querySelector('.cabecera')?.classList.toggle('solida', window.scrollY > 40);
+            document.documentElement.classList.toggle('bajo', window.scrollY > window.innerHeight * 0.9);
+          },
           { passive: true },
         );
       }
@@ -208,6 +295,8 @@ const ld = {
       // En cada página
       document.addEventListener('astro:page-load', () => {
         document.querySelector('.cabecera')?.classList.toggle('solida', window.scrollY > 40);
+        document.documentElement.classList.toggle('bajo', window.scrollY > window.innerHeight * 0.9);
+        (window as any).__marcarPistas?.();
         const io = new IntersectionObserver(
           (entradas) =>
             entradas.forEach((en) => {
@@ -492,6 +581,184 @@ const ld = {
         .pie-rejilla {
           grid-template-columns: 1fr;
           gap: 2.5rem;
+        }
+      }
+
+      /* tocadiscos */
+      .tocadiscos {
+        position: fixed;
+        left: 50%;
+        bottom: 1rem;
+        z-index: 60;
+        translate: -50% 0;
+        width: min(760px, calc(100vw - 2rem));
+        display: grid;
+        grid-template-columns: 56px minmax(0, 1fr) auto;
+        grid-template-areas: 'car txt bot' 'pan pan pan';
+        align-items: center;
+        gap: 0.6rem 1rem;
+        padding: 0.7rem 0.8rem;
+        background: rgba(28, 25, 21, 0.96);
+        border: 1px solid rgba(224, 168, 78, 0.35);
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(10px);
+        color: var(--plata);
+        animation: subir 0.5s var(--suave);
+      }
+      .tocadiscos[hidden] {
+        display: none;
+      }
+      @keyframes subir {
+        from {
+          opacity: 0;
+          margin-bottom: -2rem;
+        }
+      }
+      .td-caratula {
+        grid-area: car;
+        width: 56px;
+        height: 56px;
+        object-fit: cover;
+      }
+      .td-texto {
+        grid-area: txt;
+        min-width: 0;
+      }
+      .td-texto p {
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .td-estado {
+        font: 700 0.62rem/1.4 var(--sans);
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--sol);
+      }
+      .td-titulo {
+        font-size: 1.15rem;
+      }
+      .td-quien {
+        font-size: 0.82rem;
+        color: var(--plata-2);
+      }
+      .td-pantalla {
+        grid-area: pan;
+      }
+      .td-pantalla :global(iframe) {
+        display: block;
+        width: 100%;
+        height: 20px;
+        border: 0;
+      }
+      /* en YouTube el video ocupa la caja: se esconde la carátula */
+      .tocadiscos[data-tipo='youtube'] {
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas: 'txt bot' 'pan pan';
+        width: min(420px, calc(100vw - 2rem));
+        left: auto;
+        right: 1rem;
+        translate: none;
+      }
+      .tocadiscos[data-tipo='youtube'] .td-caratula {
+        display: none;
+      }
+      .tocadiscos[data-tipo='youtube'] .td-pantalla :global(iframe) {
+        height: auto;
+        aspect-ratio: 16 / 9;
+        max-height: 34vh;
+      }
+      .td-botones {
+        grid-area: bot;
+        display: flex;
+        gap: 0.4rem;
+      }
+      .td-botones button {
+        background: none;
+        border: 1px solid var(--linea);
+        color: var(--plata);
+        font: 700 0.68rem/1 var(--sans);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        padding: 0.6rem 0.75rem;
+        cursor: pointer;
+        transition:
+          border-color 0.25s,
+          color 0.25s;
+      }
+      .td-botones button:hover {
+        border-color: var(--sol);
+        color: var(--sol);
+      }
+      .td-botones .td-cerrar {
+        font-size: 1.1rem;
+        padding: 0.35rem 0.7rem;
+      }
+
+      /* botón flotante: aparece al bajar */
+      .flotante {
+        position: fixed;
+        right: 1rem;
+        bottom: 1rem;
+        z-index: 55;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.85rem 1.2rem;
+        background: var(--plata);
+        color: var(--tinta);
+        font: 700 0.74rem/1 var(--sans);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        text-decoration: none;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+        opacity: 0;
+        translate: 0 1rem;
+        pointer-events: none;
+        transition:
+          opacity 0.4s var(--suave),
+          translate 0.4s var(--suave),
+          background 0.25s;
+      }
+      :global(html.bajo) .flotante {
+        opacity: 1;
+        translate: 0 0;
+        pointer-events: auto;
+      }
+      :global(html.con-musica) .flotante {
+        display: none;
+      }
+      .flotante:hover {
+        background: var(--sol);
+      }
+      .flotante-punto {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--sol-tinta);
+        animation: latido 2s infinite;
+      }
+      @keyframes latido {
+        0% {
+          box-shadow: 0 0 0 0 rgba(154, 101, 22, 0.6);
+        }
+        70%,
+        100% {
+          box-shadow: 0 0 0 9px rgba(154, 101, 22, 0);
+        }
+      }
+      @media (max-width: 600px) {
+        .tocadiscos,
+        .tocadiscos[data-tipo='youtube'] {
+          left: 0.5rem;
+          right: 0.5rem;
+          bottom: 0.5rem;
+          width: auto;
+          translate: none;
+        }
+        .td-siguiente {
+          display: none;
         }
       }
 

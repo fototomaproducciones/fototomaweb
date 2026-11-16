@@ -81,8 +81,8 @@ export const OBRA: Pieza[] = [
     quien: ['martin'],
     rol: 'Música y diseño sonoro',
     ficha: 'Cortometraje documental · 2026',
-    video: '2xwhnGZxArw',
-    img: '2xwhnGZxArw.jpg',
+    video: 'ONV3lsPwmPo',
+    img: 'ONV3lsPwmPo.jpg',
     destacada: true,
   },
   {

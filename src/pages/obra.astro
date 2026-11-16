@@ -5,11 +5,6 @@ import { OBRA, CATEGORIAS, type Categoria } from '../data/obra';
 
 const orden: Categoria[] = ['documental', 'cine', 'publicidad', 'sesiones', 'medios', 'discos'];
 const grupos = orden.map((c) => ({ id: c, nombre: CATEGORIAS[c], piezas: OBRA.filter((p) => p.categoria === c) }));
-const personas = [
-  { id: 'martin', nombre: 'Martín' },
-  { id: 'santiago', nombre: 'Santiago' },
-  { id: 'juan', nombre: 'Juan' },
-];
 ---
 
 <Base titulo="Obra" descripcion="Documentales, cortometrajes, animación, comerciales, sesiones en vivo y discos de Fototoma Producciones.">
@@ -18,20 +13,14 @@ const personas = [
       <p class="etq">Obra</p>
       <h1>Lo que hemos hecho</h1>
       <p class="lead">
-        Trabajos de los tres codirectores antes y después de juntarnos en Fototoma. En cada pieza decimos quién la hizo y
-        qué hizo: música, diseño sonoro, ingeniería, dirección o cámara.
+        Trabajos de los tres codirectores antes y después de juntarnos en Fototoma: música, diseño sonoro, ingeniería,
+        dirección o cámara. Escoge un tipo de trabajo o mira todo.
       </p>
 
       <div class="filtros" role="group" aria-label="Filtrar la obra">
         <div class="filtro-fila">
-          <span class="filtro-nombre">Tipo</span>
           <button class="filtro activo" data-filtro-cat="todo">Todo</button>
           {grupos.map((g) => <button class="filtro" data-filtro-cat={g.id}>{g.nombre}</button>)}
-        </div>
-        <div class="filtro-fila">
-          <span class="filtro-nombre">Quién</span>
-          <button class="filtro activo" data-filtro-quien="todo">Los tres</button>
-          {personas.map((p) => <button class="filtro" data-filtro-quien={p.id}>{p.nombre}</button>)}
         </div>
       </div>
     </div>
@@ -59,15 +48,13 @@ const personas = [
 <script>
   document.addEventListener('astro:page-load', () => {
     if (!document.querySelector('.filtros')) return;
-    const estado: Record<string, string> = { cat: 'todo', quien: 'todo' };
+    const estado: Record<string, string> = { cat: 'todo' };
     const aplicar = () => {
       let visibles = 0;
       document.querySelectorAll<HTMLElement>('.grupo').forEach((g) => {
         let n = 0;
         g.querySelectorAll<HTMLElement>('.celda').forEach((c) => {
-          const ok =
-            (estado.cat === 'todo' || c.dataset.cat === estado.cat) &&
-            (estado.quien === 'todo' || (c.dataset.quien || '').split(' ').includes(estado.quien));
+          const ok = estado.cat === 'todo' || c.dataset.cat === estado.cat;
           c.hidden = !ok;
           if (ok) n++;
         });
@@ -77,10 +64,9 @@ const personas = [
       const vacio = document.querySelector<HTMLElement>('.vacio');
       if (vacio) vacio.hidden = visibles > 0;
     };
-    document.querySelectorAll<HTMLButtonElement>('[data-filtro-cat],[data-filtro-quien]').forEach((b) => {
+    document.querySelectorAll<HTMLButtonElement>('[data-filtro-cat]').forEach((b) => {
       b.addEventListener('click', () => {
-        const tipo = b.dataset.filtroCat !== undefined ? 'cat' : 'quien';
-        estado[tipo] = (tipo === 'cat' ? b.dataset.filtroCat : b.dataset.filtroQuien) || 'todo';
+        estado.cat = b.dataset.filtroCat || 'todo';
         b.parentElement?.querySelectorAll('.filtro').forEach((o) => {
           o.classList.toggle('activo', o === b);
           o.setAttribute('aria-pressed', o === b ? 'true' : 'false');
@@ -88,8 +74,8 @@ const personas = [
         aplicar();
       });
     });
-    const q = new URLSearchParams(location.search).get('quien');
-    if (q) document.querySelector<HTMLButtonElement>(`[data-filtro-quien="${q}"]`)?.click();
+    const q = location.hash.slice(1);
+    if (q) document.querySelector<HTMLButtonElement>(`[data-filtro-cat="${q}"]`)?.click();
   });
 </script>
 

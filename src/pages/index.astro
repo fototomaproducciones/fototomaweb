@@ -5,11 +5,12 @@ import Foto from '../components/Foto.astro';
 import Logo from '../components/Logo.astro';
 import Creditos from '../components/Creditos.astro';
 import Escuchar from '../components/Escuchar.astro';
-import { destacadas, OBRA } from '../data/obra';
+import { OBRA, CATEGORIAS, NOMBRES, type Categoria } from '../data/obra';
+import simbolos from '../components/logo-simbolos.json';
 import { DIRECTORES, ASOCIADOS } from '../data/equipo';
 
 const fotogramas = [
-  { img: '2xwhnGZxArw.jpg', pie: 'Los últimos nómadas de Mongolia · música y diseño sonoro de Martín Perea Tobón', pos: 'center 60%' },
+  { img: 'mongolia-fotograma.jpg', pie: 'Los últimos nómadas de Mongolia · música y diseño sonoro de Martín Perea Tobón', pos: 'center 60%' },
   { img: '17IYYByXjKk.jpg', pie: 'Currulao y músicas del Pacífico Sur · Dial, 2026', pos: 'center 30%' },
   { img: '5lgpy6H5sTU.jpg', pie: 'Arrabal Gentío — Mangorito', pos: 'center' },
   { img: '4bftwkKm06U.jpg', pie: 'Tierra sin sol ni luna · música de Juan Rizoma', pos: 'center' },
@@ -24,6 +25,7 @@ const frentes = [
     texto: 'Música original, diseño sonoro y mezcla final. Llegamos cuando se escribe, cuando se filma o con el corte casi listo.',
     lista: ['Música original a la imagen', 'Diseño sonoro y foley', 'Mezcla para sala, TV y plataformas', 'Supervisión musical', 'Animación y videojuegos'],
     url: '/servicios#cine',
+    ejemplo: ejemplo('mongolia'),
   },
   {
     id: 'publicidad',
@@ -32,6 +34,7 @@ const frentes = [
     texto: 'Música y sonido para comerciales y campañas, con las versiones y los formatos que pide cada medio.',
     lista: ['Música original y jingles', 'Diseño sonoro', 'Identidad y logo sonoro', 'Cortes de 6 a 60 segundos', 'Locución y mezcla por medio'],
     url: '/publicidad',
+    ejemplo: ejemplo('mazda-una-chispa'),
   },
   {
     id: 'sesiones',
@@ -40,11 +43,30 @@ const frentes = [
     texto: 'Grabamos y filmamos sesiones en vivo, producimos discos y hacemos el sonido de podcasts y programas.',
     lista: ['Sesiones grabadas y filmadas', 'Producción y arreglos', 'Videoclips', 'Podcast y radio', 'Mezcla y masterización'],
     url: '/servicios#sesiones',
+    ejemplo: ejemplo('noisesion'),
   },
 ];
 
 const principal = OBRA.find((p) => p.id === 'currulao')!;
-const resto = destacadas().filter((p) => p.id !== 'mongolia' && p.id !== 'currulao');
+const pestanas: { id: string; texto: string }[] = [
+  { id: 'destacadas', texto: 'Destacadas' },
+  ...(['documental', 'cine', 'publicidad', 'sesiones', 'medios', 'discos'] as Categoria[]).map((c) => ({ id: c, texto: CATEGORIAS[c] })),
+];
+const enRejilla = OBRA.filter((p) => p.id !== 'currulao');
+const inicial = enRejilla.filter((p) => p.destacada).slice(0, 6);
+function ejemplo(id: string) {
+  const p = OBRA.find((x) => x.id === id)!;
+  return { yt: p.video!, titulo: p.titulo, credito: `${p.rol} — ${p.quien.map((q) => NOMBRES[q]).join(' y ')}` };
+}
+const partes = (simbolos as Record<string, any[]>).parabola;
+const necesidades = [
+  { texto: 'Una película', tema: 'cine' },
+  { texto: 'Un documental', tema: 'cine' },
+  { texto: 'Un comercial', tema: 'publicidad' },
+  { texto: 'Una sesión en vivo', tema: 'sesiones' },
+  { texto: 'Un podcast', tema: 'medios' },
+  { texto: 'Un videojuego', tema: 'cine' },
+];
 ---
 
 <Base cabeceraSobreFoto>
@@ -60,6 +82,7 @@ const resto = destacadas().filter((p) => p.id !== 'mongolia' && p.id !== 'currul
         ))
       }
     </div>
+    <div class="heroe-luz" aria-hidden="true"></div>
     <div class="envoltura heroe-texto">
       <div class="heroe-marca">
         <Logo modo="simbolo" tam={64} animado />
@@ -81,6 +104,18 @@ const resto = destacadas().filter((p) => p.id !== 'mongolia' && p.id !== 'currul
           Ver el corto
         </button>
         <a class="boton flecha" href="/obra">Toda la obra</a>
+      </div>
+      <div class="necesito">
+        <p class="necesito-pregunta">¿Para qué necesitas música?</p>
+        <div class="necesito-botones">
+          {
+            necesidades.map((n) => (
+              <a class="chip" href={`/contacto?tema=${n.tema}&para=${encodeURIComponent(n.texto.toLowerCase())}`}>
+                {n.texto}
+              </a>
+            ))
+          }
+        </div>
       </div>
     </div>
     <a class="heroe-bajar" href="#hacemos" aria-label="Bajar a qué hacemos"><span></span></a>
@@ -104,10 +139,20 @@ const resto = destacadas().filter((p) => p.id !== 'mongolia' && p.id !== 'currul
       <div class="frentes">
         {
           frentes.map((fr, i) => (
-            <a class="frente rv" href={fr.url} style={`--d:${i * 0.08}s`}>
-              <div class="frente-foto marco">
+            <article class="frente rv" style={`--d:${i * 0.08}s`}>
+              <button
+                class="frente-foto marco"
+                data-yt={fr.ejemplo.yt}
+                data-titulo={fr.ejemplo.titulo}
+                data-credito={fr.ejemplo.credito}
+                aria-label={`Ver un ejemplo: ${fr.ejemplo.titulo}`}
+              >
                 <Foto src={`obra/${fr.img}`} sizes="(max-width: 900px) 100vw, 33vw" />
-              </div>
+                <span class="frente-ejemplo">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg>
+                  Ver un ejemplo
+                </span>
+              </button>
               <h3>{fr.titulo}</h3>
               <p>{fr.texto}</p>
               <ul class="lista-raya">
@@ -115,8 +160,11 @@ const resto = destacadas().filter((p) => p.id !== 'mongolia' && p.id !== 'currul
                   <li>{l}</li>
                 ))}
               </ul>
-              <span class="frente-mas flecha">Ver más</span>
-            </a>
+              <div class="frente-acciones">
+                <a class="boton flecha" href={fr.url}>Ver más</a>
+                <a class="frente-pedir" href={`/contacto?tema=${fr.id}`}>Cotizar</a>
+              </div>
+            </article>
           ))
         }
       </div>
@@ -139,10 +187,19 @@ const resto = destacadas().filter((p) => p.id !== 'mongolia' && p.id !== 'currul
       <div class="obra-principal rv">
         <ObraCard pieza={principal} grande />
       </div>
-      <div class="rejilla-obra">
+      <div class="pestanas" role="tablist" aria-label="Tipo de trabajo">
         {
-          resto.map((p, i) => (
-            <div class="rv" style={`--d:${(i % 3) * 0.08}s`}>
+          pestanas.map((t, i) => (
+            <button class:list={['pestana', { activa: i === 0 }]} role="tab" aria-selected={i === 0 ? 'true' : 'false'} data-pestana={t.id}>
+              {t.texto}
+            </button>
+          ))
+        }
+      </div>
+      <div class="rejilla-obra" role="tabpanel">
+        {
+          enRejilla.map((p) => (
+            <div class="celda-obra" data-cats={`${p.categoria}${p.destacada ? ' destacadas' : ''}`} hidden={!inicial.includes(p)}>
               <ObraCard pieza={p} />
             </div>
           ))
@@ -156,13 +213,15 @@ const resto = destacadas().filter((p) => p.id !== 'mongolia' && p.id !== 'currul
 
   <!-- escuchar -->
   <section class="seccion carbon" id="escuchar">
-    <div class="envoltura escuchar">
-      <div class="rv">
-        <p class="etq">Escuchar</p>
-        <h2>Lo que suena cuando <em>no hay imagen</em></h2>
+    <div class="envoltura">
+      <div class="cabeza-seccion rv">
+        <div>
+          <p class="etq">Escuchar</p>
+          <h2>Lo que suena cuando <em>no hay imagen</em></h2>
+        </div>
         <p class="lead">
-          Música propia de los codirectores: las aves de Santiago (una de ellas, «Diostedé», con luci le) y piezas de
-          Martín que van del jazz a la música experimental.
+          Música propia de la casa: «Presagio», de Santiago, luci le y Martín; las aves de Santiago, y piezas de Martín
+          entre el jazz y la música experimental. Dale play y sigue mirando el sitio.
         </p>
       </div>
       <Escuchar />
@@ -185,6 +244,24 @@ const resto = destacadas().filter((p) => p.id !== 'mongolia' && p.id !== 'currul
           metros, un espejo parabólico con una celda de selenio volvía esa luz a sonido. Lo llamaron fotófono.
         </p>
         <p>Nuestro logo es ese espejo recibiendo la luz.</p>
+        <div class="fotofono-juego">
+          <svg class="espejo-vivo" viewBox="0 0 100 100" aria-hidden="true">
+            {
+              partes.map((q) =>
+                q[0] === 'stroke' ? (
+                  <path d={q[1]} fill="none" stroke="currentColor" stroke-width={q[2]} class={q[2] < 4 ? 'rayos' : 'espejo'} />
+                ) : (
+                  <circle cx={q[1][0]} cy={q[1][1]} r={q[1][2]} class="foco" />
+                ),
+              )
+            }
+            {partes.filter((q) => q[0] === 'stroke' && q[2] < 4).map((q) => <path d={q[1]} class="luz" pathLength="100" />)}
+          </svg>
+          <div>
+            <button class="boton lleno encender" aria-pressed="false">Encender el sol</button>
+            <p class="fotofono-nota">Así llegaba la voz al foco del espejo.</p>
+          </div>
+        </div>
         <a class="enlace" href="/fotofono">La historia completa</a>
       </div>
     </div>
@@ -213,6 +290,7 @@ const resto = destacadas().filter((p) => p.id !== 'mongolia' && p.id !== 'currul
               <p class="director-rol">{d.rol}</p>
               <h3>{d.nombre}</h3>
               <p class="director-corta">{d.corta}</p>
+              <span class="director-ver flecha">Ver perfil</span>
             </a>
           ))
         }
@@ -284,6 +362,54 @@ const resto = destacadas().filter((p) => p.id !== 'mongolia' && p.id !== 'currul
 
 <script>
   document.addEventListener('astro:page-load', () => {
+    if (!document.querySelector('.heroe')) return;
+
+    // luz que sigue el cursor en el héroe
+    const heroe = document.querySelector<HTMLElement>('.heroe')!;
+    if (matchMedia('(hover: hover)').matches) {
+      heroe.addEventListener('pointermove', (e) => {
+        const r = heroe.getBoundingClientRect();
+        heroe.style.setProperty('--lx', `${e.clientX - r.left}px`);
+        heroe.style.setProperty('--ly', `${e.clientY - r.top}px`);
+        heroe.classList.add('con-luz');
+      });
+      heroe.addEventListener('pointerleave', () => heroe.classList.remove('con-luz'));
+    }
+
+    // pestañas de la obra
+    const MAX = 6;
+    const mostrar = (id: string) => {
+      let n = 0;
+      document.querySelectorAll<HTMLElement>('.celda-obra').forEach((c) => {
+        const ok = (c.dataset.cats || '').split(' ').includes(id) && n < MAX;
+        if (ok) n++;
+        c.hidden = !ok;
+        if (ok) {
+          c.classList.remove('entra');
+          void c.offsetWidth;
+          c.classList.add('entra');
+        }
+      });
+    };
+    document.querySelectorAll<HTMLButtonElement>('.pestana').forEach((b) =>
+      b.addEventListener('click', () => {
+        document.querySelectorAll('.pestana').forEach((o) => {
+          o.classList.toggle('activa', o === b);
+          o.setAttribute('aria-selected', o === b ? 'true' : 'false');
+        });
+        mostrar(b.dataset.pestana!);
+      }),
+    );
+
+    // encender el fotófono
+    const boton = document.querySelector<HTMLButtonElement>('.encender');
+    const juego = document.querySelector<HTMLElement>('.fotofono-juego');
+    boton?.addEventListener('click', () => {
+      const on = juego!.classList.toggle('encendido');
+      boton.setAttribute('aria-pressed', on ? 'true' : 'false');
+      boton.textContent = on ? 'Apagar' : 'Encender el sol';
+    });
+
     const fotos = [...document.querySelectorAll<HTMLElement>('.heroe-foto')];
     if (fotos.length < 2 || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     let i = 0;
@@ -357,6 +483,65 @@ const resto = destacadas().filter((p) => p.id !== 'mongolia' && p.id !== 'currul
     position: relative;
     z-index: 2;
   }
+  .heroe-luz {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(circle 340px at var(--lx, 50%) var(--ly, 50%), rgba(255, 228, 180, 0.16), transparent 70%);
+    mix-blend-mode: screen;
+    transition: opacity 0.6s var(--suave);
+  }
+  .con-luz .heroe-luz {
+    opacity: 1;
+  }
+  .necesito {
+    margin-top: 2.6rem;
+    padding-top: 1.4rem;
+    border-top: 1px solid rgba(243, 238, 228, 0.18);
+    max-width: 44rem;
+  }
+  .necesito-pregunta {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.15rem;
+    margin: 0 0 0.8rem;
+    color: rgba(243, 238, 228, 0.9);
+  }
+  .necesito-botones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.55rem 1rem;
+    border: 1px solid rgba(243, 238, 228, 0.32);
+    border-radius: 999px;
+    font-size: 0.92rem;
+    text-decoration: none;
+    color: var(--plata);
+    background: rgba(20, 18, 15, 0.35);
+    backdrop-filter: blur(4px);
+    transition:
+      background 0.25s,
+      color 0.25s,
+      border-color 0.25s,
+      translate 0.25s var(--suave);
+  }
+  .chip:hover {
+    background: var(--sol);
+    border-color: var(--sol);
+    color: var(--tinta);
+    translate: 0 -2px;
+  }
+  @media (max-width: 700px) {
+    .necesito {
+      margin-top: 2rem;
+    }
+  }
   .heroe-marca {
     color: var(--plata);
     margin-bottom: 1.8rem;
@@ -415,16 +600,78 @@ const resto = destacadas().filter((p) => p.id !== 'mongolia' && p.id !== 'currul
   .frente {
     display: flex;
     flex-direction: column;
-    text-decoration: none;
     padding-bottom: 1.6rem;
     border-bottom: 1px solid var(--linea-papel);
   }
   .frente-foto {
+    all: unset;
+    position: relative;
+    display: block;
+    overflow: hidden;
+    cursor: pointer;
     aspect-ratio: 4 / 3;
     margin-bottom: 1.6rem;
+    background: var(--grafito);
+  }
+  .frente-foto:focus-visible {
+    outline: 2px solid var(--sol-tinta);
+    outline-offset: 3px;
   }
   .frente-foto::after {
-    display: none;
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .frente-foto:hover::after {
+    opacity: 1;
+  }
+  .frente-ejemplo {
+    position: absolute;
+    left: 1rem;
+    bottom: 1rem;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.6rem 0.9rem 0.6rem 0.75rem;
+    background: var(--plata);
+    color: var(--tinta);
+    font: 700 0.7rem/1 var(--sans);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    translate: 0 0.4rem;
+    opacity: 0.92;
+    transition:
+      translate 0.35s var(--suave),
+      background 0.25s,
+      opacity 0.25s;
+  }
+  .frente-ejemplo svg {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+  .frente-foto:hover .frente-ejemplo {
+    translate: 0 0;
+    opacity: 1;
+    background: var(--sol);
+  }
+  .frente-acciones {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+  }
+  .frente-acciones .boton {
+    min-height: 2.7rem;
+    padding: 0.65rem 1.1rem;
+  }
+  .frente-pedir {
+    font: 700 0.72rem/1 var(--sans);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--sol-tinta);
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 0.2rem;
   }
   .frente-foto :global(img) {
     transition: scale 1.4s var(--suave);
@@ -444,17 +691,7 @@ const resto = destacadas().filter((p) => p.id !== 'mongolia' && p.id !== 'currul
     margin-bottom: 1.6rem;
     font-size: 0.97rem;
   }
-  .frente-mas {
-    margin-top: auto;
-    display: inline-flex;
-    gap: 0.6rem;
-    font: 700 0.75rem/1 var(--sans);
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-  }
-  .frente:hover .frente-mas::after {
-    translate: 4px 0;
-  }
+
   @media (max-width: 900px) {
     .frentes {
       grid-template-columns: 1fr;
@@ -471,6 +708,53 @@ const resto = destacadas().filter((p) => p.id !== 'mongolia' && p.id !== 'currul
     grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
     gap: 2.5rem;
     align-items: end;
+  }
+  .pestanas {
+    display: flex;
+    gap: 0.4rem;
+    overflow-x: auto;
+    padding-bottom: 0.4rem;
+    margin-bottom: 2.4rem;
+    scrollbar-width: none;
+  }
+  .pestana {
+    flex: none;
+    font: inherit;
+    font-size: 0.92rem;
+    color: var(--plata-2);
+    background: none;
+    border: 1px solid var(--linea);
+    border-radius: 999px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition:
+      background 0.25s,
+      color 0.25s,
+      border-color 0.25s;
+  }
+  .pestana:hover {
+    border-color: var(--plata-2);
+    color: var(--plata);
+  }
+  .pestana.activa {
+    background: var(--plata);
+    border-color: var(--plata);
+    color: var(--tinta);
+  }
+  .celda-obra.entra {
+    animation: entra 0.6s var(--suave) both;
+  }
+  .celda-obra:nth-child(3n + 2).entra {
+    animation-delay: 0.06s;
+  }
+  .celda-obra:nth-child(3n).entra {
+    animation-delay: 0.12s;
+  }
+  @keyframes entra {
+    from {
+      opacity: 0;
+      translate: 0 14px;
+    }
   }
   .rejilla-obra {
     display: grid;
@@ -497,21 +781,6 @@ const resto = destacadas().filter((p) => p.id !== 'mongolia' && p.id !== 'currul
     margin: 4.5rem 0 0;
   }
 
-  /* escuchar */
-  .escuchar {
-    display: grid;
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr);
-    gap: 3rem 5rem;
-    align-items: start;
-  }
-  .escuchar h2 {
-    margin-bottom: 1.4rem;
-  }
-  @media (max-width: 980px) {
-    .escuchar {
-      grid-template-columns: 1fr;
-    }
-  }
 
   /* fotófono */
   .fotofono-rejilla {
@@ -537,6 +806,66 @@ const resto = destacadas().filter((p) => p.id !== 'mongolia' && p.id !== 'currul
   .fotofono-texto p {
     color: var(--tinta-2);
     font-size: 1.08rem;
+  }
+  .fotofono-juego {
+    display: flex;
+    align-items: center;
+    gap: 1.6rem;
+    margin: 2rem 0;
+    padding: 1.2rem;
+    border: 1px solid var(--linea-papel);
+    background: var(--papel);
+  }
+  .espejo-vivo {
+    width: 110px;
+    height: 110px;
+    flex: none;
+    color: var(--tinta);
+  }
+  .espejo-vivo .foco {
+    fill: var(--tinta);
+    transition: fill 0.5s;
+  }
+  .espejo-vivo .luz {
+    fill: none;
+    stroke: var(--sol);
+    stroke-width: 2.6;
+    stroke-dasharray: 8 92;
+    stroke-dashoffset: 100;
+    opacity: 0;
+  }
+  .encendido .espejo-vivo .luz {
+    opacity: 1;
+    animation: viaja 1.4s linear infinite;
+  }
+  .encendido .espejo-vivo .luz:nth-of-type(2) {
+    animation-delay: -0.45s;
+  }
+  .encendido .espejo-vivo .foco {
+    fill: var(--sol-tinta);
+    animation: brilla 1.4s ease-in-out infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  @keyframes viaja {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes brilla {
+    50% {
+      scale: 1.35;
+    }
+  }
+  .fotofono-nota {
+    font-size: 0.9rem !important;
+    margin: 0.7rem 0 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .encendido .espejo-vivo .luz,
+    .encendido .espejo-vivo .foco {
+      animation: none;
+    }
   }
   @media (max-width: 820px) {
     .fotofono-rejilla {
@@ -589,7 +918,26 @@ const resto = destacadas().filter((p) => p.id !== 'mongolia' && p.id !== 'currul
   .director-corta {
     color: var(--plata-2);
     font-size: 0.98rem;
-    margin: 0;
+    margin: 0 0 1rem;
+  }
+  .director-ver {
+    display: inline-flex;
+    gap: 0.5rem;
+    font: 700 0.72rem/1 var(--sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--linea);
+    transition:
+      color 0.25s,
+      border-color 0.25s;
+  }
+  .director:hover .director-ver {
+    color: var(--sol);
+    border-color: var(--sol);
+  }
+  .director:hover .director-ver::after {
+    translate: 4px 0;
   }
   @media (max-width: 820px) {
     .directores {

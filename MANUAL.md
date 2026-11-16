@@ -23,7 +23,8 @@ En el panel de Claude se llama `fototoma-dev` (puerto 4350).
 | Qué | Archivo |
 |---|---|
 | Obras (videos, roles, quién hizo qué, destacadas) | `src/data/obra.ts` |
-| Equipo, músicos asociados, correo, pistas para escuchar | `src/data/equipo.ts` |
+| Equipo, músicos asociados, correo | `src/data/equipo.ts` |
+| Canciones de «Escuchar» (YouTube o SoundCloud) | `PISTAS` en `src/data/equipo.ts` + carátula cuadrada en `src/assets/pistas/` |
 | Cinta «Hemos trabajado para y con» | `src/components/Creditos.astro` |
 | Colores, letras, botones, rótulos | `src/styles/global.css` |
 | Manual de marca (la fuente del PDF) | `src/pages/marca.astro` → se ve en `/marca` |
@@ -64,6 +65,7 @@ Para subir a GitHub, el repositorio usa la cuenta `fototomaproducciones` de `gh`
 - Imágenes en AVIF/WebP del tamaño de cada pantalla, cargadas solo cuando se acercan.
 - Las dos letras se precargan; el resto de variantes solo si se usan.
 - Navegación con transición suave entre páginas y precarga de la página al pasar el mouse por un enlace.
+- La música de «Escuchar» suena en un reproductor abajo que sigue sonando al cambiar de página.
 - Los videos de YouTube y las pistas de SoundCloud no se cargan hasta dar play (la página pesa poco de entrada). Los videos se abren en una sala oscura sin salir de la página.
 - Respeta «reducir movimiento» del sistema; se puede recorrer con teclado.
 - Mapa del sitio (`sitemap-index.xml`), datos de la organización para buscadores e imagen para compartir en redes.

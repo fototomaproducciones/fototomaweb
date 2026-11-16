@@ -57,6 +57,7 @@ export const DIRECTORES: Director[] = [
       { titulo: 'Arrullos alados', anio: '2026', url: 'https://santigarcia.bandcamp.com/album/arrullos-alados' },
       { titulo: 'Cantos de cielo y río', url: 'https://santigarcia.bandcamp.com/album/cantos-de-c-elo-y-r-o' },
       { titulo: 'Diostedé, con luci le', url: 'https://soundcloud.com/santiagogarcia103314/diostede' },
+      { titulo: 'Presagio, con luci le y Martín (Vítreo)', anio: '2026', url: 'https://www.youtube.com/watch?v=avJgkzuIgSw' },
       { titulo: 'Toche', url: 'https://soundcloud.com/santiagogarcia103314/toche' },
     ],
   },
@@ -85,21 +86,40 @@ export interface Asociado {
 
 // Músicos asociados. La idea es que crezca: cuerdas, vientos, voces, percusiones…
 export const ASOCIADOS: Asociado[] = [
-  { nombre: 'luci le', nota: 'Con Santiago en «Diostedé». Portafolio en camino.' },
+  { nombre: 'luci le', nota: 'Con Santiago en «Diostedé» y con Santiago y Martín en «Presagio». Portafolio en camino.' },
 ];
 
-// Pistas para escuchar (SoundCloud). Se cargan solo al dar play.
+// Pistas para escuchar. Se cargan solo al dar play y siguen sonando al cambiar de página.
+// `tipo` youtube → `id` del video; soundcloud → `url` de la pista. Carátula en src/assets/pistas/.
 export interface Pista {
   titulo: string;
   quien: string;
-  url: string;
+  nota?: string;
+  tipo: 'youtube' | 'soundcloud';
+  id?: string;
+  url?: string;
+  img: string;
 }
 
 export const PISTAS: Pista[] = [
-  { titulo: 'Diostedé', quien: 'Santiago García y luci le', url: 'https://soundcloud.com/santiagogarcia103314/diostede' },
-  { titulo: 'Cardumen', quien: 'Martín Perea Tobón', url: 'https://soundcloud.com/martin-perea-tobon/cardumen-1' },
-  { titulo: 'Batará', quien: 'Santiago García', url: 'https://soundcloud.com/santiagogarcia103314/batara' },
-  { titulo: 'Agua', quien: 'Martín Perea Tobón', url: 'https://soundcloud.com/martin-perea-tobon/agua-5' },
-  { titulo: 'Martín pescador', quien: 'Santiago García con Anamaría Oramas', url: 'https://soundcloud.com/santiagogarcia103314/martin-pescador-feat-anamaria' },
-  { titulo: 'Pre Bab Aziz', quien: 'Martín Perea Tobón', url: 'https://soundcloud.com/martin-perea-tobon/pre-bab-aziz-2' },
+  {
+    titulo: 'Presagio',
+    quien: 'Santiago García, luci le y Martín Perea Tobón',
+    nota: 'Vítreo · 2026',
+    tipo: 'youtube',
+    id: 'avJgkzuIgSw',
+    img: 'presagio.jpg',
+  },
+  { titulo: 'Diostedé', quien: 'Santiago García y luci le', tipo: 'soundcloud', url: 'https://soundcloud.com/santiagogarcia103314/diostede', img: 'diostede.jpg' },
+  { titulo: 'Cenizas', quien: 'Martín Perea Tobón', nota: 'Sámara · 2026', tipo: 'youtube', id: 'r6Pc4Z1w7J8', img: 'cenizas.jpg' },
+  { titulo: 'Batará', quien: 'Santiago García', tipo: 'soundcloud', url: 'https://soundcloud.com/santiagogarcia103314/batara', img: 'batara.jpg' },
+  { titulo: 'Cardumen', quien: 'Martín Perea Tobón', tipo: 'soundcloud', url: 'https://soundcloud.com/martin-perea-tobon/cardumen-1', img: 'cardumen.jpg' },
+  {
+    titulo: 'Martín pescador',
+    quien: 'Santiago García con Anamaría Oramas',
+    tipo: 'soundcloud',
+    url: 'https://soundcloud.com/santiagogarcia103314/martin-pescador-feat-anamaria',
+    img: 'martin-pescador.jpg',
+  },
+  { titulo: 'Agua', quien: 'Martín Perea Tobón', tipo: 'soundcloud', url: 'https://soundcloud.com/martin-perea-tobon/agua-5', img: 'agua.jpg' },
 ];

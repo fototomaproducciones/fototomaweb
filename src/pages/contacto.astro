@@ -72,11 +72,14 @@ const temas = [
 
 <script define:vars={{ CORREO }}>
   const form = document.getElementById('formulario');
-  const tema = new URLSearchParams(location.search).get('tema');
+  const params = new URLSearchParams(location.search);
+  const tema = params.get('tema');
   if (tema) {
     const r = form.querySelector(`input[data-id="${tema}"]`);
     if (r) r.checked = true;
   }
+  const para = params.get('para');
+  if (para) form.querySelector('textarea').value = `Necesito música para ${para}. `;
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const nota = form.querySelector('.nota');
