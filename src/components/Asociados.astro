@@ -1,0 +1,231 @@
+---
+// Muro de músicos asociados. Pensado para crecer: una rejilla de retratos 4:5 con el nombre
+// sobre la foto, como un crédito, y una casilla final para sumarse.
+// variante 'muro' (inicio): solo retrato, nombre y oficio.
+// variante 'directorio' (equipo): retratos más grandes y la línea corta debajo.
+// Cada retrato lleva al perfil completo en /equipo/<id>.
+import Foto from './Foto.astro';
+import { ASOCIADOS } from '../data/equipo';
+
+interface Props {
+  variante?: 'muro' | 'directorio';
+}
+const { variante = 'muro' } = Astro.props;
+const directorio = variante === 'directorio';
+const iniciales = (n: string) =>
+  n
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0])
+    .join('');
+---
+
+<ul class:list={['musicos', variante]}>
+  {
+    ASOCIADOS.map((a) => (
+      <li>
+        <a class="musico" href={a.foto ? `/equipo/${a.id}` : undefined} aria-label={a.foto ? `${a.nombre}: ver perfil` : undefined}>
+          <div class="musico-foto">
+            {a.foto ? (
+              <Foto
+                src={`equipo/${a.foto}`}
+                alt=""
+                sizes={directorio ? '(max-width: 600px) 46vw, 16rem' : '(max-width: 600px) 46vw, 12rem'}
+                anchos={[240, 360, 480, 640]}
+              />
+            ) : (
+              <span class="musico-iniciales" aria-hidden="true">
+                {iniciales(a.nombre)}
+              </span>
+            )}
+            <div class="musico-pie">
+              <span class="musico-nombre">{a.nombre}</span>
+              {a.instrumentos && <span class="musico-oficio">{a.instrumentos}</span>}
+            </div>
+          </div>
+        </a>
+        {directorio && (a.corta ?? a.nota) && <p class="musico-corta">{a.corta ?? a.nota}</p>}
+      </li>
+    ))
+  }
+  <li>
+    <a class="musico sumate" href="/contacto?tema=musico">
+      <div class="musico-foto">
+        <span class="sol" aria-hidden="true"></span>
+        <div class="musico-pie">
+          <span class="musico-nombre">¿Tocas?</span>
+          <span class="musico-oficio">Súmate a la red</span>
+        </div>
+      </div>
+    </a>
+    {
+      directorio && (
+        <p class="musico-corta">Cuéntanos qué instrumentos tocas y qué músicas conoces, y mándanos grabaciones o videos.</p>
+      )
+    }
+  </li>
+</ul>
+
+<style>
+  .musicos {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
+    gap: 0.8rem;
+  }
+  .musicos.directorio {
+    grid-template-columns: repeat(auto-fill, minmax(13.5rem, 1fr));
+    gap: 2.2rem 1.1rem;
+  }
+  .musico {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+  }
+  .musico-foto {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: var(--grafito);
+    isolation: isolate;
+  }
+  .musico-foto :global(picture),
+  .musico-foto :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .musico-foto :global(img) {
+    filter: saturate(0.88);
+    transition:
+      scale 1.2s var(--suave),
+      filter 0.5s;
+  }
+  /* la luz baja sobre el nombre, como un crédito */
+  .musico-foto::after {
+    content: '';
+    position: absolute;
+    inset: 45% 0 0;
+    background: linear-gradient(to bottom, transparent, rgba(20, 18, 15, 0.88));
+    pointer-events: none;
+  }
+  /* el haz: una raya de sol que se abre al pasar */
+  .musico-foto::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: 2;
+    width: 100%;
+    height: 2px;
+    background: var(--sol);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s var(--suave);
+  }
+  .musico-pie {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.9rem 0.95rem 1rem;
+  }
+  .musico-nombre {
+    font-family: var(--serif);
+    font-size: 1.45rem;
+    line-height: 1.05;
+    color: var(--plata);
+  }
+  .directorio .musico-nombre {
+    font-size: 1.7rem;
+  }
+  .musico-oficio {
+    font: 700 0.62rem/1.35 var(--sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--sol);
+  }
+  .musico-iniciales {
+    position: absolute;
+    inset: 0 0 25%;
+    display: grid;
+    place-items: center;
+    font-family: var(--serif);
+    font-size: 3rem;
+    color: var(--gris);
+  }
+  .musico-corta {
+    margin: 0.8rem 0 0;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--plata-2);
+  }
+  a.musico[href]:hover .musico-foto :global(img),
+  a.musico[href]:focus-visible .musico-foto :global(img) {
+    scale: 1.045;
+    filter: saturate(1);
+  }
+  a.musico[href]:hover .musico-foto::before,
+  a.musico[href]:focus-visible .musico-foto::before {
+    transform: scaleX(1);
+  }
+  a.musico:focus-visible {
+    outline: 2px solid var(--sol);
+    outline-offset: 3px;
+  }
+
+  /* casilla para sumarse: sin foto, solo la luz */
+  .sumate .musico-foto {
+    background: var(--carbon);
+    border: 1px solid var(--linea);
+  }
+  .sumate .musico-foto::after {
+    display: none;
+  }
+  .sol {
+    position: absolute;
+    left: 50%;
+    top: 36%;
+    width: 46%;
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--sol) 0 18%, rgba(224, 168, 78, 0.28) 19% 34%, transparent 70%);
+    transition:
+      scale 0.6s var(--suave),
+      opacity 0.4s;
+    opacity: 0.75;
+  }
+  .sumate:hover .sol,
+  .sumate:focus-visible .sol {
+    scale: 1.25;
+    opacity: 1;
+  }
+
+  @media (max-width: 600px) {
+    .musicos,
+    .musicos.directorio {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.6rem 0.7rem;
+    }
+    .musicos.muro {
+      gap: 0.7rem;
+    }
+    .musico-nombre,
+    .directorio .musico-nombre {
+      font-size: 1.25rem;
+    }
+    .musico-pie {
+      padding: 0.7rem 0.75rem 0.8rem;
+    }
+  }
+</style>

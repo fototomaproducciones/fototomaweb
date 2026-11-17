@@ -1,9 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
-import { DIRECTORES, ASOCIADOS } from '../data/equipo';
+import { DIRECTORES } from '../data/equipo';
 import { dePersona } from '../data/obra';
 import Foto from '../components/Foto.astro';
-import AsociadoTarjeta from '../components/AsociadoTarjeta.astro';
+import Asociados from '../components/Asociados.astro';
 const dev = import.meta.env.DEV;
 ---
 
@@ -86,8 +86,8 @@ const dev = import.meta.env.DEV;
   }
 
   <section class="seccion carbon" id="asociados">
-    <div class="envoltura asociados">
-      <div class="rv">
+    <div class="envoltura">
+      <div class="cabeza-seccion rv">
         <h2>Músicos asociados</h2>
         <p class="lead">
           Una red de intérpretes que crece con cada proyecto: cuerdas, vientos, voces, percusiones e instrumentos
@@ -95,26 +95,7 @@ const dev = import.meta.env.DEV;
         </p>
       </div>
       <div class="rv">
-        <div class="asociados-tarjetas">
-          {ASOCIADOS.filter((a) => a.foto).map((a) => <AsociadoTarjeta a={a} />)}
-        </div>
-        {
-          ASOCIADOS.some((a) => !a.foto) && (
-            <ul class="asociados-lista">
-              {ASOCIADOS.filter((a) => !a.foto).map((a) => (
-                <li>
-                  <span class="asociado-nombre">{a.nombre}</span>
-                  <span class="gris">{a.instrumentos ?? a.nota}</span>
-                </li>
-              ))}
-            </ul>
-          )
-        }
-        <div class="sumate">
-          <h3>¿Tocas y quieres trabajar con nosotros?</h3>
-          <p>Cuéntanos qué instrumentos tocas, qué músicas conoces y mándanos grabaciones o videos.</p>
-          <a class="boton flecha" href="/contacto?tema=musico">Escribirnos</a>
-        </div>
+        <Asociados variante="directorio" />
       </div>
     </div>
   </section>
@@ -211,50 +192,4 @@ const dev = import.meta.env.DEV;
     }
   }
 
-  .asociados {
-    display: grid;
-    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-    gap: 3rem 5rem;
-  }
-  .asociados h2 {
-    margin-bottom: 1.4rem;
-  }
-  .asociados-lista {
-    list-style: none;
-    margin: 0 0 1rem;
-    padding: 0;
-    border-top: 1px solid var(--linea);
-  }
-  .asociados-lista li {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 1rem;
-    padding: 1.1rem 0;
-    border-bottom: 1px solid var(--linea);
-  }
-  .asociado-nombre {
-    font-family: var(--serif);
-    font-size: 2.2rem;
-    line-height: 1.1;
-  }
-  .asociados-tarjetas {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
-    gap: 2.5rem 2rem;
-  }
-  .sumate {
-    margin-top: 3rem;
-  }
-  .sumate h3 {
-    margin-bottom: 0.6rem;
-  }
-  .sumate p {
-    color: var(--plata-2);
-  }
-  @media (max-width: 860px) {
-    .asociados {
-      grid-template-columns: 1fr;
-    }
-  }
 </style>
