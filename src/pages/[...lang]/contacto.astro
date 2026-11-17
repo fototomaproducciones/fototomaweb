@@ -1,48 +1,97 @@
 ---
-import Base from '../layouts/Base.astro';
-import { CORREO } from '../data/equipo';
+import Base from '../../layouts/Base.astro';
+import { CORREO } from '../../data/equipo';
+import { IDIOMAS, idioma, enlace, juntar } from '../../i18n';
+
+export function getStaticPaths() {
+  return IDIOMAS();
+}
+const lang = idioma(Astro.url);
+const en = lang === 'en';
+const u = (r: string) => enlace(lang, r);
 const dev = import.meta.env.DEV;
-const temas = [
+const temas = en
+  ? [
+      { id: 'cine', texto: 'Film, series or documentary' },
+      { id: 'publicidad', texto: 'Commercial or campaign' },
+      { id: 'sesiones', texto: 'Live session, album or music video' },
+      { id: 'medios', texto: 'Podcast, radio or show' },
+      { id: 'musico', texto: 'I’m a musician and want to join' },
+      { id: 'otro', texto: 'Something else' },
+    ]
+  : [
   { id: 'cine', texto: 'Película, serie o documental' },
   { id: 'publicidad', texto: 'Comercial o campaña' },
   { id: 'sesiones', texto: 'Sesión en vivo, disco o videoclip' },
   { id: 'medios', texto: 'Podcast, radio o programa' },
   { id: 'musico', texto: 'Soy músico y quiero sumarme' },
   { id: 'otro', texto: 'Otra cosa' },
-];
+    ];
+// textos del formulario que arma el correo
+const F = en
+  ? {
+      necesito: 'I need music for',
+      falta: 'Your name, your email or the message is missing.',
+      abierto: 'Your email app opened with the message ready to send.',
+      nombre: 'Name',
+      correo: 'Email',
+      empresa: 'Company or project',
+      tema: 'Topic',
+      material: 'Material',
+    }
+  : {
+      necesito: 'Necesito música para',
+      falta: 'Falta tu nombre, tu correo o el mensaje.',
+      abierto: 'Se abrió tu programa de correo con el mensaje listo para enviar.',
+      nombre: 'Nombre',
+      correo: 'Correo',
+      empresa: 'Empresa o proyecto',
+      tema: 'Tema',
+      material: 'Material',
+    };
 ---
 
-<Base titulo="Contacto" descripcion="Escríbele a Fototoma Producciones: cuéntanos tu película, serie, documental, comercial o sesión.">
+<Base
+  titulo={en ? 'Contact' : 'Contacto'}
+  descripcion={
+    en
+      ? 'Write to Fototoma Producciones: tell us about your film, series, documentary, commercial or session.'
+      : 'Escríbele a Fototoma Producciones: cuéntanos tu película, serie, documental, comercial o sesión.'
+  }
+>
   <section class="seccion">
     <div class="envoltura contacto">
       <div>
-        <p class="etq">Contacto</p>
-        <h1>Cuéntanos qué estás haciendo</h1>
+        <p class="etq">{en ? 'Contact' : 'Contacto'}</p>
+        <h1>{en ? 'Tell us what you are making' : 'Cuéntanos qué estás haciendo'}</h1>
         <p class="lead">
-          Un guion, un corte, una referencia o una idea suelta sirven para empezar. Te respondemos con preguntas, una
-          propuesta y tiempos.
+          {
+            en
+              ? 'A script, a cut, a reference or a loose idea is enough to start. We’ll reply with questions, a proposal and a timeline. We write in Spanish and English.'
+              : 'Un guion, un corte, una referencia o una idea suelta sirven para empezar. Te respondemos con preguntas, una propuesta y tiempos.'
+          }
         </p>
         <div class="directo">
-          <p class="etq">Directo</p>
+          <p class="etq">{en ? 'Direct' : 'Directo'}</p>
           <a class="correo enlace" href={`mailto:${CORREO}`}>{CORREO}</a>
         </div>
       </div>
 
       <form class="formulario" id="formulario" novalidate>
         <label>
-          <span>Nombre</span>
+          <span>{F.nombre}</span>
           <input name="nombre" autocomplete="name" required />
         </label>
         <label>
-          <span>Correo</span>
+          <span>{F.correo}</span>
           <input name="correo" type="email" autocomplete="email" required />
         </label>
         <label>
-          <span>Empresa o proyecto <em>(opcional)</em></span>
+          <span>{F.empresa} <em>{en ? '(optional)' : '(opcional)'}</em></span>
           <input name="empresa" autocomplete="organization" />
         </label>
         <fieldset>
-          <legend>¿De qué se trata?</legend>
+          <legend>{en ? 'What is it about?' : '¿De qué se trata?'}</legend>
           <div class="temas">
             {
               temas.map((t, i) => (
@@ -55,14 +104,19 @@ const temas = [
           </div>
         </fieldset>
         <label>
-          <span>Cuéntanos</span>
-          <textarea name="mensaje" rows="6" required placeholder="Qué es, en qué etapa va, para cuándo lo necesitas…"></textarea>
+          <span>{en ? 'Tell us' : 'Cuéntanos'}</span>
+          <textarea
+            name="mensaje"
+            rows="6"
+            required
+            placeholder={en ? 'What it is, what stage it’s at, when you need it…' : 'Qué es, en qué etapa va, para cuándo lo necesitas…'}
+          ></textarea>
         </label>
         <label>
-          <span>Enlace a material <em>(opcional)</em></span>
-          <input name="enlace" type="url" placeholder="Guion, corte, referencias…" />
+          <span>{en ? 'Link to material' : 'Enlace a material'} <em>{en ? '(optional)' : '(opcional)'}</em></span>
+          <input name="enlace" type="url" placeholder={en ? 'Script, cut, references…' : 'Guion, corte, referencias…'} />
         </label>
-        <button class="boton lleno flecha" type="submit">Enviar</button>
+        <button class="boton lleno flecha" type="submit">{en ? 'Send' : 'Enviar'}</button>
         <p class="nota" aria-live="polite"></p>
         {dev && <p class="pendiente">PENDIENTE: por ahora el formulario abre el correo; conectar envío directo al publicar</p>}
       </form>
@@ -70,7 +124,7 @@ const temas = [
   </section>
 </Base>
 
-<script define:vars={{ CORREO }}>
+<script define:vars={{ CORREO, F }}>
   const form = document.getElementById('formulario');
   const params = new URLSearchParams(location.search);
   const tema = params.get('tema');
@@ -79,30 +133,30 @@ const temas = [
     if (r) r.checked = true;
   }
   const para = params.get('para');
-  if (para) form.querySelector('textarea').value = `Necesito música para ${para}. `;
+  if (para) form.querySelector('textarea').value = `${F.necesito} ${para}. `;
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const nota = form.querySelector('.nota');
     if (!form.checkValidity()) {
-      nota.textContent = 'Falta tu nombre, tu correo o el mensaje.';
+      nota.textContent = F.falta;
       form.reportValidity();
       return;
     }
     const d = new FormData(form);
     const asunto = `${d.get('tema')} — ${d.get('nombre')}`;
     const cuerpo = [
-      `Nombre: ${d.get('nombre')}`,
-      `Correo: ${d.get('correo')}`,
-      d.get('empresa') ? `Empresa o proyecto: ${d.get('empresa')}` : '',
-      `Tema: ${d.get('tema')}`,
+      `${F.nombre}: ${d.get('nombre')}`,
+      `${F.correo}: ${d.get('correo')}`,
+      d.get('empresa') ? `${F.empresa}: ${d.get('empresa')}` : '',
+      `${F.tema}: ${d.get('tema')}`,
       '',
       d.get('mensaje'),
-      d.get('enlace') ? `\nMaterial: ${d.get('enlace')}` : '',
+      d.get('enlace') ? `\n${F.material}: ${d.get('enlace')}` : '',
     ]
       .filter((x) => x !== '')
       .join('\n');
     location.href = `mailto:${CORREO}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
-    nota.textContent = 'Se abrió tu programa de correo con el mensaje listo para enviar.';
+    nota.textContent = F.abierto;
   });
 </script>
 

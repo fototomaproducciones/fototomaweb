@@ -13,6 +13,15 @@ export const CATEGORIAS: Record<Categoria, string> = {
   discos: 'Discos y arreglos',
 };
 
+export const CATEGORIAS_EN: Record<Categoria, string> = {
+  cine: 'Film, animation and stage',
+  documental: 'Documentary and series',
+  publicidad: 'Advertising and brands',
+  sesiones: 'Live sessions and music videos',
+  medios: 'Podcasts and media',
+  discos: 'Albums and arrangements',
+};
+
 export type Persona = 'martin' | 'santiago' | 'juan';
 
 export const NOMBRES: Record<Persona, string> = {
@@ -35,6 +44,8 @@ export interface Pieza {
   vertical?: boolean;
   destacada?: boolean;
   nota?: string;
+  // versión en inglés: solo los campos que cambian
+  en?: Partial<Pick<Pieza, 'titulo' | 'rol' | 'ficha' | 'nota' | 'enlaceTexto'>>;
 }
 
 export const OBRA: Pieza[] = [
@@ -49,6 +60,7 @@ export const OBRA: Pieza[] = [
     video: 'FQ1OpRNI6bM',
     img: 'FQ1OpRNI6bM.jpg',
     destacada: true,
+    en: { rol: 'Sound design', ficha: 'Commercial' },
   },
   {
     id: 'mazda-un-color',
@@ -59,6 +71,7 @@ export const OBRA: Pieza[] = [
     ficha: 'Comercial',
     video: 'x_8pQ2hT2iE',
     img: 'x_8pQ2hT2iE.jpg',
+    en: { rol: 'Sound design', ficha: 'Commercial' },
   },
 
   // --- Documental y series
@@ -73,6 +86,7 @@ export const OBRA: Pieza[] = [
     img: '17IYYByXjKk.jpg',
     destacada: true,
     nota: 'Del viaje de 2025 por el Pacífico colombiano para registrar su fauna, su flora y su música. Montaje de Camila Severiche.',
+    en: { titulo: 'Currulao and the music of the southern Pacific', rol: 'Travel, field recording and sound', ficha: 'Short documentary · Dial, Sámara series · 2026', nota: 'From a 2025 journey along Colombia’s Pacific coast to record its wildlife, its plants and its music. Edited by Camila Severiche.' },
   },
   {
     id: 'mongolia',
@@ -84,6 +98,7 @@ export const OBRA: Pieza[] = [
     video: 'ONV3lsPwmPo',
     img: 'ONV3lsPwmPo.jpg',
     destacada: true,
+    en: { titulo: 'The last nomads of Mongolia', rol: 'Music and sound design', ficha: 'Short documentary · 2026' },
   },
   {
     id: 'jazz-colombiano',
@@ -94,6 +109,7 @@ export const OBRA: Pieza[] = [
     ficha: 'Videoensayo · Dial, serie Sámara · 2025',
     video: '9-pppveOQRs',
     img: '9-pppveOQRs.jpg',
+    en: { titulo: 'A history of Colombian jazz in 10 minutes', rol: 'Research, direction and music', ficha: 'Video essay · Dial, Sámara series · 2025' },
   },
   {
     id: 'cientifico-por-un-dia',
@@ -105,6 +121,7 @@ export const OBRA: Pieza[] = [
     enlace: 'https://redaprende.colombiaaprende.edu.co/metadatos-agrupaciones/coleccion/cientifico-por-un-dia-temporada-ii/',
     enlaceTexto: 'Ver la serie en Colombia Aprende',
     img: 'cientifico.jpg',
+    en: { titulo: 'Científico por un día (Scientist for a day), season II', rol: 'Music', ficha: '12-episode series · MinCiencias, RTVC–Señal Colombia and SENA', enlaceTexto: 'Watch the series on Colombia Aprende' },
   },
 
   // --- Cine, animación y escena
@@ -118,6 +135,7 @@ export const OBRA: Pieza[] = [
     video: '6DZmq3vevQ4',
     img: '6DZmq3vevQ4.jpg',
     destacada: true,
+    en: { rol: 'Sound design and music', ficha: 'Animation · 2026' },
   },
   {
     id: 'intersticio',
@@ -128,6 +146,7 @@ export const OBRA: Pieza[] = [
     ficha: 'Cortometraje de Andrés Patiño · Tempestad Films',
     video: 'sKmqJ5aUcSQ',
     img: 'sKmqJ5aUcSQ.jpg',
+    en: { rol: 'Music', ficha: 'Short film by Andrés Patiño · Tempestad Films' },
   },
   {
     id: 'tierra-sin-sol',
@@ -139,6 +158,7 @@ export const OBRA: Pieza[] = [
     video: '4bftwkKm06U',
     img: '4bftwkKm06U.jpg',
     destacada: true,
+    en: { rol: 'Music', ficha: 'Official trailer' },
   },
   {
     id: 'walter',
@@ -149,6 +169,7 @@ export const OBRA: Pieza[] = [
     ficha: 'Cortometraje animado · 2019',
     video: 'h4N7SWFleG4',
     img: 'h4N7SWFleG4.jpg',
+    en: { rol: 'Music', ficha: 'Animated short · 2019' },
   },
   {
     id: 'bardo',
@@ -159,6 +180,7 @@ export const OBRA: Pieza[] = [
     ficha: 'Música nueva sobre el tráiler de Bardo (Alejandro G. Iñárritu, 2022)',
     video: '6uWk6G-3VYs',
     img: '6uWk6G-3VYs.jpg',
+    en: { titulo: 'Bardo — alternate trailer', rol: 'Music and sound design', ficha: 'New music over the trailer for Bardo (Alejandro G. Iñárritu, 2022)' },
   },
   {
     id: 'amores-dificiles',
@@ -169,6 +191,7 @@ export const OBRA: Pieza[] = [
     ficha: 'Obra de teatro',
     video: 'aqBiC-RY8RE',
     img: 'aqBiC-RY8RE.jpg',
+    en: { rol: 'Original music', ficha: 'Stage play' },
   },
 
   // --- Sesiones en vivo y videoclips
@@ -182,6 +205,7 @@ export const OBRA: Pieza[] = [
     video: 'L84B5ZGakjY',
     img: 'L84B5ZGakjY.jpg',
     destacada: true,
+    en: { titulo: 'In-Vitro, live session', rol: 'Composition, guitar and co-produced video', ficha: 'Music from the album In-Vitro' },
   },
   {
     id: 'noisesion',
@@ -193,6 +217,7 @@ export const OBRA: Pieza[] = [
     video: 'yfccCqJFOZU',
     img: 'yfccCqJFOZU.jpg',
     destacada: true,
+    en: { rol: 'Sound engineering', ficha: 'La Noise sessions with artists from the Colombian scene' },
   },
   {
     id: 'fractalida',
@@ -203,6 +228,7 @@ export const OBRA: Pieza[] = [
     ficha: 'Sesiones Alta Distorsión',
     video: 'cM-whAxnG9U',
     img: 'cM-whAxnG9U.jpg',
+    en: { rol: 'Sound engineering', ficha: 'Alta Distorsión sessions' },
   },
   {
     id: 'manuela-ocampo',
@@ -213,6 +239,7 @@ export const OBRA: Pieza[] = [
     ficha: 'Sesiones Macarena 360',
     video: 'W32TI7o8XM0',
     img: 'W32TI7o8XM0.jpg',
+    en: { rol: 'Sound engineering', ficha: 'Macarena 360 sessions' },
   },
   {
     id: 'dibujar-el-camino',
@@ -223,6 +250,7 @@ export const OBRA: Pieza[] = [
     ficha: 'Video musical · LaNoise Films',
     video: 'jqhSaBrgYJo',
     img: 'jqhSaBrgYJo.jpg',
+    en: { rol: 'Sound', ficha: 'Music video · LaNoise Films' },
   },
   {
     id: 'mangorito',
@@ -234,6 +262,7 @@ export const OBRA: Pieza[] = [
     video: '5lgpy6H5sTU',
     img: '5lgpy6H5sTU.jpg',
     destacada: true,
+    en: { rol: 'Music, script and production', ficha: 'Music video' },
   },
   {
     id: 'feo-palante',
@@ -244,6 +273,7 @@ export const OBRA: Pieza[] = [
     ficha: 'Videoclip · 2025',
     video: '1PCgmrlsKUQ',
     img: '1PCgmrlsKUQ.jpg',
+    en: { rol: 'Camera', ficha: 'Music video · 2025' },
   },
   {
     id: 'video-mapping',
@@ -256,6 +286,7 @@ export const OBRA: Pieza[] = [
     enlaceTexto: 'Ver en Instagram',
     img: 'kabuya.jpg',
     vertical: true,
+    en: { titulo: 'Video mapping in public space', rol: 'Drone', ficha: 'Toma Falsa Films and Posmonumenta', enlaceTexto: 'Watch on Instagram' },
   },
 
   // --- Podcast y medios
@@ -268,6 +299,7 @@ export const OBRA: Pieza[] = [
     ficha: 'Debate · Dial · 2026',
     video: 'lWeFYIvic5Q',
     img: 'lWeFYIvic5Q.jpg',
+    en: { titulo: 'A hard-line progressive against seven conservatives', rol: 'Direction (Martín) and sound engineering (Juan)', ficha: 'Debate · Dial · 2026' },
   },
   {
     id: 'podcast-lgqv',
@@ -278,6 +310,7 @@ export const OBRA: Pieza[] = [
     ficha: 'Videopodcast · RED Quynza y Dial · 2026',
     video: '1z-0Il0n8xE',
     img: '1z-0Il0n8xE.jpg',
+    en: { titulo: 'Lo que la gente quiere es vivir (What people want is to live), episode 1', rol: 'Production (Martín) and sound engineering (Juan)', ficha: 'Video podcast · RED Quynza and Dial · 2026' },
   },
 
   // --- Discos y arreglos
@@ -291,6 +324,7 @@ export const OBRA: Pieza[] = [
     enlace: 'https://open.spotify.com/album/5BByceS6sogwNmUWkrv41r',
     enlaceTexto: 'Escuchar en Spotify',
     img: 'in-vitro.jpg',
+    en: { rol: 'Solo album', ficha: 'A journey through Colombian jazz composers', enlaceTexto: 'Listen on Spotify' },
   },
   {
     id: 'calle-luna',
@@ -301,6 +335,7 @@ export const OBRA: Pieza[] = [
     ficha: 'Tema de Willie Colón',
     video: 'k1EfLddmIvY',
     img: 'k1EfLddmIvY.jpg',
+    en: { rol: 'Arrangement for symphony orchestra', ficha: 'A song by Willie Colón' },
   },
   {
     id: 'cuadrupedos',
@@ -312,8 +347,13 @@ export const OBRA: Pieza[] = [
     enlace: 'https://www.youtube.com/watch?v=kowHKauPk3U',
     enlaceTexto: 'Ver en YouTube',
     img: 'kowHKauPk3U.jpg',
+    en: { rol: 'Composition and production', ficha: 'Music video', enlaceTexto: 'Watch on YouTube' },
   },
 ];
+
+// la pieza en el idioma de la página
+export const enIdioma = (p: Pieza, lang: 'es' | 'en'): Pieza => (lang === 'en' && p.en ? { ...p, ...p.en } : p);
+export const categoria = (c: Categoria, lang: 'es' | 'en') => (lang === 'en' ? CATEGORIAS_EN : CATEGORIAS)[c];
 
 export const destacadas = () => OBRA.filter((p) => p.destacada);
 export const dePersona = (q: Persona) => OBRA.filter((p) => p.quien.includes(q));

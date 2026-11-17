@@ -1,8 +1,16 @@
 ---
-import Base from '../layouts/Base.astro';
-import Foto from '../components/Foto.astro';
+import Base from '../../layouts/Base.astro';
+import Foto from '../../components/Foto.astro';
+import { IDIOMAS, idioma, enlace, juntar } from '../../i18n';
 
-const bloques = [
+export function getStaticPaths() {
+  return IDIOMAS();
+}
+const lang = idioma(Astro.url);
+const en = lang === 'en';
+const u = (r: string) => enlace(lang, r);
+
+const BLOQUES_ES = [
   {
     id: 'cine',
     etq: 'Cine, series y documental',
@@ -84,7 +92,89 @@ const bloques = [
   },
 ];
 
-const pasos = [
+
+const BLOQUES_EN: typeof BLOQUES_ES = [
+  {
+    id: 'cine',
+    etq: 'Film, series and documentary',
+    titulo: 'Music and sound for films, series and documentaries',
+    img: 'mongolia-fotograma.jpg',
+    pie: 'The last nomads of Mongolia · music and sound design by Martín Perea Tobón',
+    servicios: [
+      {
+        nombre: 'Original music',
+        texto:
+          'Composing to picture: themes, musical atmospheres and cues synced to the cut. We record with real musicians and deliver sheet music when it is needed.',
+      },
+      {
+        nombre: 'Sound design',
+        texto: 'Ambiences, effects, foley and textures: the sound of the places, objects and movements in each scene.',
+      },
+      {
+        nombre: 'Dialogue editing and final mix',
+        texto:
+          'Dialogue cleanup, production sound editing and mixing for cinema, television or streaming, to each one’s delivery specs.',
+      },
+      {
+        nombre: 'Music supervision',
+        texto:
+          'If the film needs existing songs, we help choose them, clear the rights and keep the cue sheet of the music used.',
+      },
+      {
+        nombre: 'Animation and video games',
+        texto: 'Music and effects that follow the movement frame by frame, and layered, adaptive music for games.',
+      },
+      {
+        nombre: 'From the shoot',
+        texto:
+          'Martín is also a filmmaker: we can join at the script or shooting stage to think about the music together with the shots, or record sound and music in the field.',
+      },
+    ],
+  },
+  {
+    id: 'publicidad',
+    etq: 'Advertising and brands',
+    titulo: 'Music for commercials, campaigns and branded content',
+    img: 'x_8pQ2hT2iE.jpg',
+    pie: 'Mazda — Un color',
+    servicios: [
+      { nombre: 'Original music and jingles', texto: 'Written for the idea and the rhythm of the cut, with lyrics when the campaign calls for them.' },
+      { nombre: 'Sound design', texto: 'Product sounds, transitions and ambiences, made to fit the cut.' },
+      { nombre: 'Sonic identity', texto: 'A sound logo and a music system so the brand sounds the same on every channel.' },
+      {
+        nombre: 'Versions and deliverables',
+        texto: 'Cutdowns of 6, 10, 15, 20, 30 and 60 seconds, stems for post-production and mixes for each medium.',
+      },
+    ],
+    enlace: { url: '/publicidad', texto: 'How we work with agencies and brands' },
+  },
+  {
+    id: 'sesiones',
+    etq: 'Artists, sessions and media',
+    titulo: 'Live sessions, albums, music videos and podcasts',
+    img: 'yfccCqJFOZU.jpg',
+    pie: 'Noisesion · La Noise',
+    servicios: [
+      {
+        nombre: 'Live sessions',
+        texto:
+          'Multitrack recording and filming of bands and solo artists live, with the mix and the video delivered together. Juan has recorded series such as Noisesion and Sesiones Macarena 360.',
+      },
+      {
+        nombre: 'Music production and arranging',
+        texto: 'Producing albums and singles, arrangements for ensembles and orchestra, and directing recording sessions.',
+      },
+      { nombre: 'Music videos', texto: 'Concept, shoot, camera, drone and editing, with the music at the center.' },
+      {
+        nombre: 'Podcasts and radio',
+        texto: 'Voice recording, editing and mixing, music for the show, stingers and voice-over.',
+      },
+      { nombre: 'Mixing and mastering', texto: 'For albums, sessions and audiovisual pieces, to the level each platform requires.' },
+    ],
+  },
+];
+const bloques = en ? BLOQUES_EN : BLOQUES_ES;
+const PASOS_ES = [
   {
     nombre: 'Conversación',
     texto: 'Nos cuentas el proyecto y nos mandas lo que tengas: guion, corte, referencias. Preguntamos lo necesario.',
@@ -106,20 +196,54 @@ const pasos = [
     texto: 'Mezcla para cada medio, pistas separadas, partituras si aplica, y la licencia o cesión de derechos por escrito.',
   },
 ];
+const PASOS_EN: typeof PASOS_ES = [
+  {
+    nombre: 'Conversation',
+    texto: 'You tell us about the project and send whatever you have: script, cut, references. We ask what we need to know.',
+  },
+  {
+    nombre: 'Proposal',
+    texto: 'We send you scope, team, timeline and fee. If the project calls for it, a short first demo.',
+  },
+  {
+    nombre: 'Demos',
+    texto: 'Sketches over the picture to agree on the tone before recording. This is where the big changes happen.',
+  },
+  {
+    nombre: 'Recording and production',
+    texto: 'We bring in the associate musicians the music needs, record, and do the sound design.',
+  },
+  {
+    nombre: 'Mix and delivery',
+    texto: 'Mixes for each medium, stems, sheet music if needed, and the license or rights assignment in writing.',
+  },
+];
+const pasos = en ? PASOS_EN : PASOS_ES;
+
 ---
 
-<Base titulo="Servicios" descripcion="Música original, diseño sonoro, mezcla, supervisión musical, publicidad, sesiones en vivo, producción musical y podcast.">
+<Base
+  titulo={en ? 'Services' : 'Servicios'}
+  descripcion={
+    en
+      ? 'Original music, sound design, mixing, music supervision, advertising, live sessions, music production and podcasts.'
+      : 'Música original, diseño sonoro, mezcla, supervisión musical, publicidad, sesiones en vivo, producción musical y podcast.'
+  }
+>
   <section class="seccion">
     <div class="envoltura">
-      <p class="etq">Servicios</p>
-      <h1>Todo el sonido de un proyecto, o la parte que falte</h1>
+      <p class="etq">{en ? 'Services' : 'Servicios'}</p>
+      <h1>{en ? 'All the sound for a project, or whatever part is missing' : 'Todo el sonido de un proyecto, o la parte que falte'}</h1>
       <p class="lead intro">
-        Podemos hacernos cargo de la banda sonora completa (música, efectos, diálogos y mezcla) o sumarnos a un equipo que
-        ya existe para resolver una parte. Trabajamos en tres frentes.
+        {
+          en
+            ? 'We can take care of the whole soundtrack (music, effects, dialogue and mix) or join an existing team to handle one part. We work in three areas.'
+            : 'Podemos hacernos cargo de la banda sonora completa (música, efectos, diálogos y mezcla) o sumarnos a un equipo que ya existe para resolver una parte. Trabajamos en tres frentes.'
+        }
       </p>
-      <nav class="indice" aria-label="En esta página">
+      <nav class="indice" aria-label={en ? 'On this page' : 'En esta página'}>
         {bloques.map((b) => <a class="enlace" href={`#${b.id}`}>{b.etq}</a>)}
-        <a class="enlace" href="#proceso">Cómo trabajamos</a>
+        <a class="enlace" href="#proceso">{en ? 'How we work' : 'Cómo trabajamos'}</a>
       </nav>
     </div>
   </section>
@@ -146,7 +270,7 @@ const pasos = [
           </dl>
           {b.enlace && (
             <p class="bloque-enlace">
-              <a class="boton lleno flecha" href={b.enlace.url}>
+              <a class="boton lleno flecha" href={u(b.enlace.url)}>
                 {b.enlace.texto}
               </a>
             </p>
@@ -160,12 +284,15 @@ const pasos = [
     <div class="envoltura">
       <div class="cabeza-seccion rv">
         <div>
-          <p class="etq">Cómo trabajamos</p>
-          <h2>De la primera conversación a la entrega</h2>
+          <p class="etq">{en ? 'How we work' : 'Cómo trabajamos'}</p>
+          <h2>{en ? 'From the first conversation to delivery' : 'De la primera conversación a la entrega'}</h2>
         </div>
         <p class="lead">
-          El orden cambia según el proyecto, pero casi siempre pasa por aquí. Sin precios fijos: cada propuesta se arma con
-          lo que pide la pieza.
+          {
+            en
+              ? 'The order changes with each project, but it almost always goes through these steps. No fixed rates: each proposal is built around what the piece needs.'
+              : 'El orden cambia según el proyecto, pero casi siempre pasa por aquí. Sin precios fijos: cada propuesta se arma con lo que pide la pieza.'
+          }
         </p>
       </div>
       <ol class="pasos">
@@ -178,7 +305,7 @@ const pasos = [
           ))
         }
       </ol>
-      <p class="rv"><a class="boton lleno flecha" href="/contacto">Contarnos un proyecto</a></p>
+      <p class="rv"><a class="boton lleno flecha" href={u('/contacto')}>{en ? 'Tell us about a project' : 'Contarnos un proyecto'}</a></p>
     </div>
   </section>
 </Base>

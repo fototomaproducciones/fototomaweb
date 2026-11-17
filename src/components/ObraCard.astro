@@ -1,6 +1,7 @@
 ---
 import type { Pieza } from '../data/obra';
-import { CATEGORIAS, NOMBRES } from '../data/obra';
+import { NOMBRES, enIdioma, categoria } from '../data/obra';
+import { idioma, juntar } from '../i18n';
 import Foto from './Foto.astro';
 
 interface Props {
@@ -9,8 +10,11 @@ interface Props {
   mostrarCategoria?: boolean;
   sizes?: string;
 }
-const { pieza: p, grande = false, mostrarCategoria = false, sizes } = Astro.props;
-const firmas = p.quien.map((q) => NOMBRES[q]).join(' y ');
+const { pieza, grande = false, mostrarCategoria = false, sizes } = Astro.props;
+const lang = idioma(Astro.url);
+const en = lang === 'en';
+const p = enIdioma(pieza, lang);
+const firmas = juntar(lang, p.quien.map((q) => NOMBRES[q]));
 const credito = `${p.rol} — ${firmas}${p.ficha ? ` · ${p.ficha}` : ''}`;
 const tam = sizes ?? (grande ? '(max-width: 820px) 100vw, 66vw' : '(max-width: 620px) 100vw, (max-width: 980px) 50vw, 33vw');
 ---
@@ -18,13 +22,13 @@ const tam = sizes ?? (grande ? '(max-width: 820px) 100vw, 66vw' : '(max-width: 6
 <article class:list={['obra', { grande }]}>
   {
     p.video ? (
-      <button class="obra-imagen marco" data-yt={p.video} data-titulo={p.titulo} data-credito={credito} aria-label={`Ver ${p.titulo}`}>
+      <button class="obra-imagen marco" data-yt={p.video} data-titulo={p.titulo} data-credito={credito} aria-label={en ? `Watch ${p.titulo}` : `Ver ${p.titulo}`}>
         <Foto src={`obra/${p.img}`} sizes={tam} posicion={p.vertical ? 'center 35%' : undefined} />
         <span class="obra-ver" aria-hidden="true">
           <svg viewBox="0 0 24 24">
             <path d="M8 5.5v13l11-6.5z" fill="currentColor" />
           </svg>
-          <span>Ver</span>
+          <span>{en ? 'Watch' : 'Ver'}</span>
         </span>
       </button>
     ) : (
@@ -37,7 +41,7 @@ const tam = sizes ?? (grande ? '(max-width: 820px) 100vw, 66vw' : '(max-width: 6
     )
   }
   <div class="obra-texto">
-    <p class="obra-cat">{mostrarCategoria ? CATEGORIAS[p.categoria] : p.rol}</p>
+    <p class="obra-cat">{mostrarCategoria ? categoria(p.categoria, lang) : p.rol}</p>
     <h3>{p.titulo}</h3>
     <p class="obra-firma">{mostrarCategoria ? `${p.rol} — ${firmas}` : firmas}</p>
     {p.ficha && <p class="obra-ficha">{p.ficha}</p>}

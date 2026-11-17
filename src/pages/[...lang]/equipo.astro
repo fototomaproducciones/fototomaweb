@@ -1,27 +1,45 @@
 ---
-import Base from '../layouts/Base.astro';
-import { DIRECTORES } from '../data/equipo';
-import { dePersona } from '../data/obra';
-import Foto from '../components/Foto.astro';
-import Asociados from '../components/Asociados.astro';
+import Base from '../../layouts/Base.astro';
+import { DIRECTORES, director } from '../../data/equipo';
+import { dePersona, enIdioma } from '../../data/obra';
+import Foto from '../../components/Foto.astro';
+import Asociados from '../../components/Asociados.astro';
+import { IDIOMAS, idioma, enlace, juntar } from '../../i18n';
+
+export function getStaticPaths() {
+  return IDIOMAS();
+}
+const lang = idioma(Astro.url);
+const en = lang === 'en';
+const u = (r: string) => enlace(lang, r);
 const dev = import.meta.env.DEV;
 ---
 
-<Base titulo="Equipo" descripcion="Martín Perea Tobón, Santiago García y Juan Rizoma codirigen Fototoma Producciones, con una red de músicos asociados.">
+<Base
+  titulo={en ? 'Team' : 'Equipo'}
+  descripcion={
+    en
+      ? 'Martín Perea Tobón, Santiago García and Juan Rizoma co-direct Fototoma Producciones, with a network of associate musicians.'
+      : 'Martín Perea Tobón, Santiago García y Juan Rizoma codirigen Fototoma Producciones, con una red de músicos asociados.'
+  }
+>
   <section class="seccion cabeza">
     <div class="envoltura">
-      <p class="etq">Equipo</p>
-      <h1>Tres codirectores y una red de músicos</h1>
+      <p class="etq">{en ? 'Team' : 'Equipo'}</p>
+      <h1>{en ? 'Three co-directors and a network of musicians' : 'Tres codirectores y una red de músicos'}</h1>
       <p class="lead">
-        Venimos de la composición, el diseño sonoro, la ingeniería y la realización audiovisual. Cada proyecto lo dirige
-        quien más sabe de lo que pide, y para cada uno convocamos a los intérpretes que hagan falta.
+        {
+          en
+            ? 'We come from composition, sound design, engineering and filmmaking. Each project is led by whoever knows most about what it needs, and for each one we bring in the players it calls for.'
+            : 'Venimos de la composición, el diseño sonoro, la ingeniería y la realización audiovisual. Cada proyecto lo dirige quien más sabe de lo que pide, y para cada uno convocamos a los intérpretes que hagan falta.'
+        }
       </p>
     </div>
   </section>
 
   {
-    DIRECTORES.map((d, i) => {
-      const obra = dePersona(d.id).slice(0, 6);
+    DIRECTORES.map((x) => director(x, lang)).map((d, i) => {
+      const obra = dePersona(d.id).slice(0, 6).map((p) => enIdioma(p, lang));
       return (
         <section class:list={['seccion perfil', { invertido: i % 2 === 1 }]} id={d.id}>
           <div class="envoltura perfil-rejilla">
@@ -29,7 +47,7 @@ const dev = import.meta.env.DEV;
               <Foto src={`equipo/${d.foto}`} alt={d.nombre} sizes="(max-width: 860px) 90vw, 40vw" anchos={[480, 800, 1200]} prioridad={i === 0} />
             </figure>
             <div class="perfil-texto rv">
-              <p class="etq perfil-rol">Codirector · {d.rol}</p>
+              <p class="etq perfil-rol">{en ? 'Co-director' : 'Codirector'} · {d.rol}</p>
               <h2>{d.nombre}</h2>
               {d.formacion && <p class="perfil-formacion">{d.formacion}</p>}
               {dev && d.pendiente && <p class="pendiente">PENDIENTE: {d.pendiente}</p>}
@@ -39,7 +57,7 @@ const dev = import.meta.env.DEV;
 
               {d.discos && (
                 <div class="perfil-bloque">
-                  <p class="etq">Discos</p>
+                  <p class="etq">{en ? 'Albums' : 'Discos'}</p>
                   <ul class="perfil-lista">
                     {d.discos.map((x) => (
                       <li>
@@ -58,7 +76,7 @@ const dev = import.meta.env.DEV;
               )}
 
               <div class="perfil-bloque">
-                <p class="etq">En Fototoma</p>
+                <p class="etq">{en ? 'At Fototoma' : 'En Fototoma'}</p>
                 <ul class="perfil-lista">
                   {obra.map((p) => (
                     <li>
@@ -66,8 +84,8 @@ const dev = import.meta.env.DEV;
                     </li>
                   ))}
                 </ul>
-                <a class="enlace" href="/obra">
-                  Ver toda la obra
+                <a class="enlace" href={u('/obra')}>
+                  {en ? 'See all the work' : 'Ver toda la obra'}
                 </a>
               </div>
 
@@ -88,10 +106,13 @@ const dev = import.meta.env.DEV;
   <section class="seccion carbon" id="asociados">
     <div class="envoltura">
       <div class="cabeza-seccion rv">
-        <h2>Músicos asociados</h2>
+        <h2>{en ? 'Associate musicians' : 'Músicos asociados'}</h2>
         <p class="lead">
-          Una red de intérpretes que crece con cada proyecto: cuerdas, vientos, voces, percusiones e instrumentos
-          tradicionales, para poder responder a cualquier música que pida una película o una campaña.
+          {
+            en
+              ? 'A network of players that grows with every project: strings, winds, voices, percussion and traditional instruments, so we can answer whatever music a film or a campaign calls for.'
+              : 'Una red de intérpretes que crece con cada proyecto: cuerdas, vientos, voces, percusiones e instrumentos tradicionales, para poder responder a cualquier música que pida una película o una campaña.'
+          }
         </p>
       </div>
       <div class="rv">

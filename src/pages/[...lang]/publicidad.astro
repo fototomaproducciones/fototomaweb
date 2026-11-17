@@ -1,11 +1,19 @@
 ---
-import Base from '../layouts/Base.astro';
-import ObraCard from '../components/ObraCard.astro';
-import { OBRA } from '../data/obra';
+import Base from '../../layouts/Base.astro';
+import ObraCard from '../../components/ObraCard.astro';
+import { OBRA } from '../../data/obra';
+import { IDIOMAS, idioma, enlace, juntar } from '../../i18n';
+
+export function getStaticPaths() {
+  return IDIOMAS();
+}
+const lang = idioma(Astro.url);
+const en = lang === 'en';
+const u = (r: string) => enlace(lang, r);
 
 const muestras = OBRA.filter((p) => p.categoria === 'publicidad');
 
-const entregables = [
+const ENTREGABLES_ES = [
   {
     nombre: 'Música original',
     texto: 'Compuesta para la idea y el ritmo del corte. Si la campaña lo pide, jingle con letra y voces.',
@@ -40,7 +48,7 @@ const entregables = [
   },
 ];
 
-const piezas = [
+const PIEZAS_ES = [
   'Comerciales para televisión y cine',
   'Campañas para redes y plataformas',
   'Campañas institucionales y de entidades públicas',
@@ -49,7 +57,7 @@ const piezas = [
   'Cuñas de radio',
 ];
 
-const pasos = [
+const PASOS_ES = [
   { nombre: 'Brief', texto: 'Idea, guion o animatic, referencias y medios donde va a salir.' },
   { nombre: 'Maquetas', texto: 'Dos o tres direcciones cortas sobre la imagen para escoger el tono.' },
   { nombre: 'Producción', texto: 'Grabamos con los músicos que pida la pieza y hacemos el diseño sonoro.' },
@@ -57,29 +65,78 @@ const pasos = [
   { nombre: 'Entrega', texto: 'Versiones, mezclas, pistas separadas y la licencia firmada.' },
 ];
 
-const cotizar = [
+const COTIZAR_ES = [
   'Cuántas piezas y de qué duración',
   'Dónde y por cuánto tiempo van a circular',
   'Si hay voces, letra o locución',
   'Referencias de música o de sonido',
   'La fecha de entrega',
 ];
+const ENTREGABLES_EN: typeof ENTREGABLES_ES = [
+  { nombre: 'Original music', texto: 'Written for the idea and the rhythm of the cut. If the campaign calls for it, a jingle with lyrics and vocals.' },
+  { nombre: 'Sound design', texto: 'Product sounds, transitions, ambiences and effects, made to fit every shot.' },
+  { nombre: 'Cutdowns by length', texto: 'The same piece resolved in 6, 10, 15, 20, 30 and 60 seconds, with no abrupt edits in any of them.' },
+  { nombre: 'A mix for each medium', texto: 'Television, cinema, radio, streaming and social media, each with the loudness and sound it requires.' },
+  { nombre: 'Stems', texto: 'Music, effects and voices delivered separately, so post-production can make last-minute changes.' },
+  { nombre: 'Sonic identity', texto: 'A sound logo and a music palette so the brand sounds the same in a commercial, a podcast or an event.' },
+  { nombre: 'Voice-over', texto: 'Voice recording and direction. Juan is a radio host, and we work with associate voice talent.' },
+  { nombre: 'Clear licensing', texto: 'In writing from the proposal: media, territory and term of use, or a full buyout of rights.' },
+];
+const entregables = en ? ENTREGABLES_EN : ENTREGABLES_ES;
+const piezas = en
+  ? [
+      'TV and cinema commercials',
+      'Social media and streaming campaigns',
+      'Institutional and public-sector campaigns',
+      'Corporate and product videos',
+      'Events, launches and activations',
+      'Radio spots',
+    ]
+  : PIEZAS_ES;
+const PASOS_EN: typeof PASOS_ES = [
+  { nombre: 'Brief', texto: 'Idea, script or animatic, references and the media where it will run.' },
+  { nombre: 'Demos', texto: 'Two or three short directions over the picture to choose the tone.' },
+  { nombre: 'Production', texto: 'We record with the musicians the piece needs and do the sound design.' },
+  { nombre: 'Conforming to the final cut', texto: 'We follow the editing changes until the cut is locked.' },
+  { nombre: 'Delivery', texto: 'Cutdowns, mixes, stems and the signed license.' },
+];
+const pasos = en ? PASOS_EN : PASOS_ES;
+const cotizar = en
+  ? [
+      'How many pieces, and how long',
+      'Where and for how long they will run',
+      'Whether there are vocals, lyrics or voice-over',
+      'Music or sound references',
+      'The delivery date',
+    ]
+  : COTIZAR_ES;
+
 ---
 
-<Base titulo="Publicidad" descripcion="Música original, jingles, diseño sonoro, identidad sonora y mezcla para comerciales, campañas y contenido de marca.">
+<Base
+  titulo={en ? 'Advertising' : 'Publicidad'}
+  descripcion={
+    en
+      ? 'Original music, jingles, sound design, sonic identity and mixing for commercials, campaigns and branded content.'
+      : 'Música original, jingles, diseño sonoro, identidad sonora y mezcla para comerciales, campañas y contenido de marca.'
+  }
+>
   <div class="papel">
     <section class="seccion publi-heroe">
       <div class="envoltura heroe-rejilla">
         <div>
-          <p class="etq">Publicidad y marcas</p>
-          <h1>Música y sonido para comerciales</h1>
+          <p class="etq">{en ? 'Advertising and brands' : 'Publicidad y marcas'}</p>
+          <h1>{en ? 'Music and sound for commercials' : 'Música y sonido para comerciales'}</h1>
           <p class="lead">
-            Componemos para la idea de la campaña, grabamos con músicos reales y entregamos lo que pide la pauta: versiones
-            por duración, mezclas por medio, pistas separadas y una licencia clara.
+            {
+              en
+                ? 'We compose for the idea behind the campaign, record with real musicians and deliver what the media plan needs: cutdowns by length, mixes for each medium, stems and a clear license.'
+                : 'Componemos para la idea de la campaña, grabamos con músicos reales y entregamos lo que pide la pauta: versiones por duración, mezclas por medio, pistas separadas y una licencia clara.'
+            }
           </p>
           <div class="botones">
-            <a class="boton lleno flecha" href="/contacto?tema=publicidad">Pedir una propuesta</a>
-            <a class="boton" href="#entregables">Qué entregamos</a>
+            <a class="boton lleno flecha" href={u('/contacto?tema=publicidad')}>{en ? 'Request a proposal' : 'Pedir una propuesta'}</a>
+            <a class="boton" href="#entregables">{en ? 'What we deliver' : 'Qué entregamos'}</a>
           </div>
         </div>
         <ul class="tipos rv">
@@ -90,7 +147,7 @@ const cotizar = [
 
     <section class="seccion muestras">
       <div class="envoltura">
-        <p class="etq rv">Muestras</p>
+        <p class="etq rv">{en ? 'Samples' : 'Muestras'}</p>
         <div class="muestras-rejilla">
           {
             muestras.map((p) => (
@@ -107,12 +164,15 @@ const cotizar = [
       <div class="envoltura">
         <div class="cabeza-seccion rv">
           <div>
-            <p class="etq">Qué entregamos</p>
-            <h2>Todo lo que necesita la posproducción</h2>
+            <p class="etq">{en ? 'What we deliver' : 'Qué entregamos'}</p>
+            <h2>{en ? 'Everything post-production needs' : 'Todo lo que necesita la posproducción'}</h2>
           </div>
           <p class="lead">
-            Una pieza de publicidad no termina en la música: tiene que funcionar en varias duraciones, en varios medios y
-            con cambios hasta el último día.
+            {
+              en
+                ? 'An ad doesn’t end with the music: it has to work in several lengths, in several media, and with changes up to the last day.'
+                : 'Una pieza de publicidad no termina en la música: tiene que funcionar en varias duraciones, en varios medios y con cambios hasta el último día.'
+            }
           </p>
         </div>
         <dl class="entregables">
@@ -131,8 +191,8 @@ const cotizar = [
     <section class="seccion">
       <div class="envoltura proceso">
         <div class="rv">
-          <p class="etq">Cómo trabajamos</p>
-          <h2>Del brief a la entrega</h2>
+          <p class="etq">{en ? 'How we work' : 'Cómo trabajamos'}</p>
+          <h2>{en ? 'From brief to delivery' : 'Del brief a la entrega'}</h2>
         </div>
         <ol class="linea">
           {
@@ -150,10 +210,16 @@ const cotizar = [
     <section class="seccion cotizar">
       <div class="envoltura cotizar-rejilla">
         <div class="rv">
-          <p class="etq">Para cotizar</p>
-          <h2>Cuéntanos esto y te mandamos una propuesta</h2>
-          <p class="lead">Sin precios fijos: el valor depende de la duración, los medios, el tiempo de pauta y los músicos que haga falta convocar.</p>
-          <a class="boton lleno flecha" href="/contacto?tema=publicidad">Escribirnos</a>
+          <p class="etq">{en ? 'To get a quote' : 'Para cotizar'}</p>
+          <h2>{en ? 'Tell us this and we’ll send you a proposal' : 'Cuéntanos esto y te mandamos una propuesta'}</h2>
+          <p class="lead">
+            {
+              en
+                ? 'No fixed rates: the fee depends on length, media, how long it runs and which musicians we need to bring in.'
+                : 'Sin precios fijos: el valor depende de la duración, los medios, el tiempo de pauta y los músicos que haga falta convocar.'
+            }
+          </p>
+          <a class="boton lleno flecha" href={u('/contacto?tema=publicidad')}>{en ? 'Write to us' : 'Escribirnos'}</a>
         </div>
         <ul class="lista-cotizar rv">
           {cotizar.map((c) => <li>{c}</li>)}

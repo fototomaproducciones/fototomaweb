@@ -1,6 +1,8 @@
 ---
 // Cinta de créditos: con quién y para quién hemos trabajado (cada nombre
 // sale de una pieza real de la obra o de los perfiles).
+import { idioma } from '../i18n';
+const rotulo = idioma(Astro.url) === 'en' ? 'We have worked for and with' : 'Hemos trabajado para y con';
 const nombres = [
   'Mazda',
   'Señal Colombia',
@@ -19,8 +21,8 @@ const nombres = [
 ];
 ---
 
-<section class="creditos" aria-label="Hemos trabajado para y con">
-  <p class="creditos-rotulo">Hemos trabajado para y con</p>
+<section class="creditos" aria-label={rotulo}>
+  <p class="creditos-rotulo">{rotulo}</p>
   <div class="creditos-ventana">
     <ul class="creditos-cinta">
       {nombres.map((n) => <li>{n}</li>)}

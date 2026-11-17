@@ -5,13 +5,17 @@
 // variante 'directorio' (equipo): retratos más grandes y la línea corta debajo.
 // Cada retrato lleva al perfil completo en /equipo/<id>.
 import Foto from './Foto.astro';
-import { ASOCIADOS } from '../data/equipo';
+import { ASOCIADOS, asociado } from '../data/equipo';
+import { idioma, enlace } from '../i18n';
 
 interface Props {
   variante?: 'muro' | 'directorio';
 }
 const { variante = 'muro' } = Astro.props;
 const directorio = variante === 'directorio';
+const lang = idioma(Astro.url);
+const en = lang === 'en';
+const lista = ASOCIADOS.map((a) => asociado(a, lang));
 const iniciales = (n: string) =>
   n
     .split(/\s+/)
@@ -23,9 +27,9 @@ const iniciales = (n: string) =>
 
 <ul class:list={['musicos', variante]}>
   {
-    ASOCIADOS.map((a) => (
+    lista.map((a) => (
       <li>
-        <a class="musico" href={a.foto ? `/equipo/${a.id}` : undefined} aria-label={a.foto ? `${a.nombre}: ver perfil` : undefined}>
+        <a class="musico" href={a.foto ? enlace(lang, `/equipo/${a.id}`) : undefined} aria-label={a.foto ? `${a.nombre}: ${en ? 'view profile' : 'ver perfil'}` : undefined}>
           <div class="musico-foto">
             {a.foto ? (
               <Foto
@@ -50,18 +54,22 @@ const iniciales = (n: string) =>
     ))
   }
   <li>
-    <a class="musico sumate" href="/contacto?tema=musico">
+    <a class="musico sumate" href={enlace(lang, '/contacto?tema=musico')}>
       <div class="musico-foto">
         <span class="sol" aria-hidden="true"></span>
         <div class="musico-pie">
-          <span class="musico-nombre">¿Tocas?</span>
-          <span class="musico-oficio">Súmate a la red</span>
+          <span class="musico-nombre">{en ? 'Do you play?' : '¿Tocas?'}</span>
+          <span class="musico-oficio">{en ? 'Join the network' : 'Súmate a la red'}</span>
         </div>
       </div>
     </a>
     {
       directorio && (
-        <p class="musico-corta">Cuéntanos qué instrumentos tocas y qué músicas conoces, y mándanos grabaciones o videos.</p>
+        <p class="musico-corta">
+          {en
+            ? 'Tell us what instruments you play and what music you know, and send us recordings or videos.'
+            : 'Cuéntanos qué instrumentos tocas y qué músicas conoces, y mándanos grabaciones o videos.'}
+        </p>
       )
     }
   </li>

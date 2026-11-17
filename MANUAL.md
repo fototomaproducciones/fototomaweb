@@ -34,6 +34,16 @@ Las imágenes van en `src/assets/` (`obra/`, `equipo/`, `fotofono/`). Al constru
 
 Mientras se trabaja en local se ven avisos amarillos «PENDIENTE»; no salen en el sitio publicado.
 
+## Español e inglés
+
+El sitio está en los dos idiomas: español en la raíz (`/obra`) e inglés bajo `/en` (`/en/obra`). Arriba hay un botón ES / EN y en el pie un enlace «In English» / «En español» que llevan a la misma página en el otro idioma.
+
+- Las páginas viven en `src/pages/[...lang]/` y cada una sale dos veces. Cada texto está escrito en los dos idiomas, uno al lado del otro: `{en ? 'English' : 'Español'}`. Al cambiar un texto, cambiar los dos.
+- En los datos, la versión en inglés va en el campo `en` de cada ficha: en `obra.ts` solo los campos que cambian (`rol`, `ficha`, a veces `titulo`); en `equipo.ts`, `en` de cada codirector (rol, línea corta, bio) y de cada asociado. Si una obra nueva no trae `en`, en inglés sale con el texto en español.
+- Los enlaces internos se escriben con `u('/ruta')` para que en inglés apunten a `/en/ruta`.
+- Los títulos de obras y canciones con nombre propio se dejan en español; los descriptivos van traducidos.
+- `/marca` y la página 404 existen solo en español.
+
 ## Rehacer la marca
 
 1. Si cambia el logo: editar `scripts/generar-logo.py` y correr `npm run logo` (necesita Python con `fonttools` y `brotli`).

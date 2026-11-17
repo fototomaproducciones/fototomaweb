@@ -1,0 +1,206 @@
+---
+import Base from '../../layouts/Base.astro';
+import Logo from '../../components/Logo.astro';
+import Foto from '../../components/Foto.astro';
+import { IDIOMAS, idioma, enlace, juntar } from '../../i18n';
+
+export function getStaticPaths() {
+  return IDIOMAS();
+}
+const lang = idioma(Astro.url);
+const en = lang === 'en';
+const u = (r: string) => enlace(lang, r);
+---
+
+<Base
+  titulo={en ? 'The photophone' : 'El fotófono'}
+  descripcion={
+    en
+      ? 'In 1880 Bell and Tainter transmitted a voice on a beam of sunlight. Fototoma’s name and logo come from that invention.'
+      : 'En 1880 Bell y Tainter transmitieron una voz en un rayo de sol. De ese invento sale el nombre y el logo de Fototoma.'
+  }
+>
+  <section class="seccion">
+    <div class="envoltura texto-largo">
+      <p class="etq">{en ? 'The name' : 'El nombre'}</p>
+      <h1>{en ? 'The photophone' : 'El fotófono'}</h1>
+      <p class="lead">
+        {
+          en
+            ? 'In 1880, four years after the telephone, Alexander Graham Bell and his assistant Charles Sumner Tainter transmitted a voice without wires, carried on a beam of sunlight.'
+            : 'En 1880, cuatro años después del teléfono, Alexander Graham Bell y su asistente Charles Sumner Tainter transmitieron una voz sin cables, montada en un rayo de sol.'
+        }
+      </p>
+    </div>
+  </section>
+
+  <figure class="grabado-ancho">
+    <Foto src="fotofono/gartenlaube.jpg" sizes="100vw" anchos={[800, 1280, 1566]} prioridad alt={en ? 'Diagram of the photophone: light passes through lenses, reflects off the transmitter mirror and reaches a parabolic mirror with a selenium cell connected to an earpiece.' : 'Esquema del fotófono: la luz pasa por lentes, se refleja en el espejo del transmisor y llega a un espejo parabólico con una celda de selenio conectada a un auricular.'} />
+    <figcaption class="pie-foto envoltura">{en ? 'Diagram of the photophone · Die Gartenlaube, 1880 · public domain' : 'Esquema del fotófono · Die Gartenlaube, 1880 · dominio público'}</figcaption>
+  </figure>
+
+  <section class="seccion">
+    <div class="envoltura texto-largo">
+      {en ? (
+        <Fragment>
+          <h2>How it worked</h2>
+          <p>
+            The transmitter was a very thin mirror. Speaking into it made it vibrate, and the beam of sunlight bouncing off
+            the mirror grew brighter or dimmer with the rhythm of the words.
+          </p>
+          <p>
+            Far away, the receiver gathered that light with a parabolic mirror. At its focus sat a selenium cell, a material
+            that conducts more or less electricity depending on the light it receives. The cell was connected to an
+            earpiece: the changes in light became changes in current, and the current became a voice again.
+          </p>
+          <p>
+            The best-known test took place in June 1880 in Washington, between the roof of the Franklin School and a window
+            of Bell’s laboratory, about 200 meters away. Bell considered it the most important of his inventions. It had no
+            commercial use in its time, because it depended on the sun and on nothing getting in the way, but the principle
+            of carrying sound on light came back in the optical soundtracks of sound film and, much later, in fiber optics.
+          </p>
+        </Fragment>
+      ) : (
+      <Fragment>
+      <h2>Cómo funcionaba</h2>
+      <p>
+        El transmisor era un espejo muy delgado. Al hablar frente a él, la voz lo hacía vibrar, y el rayo de sol que
+        rebotaba en el espejo se volvía más intenso o más débil al ritmo de las palabras.
+      </p>
+      <p>
+        Lejos, el receptor recogía esa luz con un espejo parabólico. En su foco había una celda de selenio, un material
+        que conduce más o menos electricidad según la luz que recibe. La celda estaba conectada a un auricular: las
+        variaciones de luz se volvían variaciones de corriente, y la corriente se volvía otra vez voz.
+      </p>
+      <p>
+        La prueba conocida fue en junio de 1880, en Washington, entre el techo de la Escuela Franklin y una ventana del
+        laboratorio de Bell, a unos 200 metros. Bell lo consideró el más importante de sus inventos. No tuvo uso
+        comercial en su época, porque dependía del sol y de que nada se atravesara en el camino, pero el principio de
+        llevar sonido en la luz reapareció en las pistas ópticas del cine sonoro y, mucho después, en la fibra óptica.
+      </p>
+      </Fragment>
+      )}
+    </div>
+  </section>
+
+  <section class="seccion hueso">
+    <div class="envoltura dos-grabados">
+      <figure class="rv">
+        <Foto src="fotofono/transmisor.jpg" sizes="(max-width: 760px) 100vw, 55vw" alt={en ? 'Engraving: a man speaks into the photophone transmitter, which reflects a beam of sunlight.' : 'Grabado: un hombre habla al transmisor del fotófono, que refleja un rayo de sol.'} />
+        <figcaption class="pie-foto">{en ? 'The transmitter · engraving from 1880' : 'El transmisor · grabado de 1880'}</figcaption>
+      </figure>
+      <figure class="rv">
+        <Foto src="fotofono/receptor.jpg" sizes="(max-width: 760px) 100vw, 40vw" alt={en ? 'Engraving: a man listens through earphones connected to the photophone’s parabolic receiver.' : 'Grabado: un hombre escucha con auriculares conectados al receptor parabólico del fotófono.'} />
+        <figcaption class="pie-foto">{en ? 'The receiver · engraving from 1880' : 'El receptor · grabado de 1880'}</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="seccion">
+    <div class="envoltura logo-explica">
+      <div class="logo-muestra rv">
+        <Logo modo="simbolo" tam={220} />
+      </div>
+      <div class="texto-largo rv">
+        <p class="etq">{en ? 'The logo' : 'El logo'}</p>
+        <h2>{en ? 'The mirror that receives the light' : 'El espejo que recibe la luz'}</h2>
+        {en ? (
+          <Fragment>
+            <p>
+              Fototoma’s symbol is the photophone receiver seen from the side: the parabolic mirror, three parallel rays of
+              light coming in, and the point where they converge, which is where the selenium cell sat, the place where light
+              turned into sound.
+            </p>
+            <p>It seemed like a good image of what we do: take in a film, a commercial or a session, and give it back with sound.</p>
+          </Fragment>
+        ) : (
+        <Fragment>
+        <p>
+          El símbolo de Fototoma es el receptor del fotófono visto de lado: el espejo parabólico, tres rayos de luz que
+          llegan paralelos y el punto donde se concentran, que es donde estaba la celda de selenio, el lugar donde la luz
+          se convertía en sonido.
+        </p>
+        <p>Nos pareció una buena imagen de lo que hacemos: recibir una película, un comercial o una sesión, y devolverla con sonido.</p>
+        </Fragment>
+        )}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .texto-largo {
+    max-width: 46rem;
+  }
+  h1 {
+    margin-bottom: 1.6rem;
+  }
+  h2 {
+    margin-bottom: 1.4rem;
+  }
+  .texto-largo p:not(.lead):not(.etq) {
+    color: var(--plata-2);
+    font-size: 1.1rem;
+  }
+  .grabado-ancho {
+    margin: 0;
+    background: var(--hueso);
+    color: var(--tinta);
+  }
+  .grabado-ancho :global(img) {
+    width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+    filter: grayscale(1) contrast(1.1);
+    mix-blend-mode: multiply;
+    margin: 0 auto;
+  }
+  .grabado-ancho figcaption {
+    padding-top: 0.6rem;
+    padding-bottom: 0.9rem;
+    color: var(--tinta-2);
+  }
+  .dos-grabados {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: 2.5rem;
+    align-items: end;
+  }
+  .dos-grabados figure {
+    margin: 0;
+  }
+  .dos-grabados :global(img) {
+    mix-blend-mode: multiply;
+    width: 100%;
+    filter: grayscale(1) contrast(1.08);
+  }
+  .dos-grabados figcaption {
+    margin-top: 0.7rem;
+    color: var(--tinta-2);
+  }
+  @media (max-width: 760px) {
+    .dos-grabados {
+      grid-template-columns: 1fr;
+    }
+  }
+  .logo-explica {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: 3rem 5rem;
+    align-items: center;
+  }
+  .logo-muestra {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    border: 1px solid var(--linea);
+  }
+  @media (max-width: 760px) {
+    .logo-explica {
+      grid-template-columns: 1fr;
+    }
+    .logo-muestra :global(.logo) {
+      --tam: 150px !important;
+    }
+  }
+</style>

@@ -1,25 +1,42 @@
 ---
-import Base from '../layouts/Base.astro';
-import ObraCard from '../components/ObraCard.astro';
-import { OBRA, CATEGORIAS, type Categoria } from '../data/obra';
+import Base from '../../layouts/Base.astro';
+import ObraCard from '../../components/ObraCard.astro';
+import { OBRA, categoria, type Categoria } from '../../data/obra';
+import { IDIOMAS, idioma, enlace, juntar } from '../../i18n';
+
+export function getStaticPaths() {
+  return IDIOMAS();
+}
+const lang = idioma(Astro.url);
+const en = lang === 'en';
+const u = (r: string) => enlace(lang, r);
 
 const orden: Categoria[] = ['documental', 'cine', 'publicidad', 'sesiones', 'medios', 'discos'];
-const grupos = orden.map((c) => ({ id: c, nombre: CATEGORIAS[c], piezas: OBRA.filter((p) => p.categoria === c) }));
+const grupos = orden.map((c) => ({ id: c, nombre: categoria(c, lang), piezas: OBRA.filter((p) => p.categoria === c) }));
 ---
 
-<Base titulo="Obra" descripcion="Documentales, cortometrajes, animación, comerciales, sesiones en vivo y discos de Fototoma Producciones.">
+<Base
+  titulo={en ? 'Work' : 'Obra'}
+  descripcion={
+    en
+      ? 'Documentaries, short films, animation, commercials, live sessions and albums by Fototoma Producciones.'
+      : 'Documentales, cortometrajes, animación, comerciales, sesiones en vivo y discos de Fototoma Producciones.'
+  }
+>
   <section class="seccion obra-cabeza">
     <div class="envoltura">
-      <p class="etq">Obra</p>
-      <h1>Lo que hemos hecho</h1>
+      <p class="etq">{en ? 'Work' : 'Obra'}</p>
+      <h1>{en ? 'What we have made' : 'Lo que hemos hecho'}</h1>
       <p class="lead">
-        Trabajos de los tres codirectores antes y después de juntarnos en Fototoma: música, diseño sonoro, ingeniería,
-        dirección o cámara. Escoge un tipo de trabajo o mira todo.
+        {
+          en
+            ? 'Work by the three co-directors before and after joining forces as Fototoma: music, sound design, engineering, directing or camera. Pick a type of work or browse everything.'
+            : 'Trabajos de los tres codirectores antes y después de juntarnos en Fototoma: música, diseño sonoro, ingeniería, dirección o cámara. Escoge un tipo de trabajo o mira todo.'
+        }
       </p>
-
-      <div class="filtros" role="group" aria-label="Filtrar la obra">
+      <div class="filtros" role="group" aria-label={en ? 'Filter the work' : 'Filtrar la obra'}>
         <div class="filtro-fila">
-          <button class="filtro activo" data-filtro-cat="todo">Todo</button>
+          <button class="filtro activo" data-filtro-cat="todo">{en ? 'All' : 'Todo'}</button>
           {grupos.map((g) => <button class="filtro" data-filtro-cat={g.id}>{g.nombre}</button>)}
         </div>
       </div>
@@ -41,7 +58,7 @@ const grupos = orden.map((c) => ({ id: c, nombre: CATEGORIAS[c], piezas: OBRA.fi
         </section>
       ))
     }
-    <p class="vacio" hidden>No hay piezas con esa combinación todavía.</p>
+    <p class="vacio" hidden>{en ? 'No pieces with that combination yet.' : 'No hay piezas con esa combinación todavía.'}</p>
   </div>
 </Base>
 

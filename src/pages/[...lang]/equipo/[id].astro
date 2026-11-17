@@ -1,33 +1,43 @@
 ---
 // Perfil completo de cada músico asociado (los que tienen foto). Se llega desde sus tarjetas.
-import Base from '../../layouts/Base.astro';
-import Foto from '../../components/Foto.astro';
-import { ASOCIADOS, type Asociado } from '../../data/equipo';
+import Base from '../../../layouts/Base.astro';
+import Foto from '../../../components/Foto.astro';
+import { ASOCIADOS, asociado, type Asociado } from '../../../data/equipo';
+import { IDIOMAS, idioma, enlace } from '../../../i18n';
 
 export function getStaticPaths() {
-  return ASOCIADOS.filter((a) => a.foto).map((a) => ({ params: { id: a.id }, props: { a } }));
+  return IDIOMAS().flatMap(({ params }) =>
+    ASOCIADOS.filter((a) => a.foto).map((a) => ({ params: { ...params, id: a.id }, props: { original: a } })),
+  );
 }
-const { a } = Astro.props as { a: Asociado };
-const descripcion = `${a.nombre}, músico asociado de Fototoma Producciones. ${a.corta ?? a.instrumentos ?? ''}`.trim();
+const lang = idioma(Astro.url);
+const en = lang === 'en';
+const u = (r: string) => enlace(lang, r);
+const a = asociado((Astro.props as { original: Asociado }).original, lang);
+const descripcion = (
+  en
+    ? `${a.nombre}, associate musician at Fototoma Producciones. ${a.corta ?? a.instrumentos ?? ''}`
+    : `${a.nombre}, músico asociado de Fototoma Producciones. ${a.corta ?? a.instrumentos ?? ''}`
+).trim();
 ---
 
 <Base titulo={a.nombre} descripcion={descripcion}>
   <section class="seccion perfil">
     <div class="envoltura">
-      <a class="volver enlace" href="/equipo#asociados">← Músicos asociados</a>
+      <a class="volver enlace" href={u('/equipo#asociados')}>← {en ? 'Associate musicians' : 'Músicos asociados'}</a>
       <div class="perfil-rejilla">
         <figure class="perfil-foto">
           <Foto src={`equipo/${a.foto}`} alt={a.nombre} sizes="(max-width: 860px) 90vw, 40vw" anchos={[480, 800, 1200]} prioridad />
         </figure>
         <div class="perfil-texto">
-          <p class="etq perfil-rol">Músico asociado{a.instrumentos && ` · ${a.instrumentos}`}</p>
+          <p class="etq perfil-rol">{en ? 'Associate musician' : 'Músico asociado'}{a.instrumentos && ` · ${a.instrumentos}`}</p>
           <h1>{a.nombre}</h1>
           {a.bio && <p class="perfil-bio">{a.bio}</p>}
 
           {
             a.obra && (
               <div class="perfil-bloque">
-                <p class="etq">Obra</p>
+                <p class="etq">{en ? 'Work' : 'Obra'}</p>
                 <ul class="perfil-lista">
                   {a.obra.map((o) => (
                     <li>
@@ -45,7 +55,7 @@ const descripcion = `${a.nombre}, músico asociado de Fototoma Producciones. ${a
           {
             a.canciones && (
               <div class="perfil-bloque">
-                <p class="etq">Canciones</p>
+                <p class="etq">{en ? 'Songs' : 'Canciones'}</p>
                 <ul class="perfil-lista">
                   {a.canciones.map((c) => (
                     <li>
@@ -71,7 +81,7 @@ const descripcion = `${a.nombre}, músico asociado de Fototoma Producciones. ${a
             )
           }
 
-          <a class="boton flecha contratar" href="/contacto?tema=musico">Trabajar con {a.nombre}</a>
+          <a class="boton flecha contratar" href={u('/contacto?tema=musico')}>{en ? `Work with ${a.nombre}` : `Trabajar con ${a.nombre}`}</a>
         </div>
       </div>
     </div>

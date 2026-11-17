@@ -13,9 +13,12 @@ export interface Director {
   pendiente?: string; // nota visible solo en desarrollo
   enlaces: { texto: string; url: string }[];
   discos?: { titulo: string; anio?: string; url?: string }[];
+  // versión en inglés; enlaces y discos: solo los textos, en el mismo orden
+  en: Pick<Director, 'rol' | 'corta' | 'bio'> & { formacion?: string; enlaces?: string[]; discos?: string[] };
 }
 
 const BOSQUE = 'Maestría en Música con énfasis en arreglos, Universidad El Bosque';
+const BOSQUE_EN = 'Master of Music in arranging, Universidad El Bosque';
 
 export const DIRECTORES: Director[] = [
   {
@@ -35,6 +38,16 @@ export const DIRECTORES: Director[] = [
       { texto: 'SoundCloud', url: 'https://soundcloud.com/martin-perea-tobon' },
       { texto: 'Dial', url: 'https://dialmedio.org' },
     ],
+    en: {
+      rol: 'Composition and filmmaking',
+      corta: 'Composer, arranger and guitarist. He writes music for film, documentary and animation, and he also shoots.',
+      formacion: BOSQUE_EN,
+      bio: [
+        'Composer, arranger and guitarist from Bogotá, with a master’s degree in music (arranging) from Universidad El Bosque. He writes music for film, documentary, animation and video games, and works across jazz, experimental music and sound design. His album In-Vitro explores the work of Colombian jazz composers.',
+        'He is also a filmmaker: he runs Dial, a production company and media outlet where he makes documentaries, debates and, with RED Quynza, the podcast Lo que la gente quiere es vivir. He shoots, flies a drone and edits. That lets him join a project at the script or shooting stage and think about the music together with the picture, instead of receiving a finished cut.',
+      ],
+      enlaces: ['Portfolio', 'In-Vitro on Spotify', 'SoundCloud', 'Dial'],
+    },
   },
   {
     id: 'santiago',
@@ -60,6 +73,17 @@ export const DIRECTORES: Director[] = [
       { titulo: 'Presagio, con luci le y Martín (Vítreo)', anio: '2026', url: 'https://www.youtube.com/watch?v=avJgkzuIgSw' },
       { titulo: 'Toche', url: 'https://soundcloud.com/santiagogarcia103314/toche' },
     ],
+    en: {
+      rol: 'Sound design and composition',
+      corta: 'Sound designer, composer and arranger. He did the sound for Mazda commercials and has scored animation.',
+      formacion: BOSQUE_EN,
+      bio: [
+        'Sound designer, composer and arranger from Bogotá, with a master’s degree in music (arranging) from Universidad El Bosque. He did the sound design for Mazda’s «Una chispa» and «Un color» commercials and wrote the music for the animated short Walter (2019).',
+        'His own music is named after Colombian birds: Toche, Carrao, Martín pescador (with Anamaría Oramas), Diostedé (with luci le), Mielero and Batará, plus the albums Cantos de cielo y río and Arrullos alados (2026). In 2025 he traveled with Martín along Colombia’s Pacific coast to record its wildlife, its plants and its music; that trip became the documentary Currulao y músicas del Pacífico Sur.',
+      ],
+      enlaces: ['SoundCloud', 'Music and sound portfolio', 'Albums and social media'],
+      discos: ['Arrullos alados', 'Cantos de cielo y río', 'Diostedé, with luci le', 'Presagio, with luci le and Martín (Vítreo)', 'Toche'],
+    },
   },
   {
     id: 'juan',
@@ -75,6 +99,15 @@ export const DIRECTORES: Director[] = [
       { texto: 'Noisesion', url: 'https://www.youtube.com/watch?v=yfccCqJFOZU' },
       { texto: 'Cuadrúpedos (videoclip)', url: 'https://www.youtube.com/watch?v=kowHKauPk3U' },
     ],
+    en: {
+      rol: 'Music production and sound engineering',
+      corta: 'Music producer, percussionist and engineer. He records and mixes live sessions and composes for series and short films.',
+      bio: [
+        'Music producer from Pereira (Risaralda). As a percussionist he has played with the Nogal Jazz Big Band, Jofman, La Real del Sonido, Frailejón, Filtre Fauna, Buha 2030 and La Vodkanera. With his label Rizoma Lab he produces artists from the jazz and alternative music scene, and he has made audiovisual pieces for Señal Colombianísimas and IDRD.',
+        'He composed the music for the second season of Científico por un día (MinCiencias, Señal Colombia and SENA) and for short films such as Intersticio and Tierra sin sol ni luna. With the production company La Noise he has worked on music videos and on Noisesion, a series of sessions with Colombian artists. He is the sound engineer for Dial’s projects, a radio host and producer at RAC (Radio UNAL), and a music production teacher.',
+      ],
+      enlaces: ['Noisesion', 'Cuadrúpedos (music video)'],
+    },
   },
 ];
 
@@ -90,6 +123,8 @@ export interface Asociado {
   obra?: { titulo: string; nota?: string; url: string }[];
   canciones?: { titulo: string; url: string }[];
   enlaces?: { texto: string; url: string }[];
+  // versión en inglés; obra: solo las notas, en el mismo orden
+  en?: { corta?: string; instrumentos?: string; nota?: string; bio?: string; obra?: string[] };
 }
 
 // Músicos asociados. La idea es que crezca: cuerdas, vientos, voces, percusiones…
@@ -122,6 +157,12 @@ export const ASOCIADOS: Asociado[] = [
       { texto: 'SoundCloud', url: 'https://soundcloud.com/lucileflor' },
       { texto: 'Fiverr', url: 'https://www.fiverr.com/lucillexoxo/be-your-session-singer-and-custom-vocal-arranger' },
     ],
+    en: {
+      corta: 'Session singer and songwriter. Lead and backing vocals in Spanish and English; her album is Niña Flor.',
+      instrumentos: 'Vocals and vocal arrangements',
+      bio: 'Session singer and vocal arranger. She records lead and backing vocals in Spanish and English, and writes the harmonies and vocal textures for each song. She has sung pop, rock, jazz, ballads and electronic music. With Santiago she made «Diostedé», and with Santiago and Martín, «Presagio». She also writes her own music: she has an album, Niña Flor, and has composed for art installations and dance.',
+      obra: ['album', 'music for an art installation', 'dance film directed by Leo Carreño, with dancer Anjah Kihai'],
+    },
   },
 ];
 
@@ -135,27 +176,52 @@ export interface Pista {
   id?: string;
   url?: string;
   img: string;
+  quienEn?: string;
 }
 
 export const PISTAS: Pista[] = [
   {
     titulo: 'Presagio',
     quien: 'Santiago García, luci le y Martín Perea Tobón',
+    quienEn: 'Santiago García, luci le and Martín Perea Tobón',
     nota: 'Vítreo · 2026',
     tipo: 'youtube',
     id: 'avJgkzuIgSw',
     img: 'presagio.jpg',
   },
-  { titulo: 'Diostedé', quien: 'Santiago García y luci le', tipo: 'soundcloud', url: 'https://soundcloud.com/santiagogarcia103314/diostede', img: 'diostede.jpg' },
+  { titulo: 'Diostedé', quien: 'Santiago García y luci le', quienEn: 'Santiago García and luci le', tipo: 'soundcloud', url: 'https://soundcloud.com/santiagogarcia103314/diostede', img: 'diostede.jpg' },
   { titulo: 'Cenizas', quien: 'Martín Perea Tobón', nota: 'Sámara · 2026', tipo: 'youtube', id: 'r6Pc4Z1w7J8', img: 'cenizas.jpg' },
   { titulo: 'Batará', quien: 'Santiago García', tipo: 'soundcloud', url: 'https://soundcloud.com/santiagogarcia103314/batara', img: 'batara.jpg' },
   { titulo: 'Cardumen', quien: 'Martín Perea Tobón', tipo: 'soundcloud', url: 'https://soundcloud.com/martin-perea-tobon/cardumen-1', img: 'cardumen.jpg' },
   {
     titulo: 'Martín pescador',
     quien: 'Santiago García con Anamaría Oramas',
+    quienEn: 'Santiago García with Anamaría Oramas',
     tipo: 'soundcloud',
     url: 'https://soundcloud.com/santiagogarcia103314/martin-pescador-feat-anamaria',
     img: 'martin-pescador.jpg',
   },
   { titulo: 'Agua', quien: 'Martín Perea Tobón', tipo: 'soundcloud', url: 'https://soundcloud.com/martin-perea-tobon/agua-5', img: 'agua.jpg' },
 ];
+
+// En el idioma de la página
+type L = 'es' | 'en';
+export const director = (d: Director, lang: L): Director => {
+  if (lang === 'es') return d;
+  const { rol, corta, bio, formacion, enlaces, discos } = d.en;
+  return {
+    ...d,
+    rol,
+    corta,
+    bio,
+    formacion: formacion ?? d.formacion,
+    enlaces: d.enlaces.map((e, i) => ({ ...e, texto: enlaces?.[i] ?? e.texto })),
+    discos: d.discos?.map((x, i) => ({ ...x, titulo: discos?.[i] ?? x.titulo })),
+  };
+};
+export const asociado = (a: Asociado, lang: L): Asociado => {
+  if (lang === 'es' || !a.en) return a;
+  const { obra, ...resto } = a.en;
+  return { ...a, ...resto, obra: a.obra?.map((o, i) => ({ ...o, nota: obra?.[i] ?? o.nota })) };
+};
+export const pista = (p: Pista, lang: L): Pista => (lang === 'en' && p.quienEn ? { ...p, quien: p.quienEn } : p);

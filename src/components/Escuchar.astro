@@ -3,12 +3,14 @@
 // (Base.astro), que sigue sonando aunque se cambie de página.
 import { getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
-import { PISTAS } from '../data/equipo';
+import { PISTAS, pista } from '../data/equipo';
+import { idioma } from '../i18n';
+const en = idioma(Astro.url) === 'en';
 import Foto from './Foto.astro';
 
 const caratulas = import.meta.glob<{ default: ImageMetadata }>('/src/assets/pistas/*.jpg', { eager: true });
 const lista = await Promise.all(
-  PISTAS.map(async (p) => {
+  PISTAS.map((x) => pista(x, en ? 'en' : 'es')).map(async (p) => {
     const meta = caratulas[`/src/assets/pistas/${p.img}`].default;
     const mini = await getImage({ src: meta, width: 160, height: 160, format: 'webp', quality: 70 });
     return { ...p, mini: mini.src, clave: p.id ?? p.url! };
@@ -20,7 +22,7 @@ const datos = lista.map(({ titulo, quien, tipo, id, url, mini, clave }) => ({ ti
 <div class="estante" data-lista={JSON.stringify(datos)}>
   {
     lista.map((p, i) => (
-      <button class="disco rv" style={`--d:${i * 0.06}s`} data-pista={JSON.stringify(datos[i])} aria-label={`Escuchar ${p.titulo}, de ${p.quien}`}>
+      <button class="disco rv" style={`--d:${i * 0.06}s`} data-pista={JSON.stringify(datos[i])} aria-label={en ? `Listen to ${p.titulo}, by ${p.quien}` : `Escuchar ${p.titulo}, de ${p.quien}`}>
         <span class="disco-caratula">
           <Foto src={`pistas/${p.img}`} sizes="(max-width: 700px) 60vw, 220px" anchos={[300, 500]} />
           <span class="disco-vinilo" aria-hidden="true" />
@@ -44,7 +46,7 @@ const datos = lista.map(({ titulo, quien, tipo, id, url, mini, clave }) => ({ ti
   }
 </div>
 <p class="estante-pista">
-  <span class="mover" aria-hidden="true">←&nbsp;→</span> Desliza para ver más. La música sigue sonando aunque cambies de página.
+  <span class="mover" aria-hidden="true">←&nbsp;→</span> {en ? 'Swipe to see more. The music keeps playing when you change pages.' : 'Desliza para ver más. La música sigue sonando aunque cambies de página.'}
 </p>
 
 <style>

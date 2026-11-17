@@ -1,23 +1,69 @@
 ---
-import Base from '../layouts/Base.astro';
-import ObraCard from '../components/ObraCard.astro';
-import Foto from '../components/Foto.astro';
-import Logo from '../components/Logo.astro';
-import Creditos from '../components/Creditos.astro';
-import Escuchar from '../components/Escuchar.astro';
-import { OBRA, CATEGORIAS, NOMBRES, type Categoria } from '../data/obra';
-import { DIRECTORES } from '../data/equipo';
-import Asociados from '../components/Asociados.astro';
+import Base from '../../layouts/Base.astro';
+import ObraCard from '../../components/ObraCard.astro';
+import Foto from '../../components/Foto.astro';
+import Logo from '../../components/Logo.astro';
+import Creditos from '../../components/Creditos.astro';
+import Escuchar from '../../components/Escuchar.astro';
+import { OBRA as OBRA_ES, NOMBRES, categoria, enIdioma, type Categoria } from '../../data/obra';
+import { DIRECTORES, director } from '../../data/equipo';
+import Asociados from '../../components/Asociados.astro';
+import { IDIOMAS, idioma, enlace, juntar } from '../../i18n';
 
-const fotogramas = [
+export function getStaticPaths() {
+  return IDIOMAS();
+}
+const lang = idioma(Astro.url);
+const en = lang === 'en';
+const u = (r: string) => enlace(lang, r);
+
+const OBRA = OBRA_ES.map((p) => enIdioma(p, lang));
+const fotogramas = en
+  ? [
+      { img: 'mongolia-fotograma.jpg', pie: 'The last nomads of Mongolia · music and sound design by Martín Perea Tobón', pos: 'center 60%' },
+      { img: '17IYYByXjKk.jpg', pie: 'Currulao and the music of the southern Pacific · Dial, 2026', pos: 'center 30%' },
+      { img: '5lgpy6H5sTU.jpg', pie: 'Arrabal Gentío — Mangorito', pos: 'center' },
+      { img: '4bftwkKm06U.jpg', pie: 'Tierra sin sol ni luna · music by Juan Rizoma', pos: 'center' },
+    ]
+  : [
   { img: 'mongolia-fotograma.jpg', pie: 'Los últimos nómadas de Mongolia · música y diseño sonoro de Martín Perea Tobón', pos: 'center 60%' },
   { img: '17IYYByXjKk.jpg', pie: 'Currulao y músicas del Pacífico Sur · Dial, 2026', pos: 'center 30%' },
   { img: '5lgpy6H5sTU.jpg', pie: 'Arrabal Gentío — Mangorito', pos: 'center' },
   { img: '4bftwkKm06U.jpg', pie: 'Tierra sin sol ni luna · música de Juan Rizoma', pos: 'center' },
-];
+    ];
 const mongolia = OBRA.find((p) => p.id === 'mongolia')!;
 
-const frentes = [
+const frentes = en
+  ? [
+      {
+        id: 'cine',
+        titulo: 'Film, series and documentary',
+        img: '6uWk6G-3VYs.jpg',
+        texto: 'Original music, sound design and final mix. We come in while it is being written, while it is being shot, or when the cut is nearly done.',
+        lista: ['Original music to picture', 'Sound design and foley', 'Mixing for cinema, TV and streaming', 'Music supervision', 'Animation and video games'],
+        url: '/servicios#cine',
+        ejemplo: ejemplo('bardo'),
+      },
+      {
+        id: 'publicidad',
+        titulo: 'Advertising and brands',
+        img: 'FQ1OpRNI6bM.jpg',
+        texto: 'Music and sound for commercials and campaigns, with every version and format each medium asks for.',
+        lista: ['Original music and jingles', 'Sound design', 'Sonic identity and sound logo', 'Cutdowns from 6 to 60 seconds', 'Voice-over and mixes for each medium'],
+        url: '/publicidad',
+        ejemplo: ejemplo('mazda-una-chispa'),
+      },
+      {
+        id: 'sesiones',
+        titulo: 'Artists, sessions and media',
+        img: 'W32TI7o8XM0.jpg',
+        texto: 'We record and film live sessions, produce albums and do the sound for podcasts and shows.',
+        lista: ['Recorded and filmed sessions', 'Production and arrangements', 'Music videos', 'Podcasts and radio', 'Mixing and mastering'],
+        url: '/servicios#sesiones',
+        ejemplo: ejemplo('noisesion'),
+      },
+    ]
+  : [
   {
     id: 'cine',
     titulo: 'Cine, series y documental',
@@ -45,27 +91,37 @@ const frentes = [
     url: '/servicios#sesiones',
     ejemplo: ejemplo('noisesion'),
   },
-];
+    ];
 
 const principal = OBRA.find((p) => p.id === 'currulao')!;
 const pestanas: { id: string; texto: string }[] = [
-  { id: 'destacadas', texto: 'Destacadas' },
-  ...(['documental', 'cine', 'publicidad', 'sesiones', 'medios', 'discos'] as Categoria[]).map((c) => ({ id: c, texto: CATEGORIAS[c] })),
+  { id: 'destacadas', texto: en ? 'Featured' : 'Destacadas' },
+  ...(['documental', 'cine', 'publicidad', 'sesiones', 'medios', 'discos'] as Categoria[]).map((c) => ({ id: c, texto: categoria(c, lang) })),
 ];
 const enRejilla = OBRA.filter((p) => p.id !== 'currulao');
 const inicial = enRejilla.filter((p) => p.destacada).slice(0, 6);
 function ejemplo(id: string) {
   const p = OBRA.find((x) => x.id === id)!;
-  return { yt: p.video!, titulo: p.titulo, credito: `${p.rol} — ${p.quien.map((q) => NOMBRES[q]).join(' y ')}` };
+  return { yt: p.video!, titulo: p.titulo, credito: `${p.rol} — ${juntar(lang, p.quien.map((q) => NOMBRES[q]))}` };
 }
-const necesidades = [
+const necesidades = en
+  ? [
+      { texto: 'A film', tema: 'cine' },
+      { texto: 'A documentary', tema: 'cine' },
+      { texto: 'A commercial', tema: 'publicidad' },
+      { texto: 'A live session', tema: 'sesiones' },
+      { texto: 'A podcast', tema: 'medios' },
+      { texto: 'A video game', tema: 'cine' },
+    ]
+  : [
   { texto: 'Una película', tema: 'cine' },
   { texto: 'Un documental', tema: 'cine' },
   { texto: 'Un comercial', tema: 'publicidad' },
   { texto: 'Una sesión en vivo', tema: 'sesiones' },
   { texto: 'Un podcast', tema: 'medios' },
   { texto: 'Un videojuego', tema: 'cine' },
-];
+    ];
+const directores = DIRECTORES.map((d) => director(d, lang));
 ---
 
 <Base cabeceraSobreFoto>
@@ -86,11 +142,14 @@ const necesidades = [
       <div class="heroe-marca">
         <Logo modo="simbolo" tam={64} animado />
       </div>
-      <p class="etq">Productora de música para medios audiovisuales</p>
-      <h1>Música para <em>la imagen</em></h1>
+      <p class="etq">{en ? 'Music production for film, TV and media' : 'Productora de música para medios audiovisuales'}</p>
+      {en ? <h1>Music for <em>the picture</em></h1> : <h1>Música para <em>la imagen</em></h1>}
       <p class="lead">
-        Componemos, grabamos y mezclamos la música y el sonido de películas, documentales, series, comerciales y
-        sesiones en vivo. Somos tres codirectores con una red de músicos asociados.
+        {
+          en
+            ? 'We compose, record and mix the music and sound for films, documentaries, series, commercials and live sessions. We are three co-directors with a network of associate musicians.'
+            : 'Componemos, grabamos y mezclamos la música y el sonido de películas, documentales, series, comerciales y sesiones en vivo. Somos tres codirectores con una red de músicos asociados.'
+        }
       </p>
       <div class="botones">
         <button
@@ -100,16 +159,16 @@ const necesidades = [
           data-credito={`${mongolia.rol} — Martín Perea Tobón · ${mongolia.ficha}`}
         >
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg>
-          Ver el corto
+          {en ? 'Watch the short' : 'Ver el corto'}
         </button>
-        <a class="boton flecha" href="/obra">Toda la obra</a>
+        <a class="boton flecha" href={u('/obra')}>{en ? 'All our work' : 'Toda la obra'}</a>
       </div>
       <div class="necesito">
-        <p class="necesito-pregunta">¿Para qué necesitas música?</p>
+        <p class="necesito-pregunta">{en ? 'What do you need music for?' : '¿Para qué necesitas música?'}</p>
         <div class="necesito-botones">
           {
             necesidades.map((n) => (
-              <a class="chip" href={`/contacto?tema=${n.tema}&para=${encodeURIComponent(n.texto.toLowerCase())}`}>
+              <a class="chip" href={u(`/contacto?tema=${n.tema}&para=${encodeURIComponent(n.texto.toLowerCase())}`)}>
                 {n.texto}
               </a>
             ))
@@ -117,7 +176,7 @@ const necesidades = [
         </div>
       </div>
     </div>
-    <a class="heroe-bajar" href="#hacemos" aria-label="Bajar a qué hacemos"><span></span></a>
+    <a class="heroe-bajar" href="#hacemos" aria-label={en ? 'Scroll down to what we do' : 'Bajar a qué hacemos'}><span></span></a>
   </section>
 
   <Creditos />
@@ -127,12 +186,15 @@ const necesidades = [
     <div class="envoltura">
       <div class="cabeza-seccion rv">
         <div>
-          <p class="etq">Qué hacemos</p>
-          <h2>Del guion a la <em>mezcla final</em></h2>
+          <p class="etq">{en ? 'What we do' : 'Qué hacemos'}</p>
+          {en ? <h2>From script to <em>final mix</em></h2> : <h2>Del guion a la <em>mezcla final</em></h2>}
         </div>
         <p class="lead">
-          Una partitura para cuerdas, el ruido de una calle, un jingle de quince segundos o una banda grabada en vivo.
-          Cada proyecto lo armamos con el equipo que haga falta.
+          {
+            en
+              ? 'A score for strings, the noise of a street, a fifteen-second jingle or a band recorded live. We put together whatever team each project needs.'
+              : 'Una partitura para cuerdas, el ruido de una calle, un jingle de quince segundos o una banda grabada en vivo. Cada proyecto lo armamos con el equipo que haga falta.'
+          }
         </p>
       </div>
       <div class="frentes">
@@ -144,12 +206,12 @@ const necesidades = [
                 data-yt={fr.ejemplo.yt}
                 data-titulo={fr.ejemplo.titulo}
                 data-credito={fr.ejemplo.credito}
-                aria-label={`Ver un ejemplo: ${fr.ejemplo.titulo}`}
+                aria-label={en ? `Watch an example: ${fr.ejemplo.titulo}` : `Ver un ejemplo: ${fr.ejemplo.titulo}`}
               >
                 <Foto src={`obra/${fr.img}`} sizes="(max-width: 900px) 100vw, 33vw" />
                 <span class="frente-ejemplo">
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg>
-                  Ver un ejemplo
+                  {en ? 'Watch an example' : 'Ver un ejemplo'}
                 </span>
               </button>
               <h3>{fr.titulo}</h3>
@@ -160,8 +222,8 @@ const necesidades = [
                 ))}
               </ul>
               <div class="frente-acciones">
-                <a class="boton flecha" href={fr.url}>Ver más</a>
-                <a class="frente-pedir" href={`/contacto?tema=${fr.id}`}>Cotizar</a>
+                <a class="boton flecha" href={u(fr.url)}>{en ? 'More' : 'Ver más'}</a>
+                <a class="frente-pedir" href={u(`/contacto?tema=${fr.id}`)}>{en ? 'Get a quote' : 'Cotizar'}</a>
               </div>
             </article>
           ))
@@ -175,18 +237,21 @@ const necesidades = [
     <div class="envoltura">
       <div class="cabeza-seccion rv">
         <div>
-          <p class="etq">Obra</p>
-          <h2>Algunos trabajos</h2>
+          <p class="etq">{en ? 'Work' : 'Obra'}</p>
+          <h2>{en ? 'Selected work' : 'Algunos trabajos'}</h2>
         </div>
         <p class="lead">
-          Documentales, cortometrajes, animación, comerciales y sesiones. Cada pieza dice quién de nosotros la hizo y qué
-          hizo.
+          {
+            en
+              ? 'Documentaries, short films, animation, commercials and sessions. Each piece says which of us worked on it and what they did.'
+              : 'Documentales, cortometrajes, animación, comerciales y sesiones. Cada pieza dice quién de nosotros la hizo y qué hizo.'
+          }
         </p>
       </div>
       <div class="obra-principal rv">
         <ObraCard pieza={principal} grande />
       </div>
-      <div class="pestanas" role="tablist" aria-label="Tipo de trabajo">
+      <div class="pestanas" role="tablist" aria-label={en ? 'Type of work' : 'Tipo de trabajo'}>
         {
           pestanas.map((t, i) => (
             <button class:list={['pestana', { activa: i === 0 }]} role="tab" aria-selected={i === 0 ? 'true' : 'false'} data-pestana={t.id}>
@@ -205,7 +270,7 @@ const necesidades = [
         }
       </div>
       <p class="ver-mas rv">
-        <a class="boton flecha" href="/obra">Toda la obra · {OBRA.length} piezas</a>
+        <a class="boton flecha" href={u('/obra')}>{en ? `All our work · ${OBRA.length} pieces` : `Toda la obra · ${OBRA.length} piezas`}</a>
       </p>
     </div>
   </section>
@@ -215,12 +280,15 @@ const necesidades = [
     <div class="envoltura">
       <div class="cabeza-seccion rv">
         <div>
-          <p class="etq">Escuchar</p>
-          <h2>Lo que suena cuando <em>no hay imagen</em></h2>
+          <p class="etq">{en ? 'Listen' : 'Escuchar'}</p>
+          {en ? <h2>What it sounds like <em>without the picture</em></h2> : <h2>Lo que suena cuando <em>no hay imagen</em></h2>}
         </div>
         <p class="lead">
-          Música propia de la casa: «Presagio», de Santiago, luci le y Martín; las aves de Santiago, y piezas de Martín
-          entre el jazz y la música experimental. Dale play y sigue mirando el sitio.
+          {
+            en
+              ? 'Our own music: «Presagio», by Santiago, luci le and Martín; Santiago’s birds, and pieces by Martín between jazz and experimental music. Press play and keep browsing.'
+              : 'Música propia de la casa: «Presagio», de Santiago, luci le y Martín; las aves de Santiago, y piezas de Martín entre el jazz y la música experimental. Dale play y sigue mirando el sitio.'
+          }
         </p>
       </div>
       <Escuchar />
@@ -231,14 +299,18 @@ const necesidades = [
   <section class="seccion papel">
     <div class="envoltura publi">
       <div class="publi-texto rv">
-        <p class="etq">Para agencias y marcas</p>
-        <h2>Música para comerciales, <em>lista para la pauta</em></h2>
+        <p class="etq">{en ? 'For agencies and brands' : 'Para agencias y marcas'}</p>
+        {en ? <h2>Music for commercials, <em>ready to air</em></h2> : <h2>Música para comerciales, <em>lista para la pauta</em></h2>}
         <p class="lead">
-          Versiones por duración, pistas separadas, mezcla para cada medio y una licencia de uso clara desde la propuesta.
+          {
+            en
+              ? 'Cutdowns for every length, stems, a mix for each medium and clear usage rights from the first proposal.'
+              : 'Versiones por duración, pistas separadas, mezcla para cada medio y una licencia de uso clara desde la propuesta.'
+          }
         </p>
         <div class="botones">
-          <a class="boton lleno flecha" href="/publicidad">Cómo trabajamos con marcas</a>
-          <a class="boton" href="/contacto?tema=publicidad">Pedir una propuesta</a>
+          <a class="boton lleno flecha" href={u('/publicidad')}>{en ? 'How we work with brands' : 'Cómo trabajamos con marcas'}</a>
+          <a class="boton" href={u('/contacto?tema=publicidad')}>{en ? 'Request a proposal' : 'Pedir una propuesta'}</a>
         </div>
       </div>
       <div class="publi-pieza rv">
@@ -252,25 +324,28 @@ const necesidades = [
     <div class="envoltura">
       <div class="cabeza-seccion rv">
         <div>
-          <p class="etq">Codirección</p>
-          <h2>Tres oficios, <em>una mesa</em></h2>
+          <p class="etq">{en ? 'Co-direction' : 'Codirección'}</p>
+          {en ? <h2>Three crafts, <em>one table</em></h2> : <h2>Tres oficios, <em>una mesa</em></h2>}
         </div>
         <p class="lead">
-          Composición y arreglos, diseño sonoro, producción musical, ingeniería y realización audiovisual. Cada proyecto lo
-          dirige quien más sabe de lo que pide.
+          {
+            en
+              ? 'Composition and arranging, sound design, music production, engineering and filmmaking. Each project is led by whoever knows most about what it needs.'
+              : 'Composición y arreglos, diseño sonoro, producción musical, ingeniería y realización audiovisual. Cada proyecto lo dirige quien más sabe de lo que pide.'
+          }
         </p>
       </div>
       <div class="directores">
         {
-          DIRECTORES.map((d, i) => (
-            <a class="director rv" href={`/equipo#${d.id}`} style={`--d:${i * 0.08}s`}>
+          directores.map((d, i) => (
+            <a class="director rv" href={u(`/equipo#${d.id}`)} style={`--d:${i * 0.08}s`}>
               <div class="director-foto">
                 <Foto src={`equipo/${d.foto}`} alt={d.nombre} sizes="(max-width: 820px) 90vw, 30vw" anchos={[400, 640, 900]} />
               </div>
               <p class="director-rol">{d.rol}</p>
               <h3>{d.nombre}</h3>
               <p class="director-corta">{d.corta}</p>
-              <span class="director-ver flecha">Ver perfil</span>
+              <span class="director-ver flecha">{en ? 'View profile' : 'Ver perfil'}</span>
             </a>
           ))
         }
@@ -278,12 +353,15 @@ const necesidades = [
 
       <div class="asociados rv">
         <div class="asociados-cabeza">
-          <p class="etq">Músicos asociados</p>
+          <p class="etq">{en ? 'Associate musicians' : 'Músicos asociados'}</p>
           <p class="asociados-texto">
-            Para cada proyecto convocamos a los intérpretes que pide la música: cuerdas, vientos, voces, percusiones,
-            instrumentos tradicionales.
+            {
+              en
+                ? 'For each project we bring in the players the music calls for: strings, winds, voices, percussion, traditional instruments.'
+                : 'Para cada proyecto convocamos a los intérpretes que pide la música: cuerdas, vientos, voces, percusiones, instrumentos tradicionales.'
+            }
           </p>
-          <a class="enlace" href="/equipo#asociados">Ver todos</a>
+          <a class="enlace" href={u('/equipo#asociados')}>{en ? 'See all' : 'Ver todos'}</a>
         </div>
         <Asociados />
       </div>
@@ -292,18 +370,27 @@ const necesidades = [
 
   <!-- el nombre: solo una seña; la historia está en /fotofono -->
   <section class="fotofono hueso">
-    <a class="envoltura fotofono-franja" href="/fotofono">
+    <a class="envoltura fotofono-franja" href={u('/fotofono')}>
       <figure class="fotofono-grabado">
         <Foto src="fotofono/transmisor.jpg" alt="" sizes="9rem" anchos={[200, 320]} />
       </figure>
       <div class="fotofono-texto">
-        <p class="etq">El nombre</p>
-        <p class="fotofono-frase">
-          Fototoma viene del <em>fotófono</em>: en 1880, Bell y Tainter mandaron una voz por un rayo de sol. Nuestro logo
-          es el espejo que la recibía.
-        </p>
+        <p class="etq">{en ? 'The name' : 'El nombre'}</p>
+        {
+          en ? (
+            <p class="fotofono-frase">
+              Fototoma comes from the <em>photophone</em>: in 1880, Bell and Tainter sent a voice along a beam of sunlight.
+              Our logo is the mirror that received it.
+            </p>
+          ) : (
+            <p class="fotofono-frase">
+              Fototoma viene del <em>fotófono</em>: en 1880, Bell y Tainter mandaron una voz por un rayo de sol. Nuestro
+              logo es el espejo que la recibía.
+            </p>
+          )
+        }
       </div>
-      <span class="fotofono-ir flecha">La historia</span>
+      <span class="fotofono-ir flecha">{en ? 'The story' : 'La historia'}</span>
     </a>
   </section>
 
@@ -313,14 +400,17 @@ const necesidades = [
       <Foto src="obra/17IYYByXjKk.jpg" sizes="100vw" anchos={[800, 1280]} posicion="center 30%" />
     </div>
     <div class="envoltura cierre-caja rv">
-      <p class="etq">Contacto</p>
-      <h2>Cuéntanos qué estás <em>haciendo</em></h2>
+      <p class="etq">{en ? 'Contact' : 'Contacto'}</p>
+      {en ? <h2>Tell us what you are <em>making</em></h2> : <h2>Cuéntanos qué estás <em>haciendo</em></h2>}
       <p class="lead">
-        Un guion, un corte, una referencia o una idea suelta sirven para empezar. Respondemos con preguntas, una propuesta
-        y tiempos.
+        {
+          en
+            ? 'A script, a cut, a reference or a loose idea is enough to start. We reply with questions, a proposal and a timeline.'
+            : 'Un guion, un corte, una referencia o una idea suelta sirven para empezar. Respondemos con preguntas, una propuesta y tiempos.'
+        }
       </p>
       <div class="botones">
-        <a class="boton lleno flecha" href="/contacto">Escribirnos</a>
+        <a class="boton lleno flecha" href={u('/contacto')}>{en ? 'Write to us' : 'Escribirnos'}</a>
       </div>
     </div>
   </section>

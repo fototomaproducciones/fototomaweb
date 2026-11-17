@@ -9,6 +9,7 @@ import latoUrl from '@fontsource/lato/files/lato-latin-400-normal.woff2?url';
 import { ClientRouter } from 'astro:transitions';
 import Logo from '../components/Logo.astro';
 import { CORREO } from '../data/equipo';
+import { idioma, limpiar, sinIdioma, enlace } from '../i18n';
 
 interface Props {
   titulo?: string;
@@ -16,31 +17,44 @@ interface Props {
   noindex?: boolean;
   cabeceraSobreFoto?: boolean;
   imagen?: string; // imagen para compartir (en public/)
+  traducida?: boolean; // false: la página existe solo en español (marca, 404)
 }
+const lang = idioma(Astro.url);
+const en = lang === 'en';
 const {
   titulo,
-  descripcion = 'Productora de música para cine, documental, series, publicidad y medios. Música original, diseño sonoro, mezcla y sesiones en vivo.',
+  descripcion = en
+    ? 'Music production company for film, documentary, series, advertising and media. Original music, sound design, mixing and live sessions.'
+    : 'Productora de música para cine, documental, series, publicidad y medios. Música original, diseño sonoro, mezcla y sesiones en vivo.',
   noindex = false,
   cabeceraSobreFoto = false,
   imagen = '/og.jpg',
+  traducida = true,
 } = Astro.props;
-const tituloCompleto = titulo ? `${titulo} · Fototoma Producciones` : 'Fototoma Producciones · Música para la imagen';
+const tituloCompleto = titulo
+  ? `${titulo} · Fototoma Producciones`
+  : en
+    ? 'Fototoma Producciones · Music for the picture'
+    : 'Fototoma Producciones · Música para la imagen';
 // al construir, las páginas salen como obra.html, pero se publican como /obra
-const limpia = Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/').replace(/(.)\/$/, '$1') || '/';
-const ruta = limpia;
+const limpia = limpiar(Astro.url.pathname);
+const ruta = sinIdioma(limpia); // la ruta sin /en, para marcar el menú
 const canonica = new URL(limpia, Astro.site);
+const versionEs = new URL(ruta, Astro.site);
+const versionEn = new URL(enlace('en', ruta), Astro.site);
+const u = (r: string) => enlace(lang, r);
 const menu = [
-  { url: '/obra', texto: 'Obra' },
-  { url: '/servicios', texto: 'Servicios' },
-  { url: '/publicidad', texto: 'Publicidad' },
-  { url: '/equipo', texto: 'Equipo' },
+  { url: '/obra', texto: en ? 'Work' : 'Obra' },
+  { url: '/servicios', texto: en ? 'Services' : 'Servicios' },
+  { url: '/publicidad', texto: en ? 'Advertising' : 'Publicidad' },
+  { url: '/equipo', texto: en ? 'Team' : 'Equipo' },
 ];
 const dev = import.meta.env.DEV;
 const ld = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'Fototoma Producciones',
-  description: 'Productora de música para medios audiovisuales.',
+  description: en ? 'Music production company for film, TV and media.' : 'Productora de música para medios audiovisuales.',
   url: Astro.site?.href,
   email: CORREO,
   logo: new URL('/marca/fototoma-simbolo-negro.png', Astro.site).href,
@@ -50,7 +64,7 @@ const ld = {
 ---
 
 <!doctype html>
-<html lang="es-CO" class={dev ? 'dev' : ''}>
+<html lang={en ? 'en' : 'es-CO'} class={dev ? 'dev' : ''}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -59,13 +73,23 @@ const ld = {
     <meta name="description" content={descripcion} />
     <link rel="canonical" href={canonica} />
     {noindex && <meta name="robots" content="noindex" />}
+    {
+      traducida && (
+        <>
+          <link rel="alternate" hreflang="es" href={versionEs} />
+          <link rel="alternate" hreflang="en" href={versionEn} />
+          <link rel="alternate" hreflang="x-default" href={versionEs} />
+        </>
+      )
+    }
     <link rel="preload" href={serifUrl} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={latoUrl} as="font" type="font/woff2" crossorigin />
     <link rel="preconnect" href="https://i.ytimg.com" />
     <meta property="og:title" content={tituloCompleto} />
     <meta property="og:description" content={descripcion} />
     <meta property="og:type" content="website" />
-    <meta property="og:locale" content="es_CO" />
+    <meta property="og:locale" content={en ? 'en_US' : 'es_CO'} />
+    {traducida && <meta property="og:locale:alternate" content={en ? 'es_CO' : 'en_US'} />}
     <meta property="og:image" content={new URL(imagen, Astro.site)} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -79,24 +103,41 @@ const ld = {
     <ClientRouter fallback="swap" />
   </head>
   <body>
-    <a class="saltar" href="#contenido">Ir al contenido</a>
+    <a class="saltar" href="#contenido">{en ? 'Skip to content' : 'Ir al contenido'}</a>
     <header class:list={['cabecera', { 'sobre-foto': cabeceraSobreFoto }]}>
       <div class="envoltura cabecera-fila">
-        <a href="/" class="cabecera-logo" aria-label="Fototoma Producciones, inicio">
+        <a href={u('/')} class="cabecera-logo" aria-label={en ? 'Fototoma Producciones, home' : 'Fototoma Producciones, inicio'}>
           <Logo tam={40} />
         </a>
-        <nav id="menu" class="menu" aria-label="Principal">
+        <nav id="menu" class="menu" aria-label={en ? 'Main' : 'Principal'}>
           {
             menu.map((m) => (
-              <a href={m.url} aria-current={ruta.startsWith(m.url) ? 'page' : undefined}>
+              <a href={u(m.url)} aria-current={ruta.startsWith(m.url) ? 'page' : undefined}>
                 {m.texto}
               </a>
             ))
           }
-          <a class="menu-cta" href="/contacto" aria-current={ruta === '/contacto' ? 'page' : undefined}>Escríbenos</a>
+          {
+            traducida && (
+              <a
+                class="menu-idioma"
+                href={en ? ruta : enlace('en', ruta)}
+                hreflang={en ? 'es' : 'en'}
+                lang={en ? 'es' : 'en'}
+                aria-label={en ? 'Ver esta página en español' : 'View this page in English'}
+              >
+                <span class:list={{ actual: !en }}>ES</span>
+                <span aria-hidden="true">/</span>
+                <span class:list={{ actual: en }}>EN</span>
+              </a>
+            )
+          }
+          <a class="menu-cta" href={u('/contacto')} aria-current={ruta === '/contacto' ? 'page' : undefined}>
+            {en ? 'Get in touch' : 'Escríbenos'}
+          </a>
         </nav>
         <button class="menu-boton" aria-expanded="false" aria-controls="menu">
-          <span class="sr">Menú</span>
+          <span class="sr">{en ? 'Menu' : 'Menú'}</span>
           <span class="menu-rayas" aria-hidden="true"></span>
         </button>
       </div>
@@ -108,53 +149,59 @@ const ld = {
 
     <footer class="pie">
       <div class="envoltura pie-arriba">
-        <p class="pie-llamado serif">¿Tienes una película, un comercial o una sesión entre manos?</p>
+        <p class="pie-llamado serif">
+          {en ? 'Working on a film, a commercial or a session?' : '¿Tienes una película, un comercial o una sesión entre manos?'}
+        </p>
         <a class="pie-correo" href={`mailto:${CORREO}`}>{CORREO}</a>
       </div>
       <div class="envoltura pie-rejilla">
         <Logo modo="apilado" tam={84} class="pie-logo" />
         <p class="pie-texto">
-          Música y sonido para cine, documental, series, publicidad y medios. Tres codirectores y una red de músicos
-          asociados en Colombia.
+          {
+            en
+              ? 'Music and sound for film, documentary, series, advertising and media. Three co-directors and a network of associate musicians in Colombia.'
+              : 'Música y sonido para cine, documental, series, publicidad y medios. Tres codirectores y una red de músicos asociados en Colombia.'
+          }
         </p>
-        <nav class="pie-menu" aria-label="Pie">
-          {menu.map((m) => <a href={m.url}>{m.texto}</a>)}
-          <a href="/contacto">Contacto</a>
-          <a href="/fotofono">El fotófono</a>
+        <nav class="pie-menu" aria-label={en ? 'Footer' : 'Pie'}>
+          {menu.map((m) => <a href={u(m.url)}>{m.texto}</a>)}
+          <a href={u('/contacto')}>{en ? 'Contact' : 'Contacto'}</a>
+          <a href={u('/fotofono')}>{en ? 'The photophone' : 'El fotófono'}</a>
+          {traducida && (en ? <a href={ruta} hreflang="es" lang="es">En español</a> : <a href={enlace('en', ruta)} hreflang="en" lang="en">In English</a>)}
         </nav>
       </div>
       <div class="envoltura pie-final">
         <span>© {new Date().getFullYear()} Fototoma Producciones</span>
-        <span>Grabados del fotófono de Bell y Tainter, 1880 · dominio público</span>
+        <span>{en ? 'Engravings of Bell and Tainter’s photophone, 1880 · public domain' : 'Grabados del fotófono de Bell y Tainter, 1880 · dominio público'}</span>
       </div>
     </footer>
 
     <!-- tocadiscos: sigue sonando al cambiar de página -->
-    <aside class="tocadiscos" transition:persist="tocadiscos" hidden aria-label="Reproductor de música">
+    <aside class="tocadiscos" transition:persist="tocadiscos" hidden aria-label={en ? 'Music player' : 'Reproductor de música'}>
       <img class="td-caratula" alt="" width="56" height="56" />
       <div class="td-texto">
-        <p class="td-estado">Sonando</p>
+        <p class="td-estado">{en ? 'Now playing' : 'Sonando'}</p>
         <p class="td-titulo serif"></p>
         <p class="td-quien"></p>
       </div>
       <div class="td-pantalla"></div>
       <div class="td-botones">
-        <button class="td-siguiente" aria-label="Siguiente pista">Siguiente <span aria-hidden="true">→</span></button>
-        <button class="td-cerrar" aria-label="Cerrar el reproductor">×</button>
+        <button class="td-siguiente" aria-label={en ? 'Next track' : 'Siguiente pista'}>{en ? 'Next' : 'Siguiente'} <span aria-hidden="true">→</span></button>
+        <button class="td-cerrar" aria-label={en ? 'Close the player' : 'Cerrar el reproductor'}>×</button>
       </div>
     </aside>
 
     {
       ruta !== '/contacto' && (
-        <a class="flotante" href="/contacto" aria-label="Escríbenos sobre tu proyecto">
+        <a class="flotante" href={u('/contacto')} aria-label={en ? 'Tell us about your project' : 'Escríbenos sobre tu proyecto'}>
           <span class="flotante-punto" aria-hidden="true" />
-          ¿Tienes un proyecto?
+          {en ? 'Got a project?' : '¿Tienes un proyecto?'}
         </a>
       )
     }
 
     <!-- reproductor: abre los videos en grande sin salir de la página -->
-    <dialog class="sala" id="sala" aria-label="Reproductor de video">
+    <dialog class="sala" id="sala" aria-label={en ? 'Video player' : 'Reproductor de video'}>
       <div class="sala-caja">
         <div class="sala-pantalla"></div>
         <div class="sala-pie">
@@ -162,7 +209,7 @@ const ld = {
             <p class="sala-titulo serif"></p>
             <p class="sala-credito"></p>
           </div>
-          <button class="sala-cerrar" aria-label="Cerrar">Cerrar <span aria-hidden="true">×</span></button>
+          <button class="sala-cerrar" aria-label={en ? 'Close' : 'Cerrar'}>{en ? 'Close' : 'Cerrar'} <span aria-hidden="true">×</span></button>
         </div>
       </div>
     </dialog>
@@ -203,7 +250,7 @@ const ld = {
           caja.querySelector('.td-quien')!.textContent = p.quien;
           const f = document.createElement('iframe');
           f.allow = 'autoplay; encrypted-media';
-          f.title = `${p.titulo}, de ${p.quien}`;
+          f.title = document.documentElement.lang === 'en' ? `${p.titulo}, by ${p.quien}` : `${p.titulo}, de ${p.quien}`;
           f.src =
             p.tipo === 'youtube'
               ? `https://www.youtube-nocookie.com/embed/${p.id}?autoplay=1&rel=0&modestbranding=1`
@@ -395,6 +442,20 @@ const ld = {
       .menu a:hover::after,
       .menu a[aria-current='page']::after {
         scale: 1 1;
+      }
+      .menu .menu-idioma {
+        display: inline-flex;
+        gap: 0.3em;
+        color: var(--gris);
+      }
+      .menu .menu-idioma .actual {
+        color: var(--plata);
+      }
+      .menu .menu-idioma::after {
+        display: none;
+      }
+      .menu .menu-idioma:hover {
+        color: var(--plata-2);
       }
       .menu .menu-cta {
         border: 1px solid rgba(243, 238, 228, 0.5);
