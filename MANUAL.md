@@ -42,7 +42,9 @@ El sitio está en los dos idiomas: español en la raíz (`/obra`) e inglés bajo
 - En los datos, la versión en inglés va en el campo `en` de cada ficha: en `obra.ts` solo los campos que cambian (`rol`, `ficha`, a veces `titulo`); en `equipo.ts`, `en` de cada codirector (rol, línea corta, bio) y de cada asociado. Si una obra nueva no trae `en`, en inglés sale con el texto en español.
 - Los enlaces internos se escriben con `u('/ruta')` para que en inglés apunten a `/en/ruta`.
 - Los títulos de obras y canciones con nombre propio se dejan en español; los descriptivos van traducidos.
-- `/marca` y la página 404 existen solo en español.
+- `/marca` existe solo en español. La 404 tiene versión en cada idioma (`/en/404` la sirve el Worker para las rutas `/en`).
+
+**Cada visitante ve un solo idioma.** El Worker (`worker/index.ts`) decide en la primera visita: desde un país hispanohablante (lista `HISPANOS`) se queda en español; desde cualquier otro país pasa a la misma página en inglés, salvo que su navegador esté en español. Si la persona elige idioma en el menú (ES / EN o el enlace del pie), queda guardado en la cookie `idioma` por un año y el sitio ya no decide por la ubicación. A los buscadores y a las vistas previas de enlaces (WhatsApp, Facebook) no se les cambia el idioma, para que indexen las dos versiones.
 
 ## Rehacer la marca
 

@@ -7,5 +7,5 @@ export default defineConfig({
   build: { format: 'file' },
   devToolbar: { enabled: false },
   prefetch: { prefetchAll: true, defaultStrategy: 'hover' },
-  integrations: [sitemap({ filter: (url) => !url.includes('/marca') && !url.includes('/og') })],
+  integrations: [sitemap({ filter: (url) => !url.includes('/marca') && !url.includes('/og') && !url.includes('/404') })],
 });

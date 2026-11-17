@@ -1,18 +1,21 @@
 ---
 import Base from '../layouts/Base.astro';
 import Logo from '../components/Logo.astro';
+import { idioma } from '../i18n';
+// un solo idioma: /404 en español; /en/404 (src/pages/en/404.astro) en inglés
+const en = idioma(Astro.url) === 'en';
 ---
 
-<Base titulo="Página no encontrada · Page not found" noindex traducida={false}>
+<Base titulo={en ? 'Page not found' : 'Página no encontrada'} noindex traducida={false}>
   <section class="seccion perdida">
     <div class="envoltura">
       <Logo modo="simbolo" tam={90} animado />
       <p class="etq">Error 404</p>
-      <h1>Aquí no llegó <em>la luz</em></h1>
-      <p class="lead">La página que buscas no existe o cambió de lugar.<br /><span lang="en">The page you are looking for does not exist or has moved. <a href="/en">Go to the English site</a>.</span></p>
+      {en ? <h1>The light <em>didn’t reach</em> here</h1> : <h1>Aquí no llegó <em>la luz</em></h1>}
+      <p class="lead">{en ? 'The page you are looking for does not exist or has moved.' : 'La página que buscas no existe o cambió de lugar.'}</p>
       <div class="botones">
-        <a class="boton lleno flecha" href="/">Ir al inicio</a>
-        <a class="boton" href="/obra">Ver la obra</a>
+        <a class="boton lleno flecha" href={en ? '/en' : '/'}>{en ? 'Go to the home page' : 'Ir al inicio'}</a>
+        <a class="boton" href={en ? '/en/obra' : '/obra'}>{en ? 'See our work' : 'Ver la obra'}</a>
       </div>
     </div>
   </section>

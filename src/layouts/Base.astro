@@ -122,6 +122,7 @@ const ld = {
               <a
                 class="menu-idioma"
                 href={en ? ruta : enlace('en', ruta)}
+                data-idioma={en ? 'es' : 'en'}
                 hreflang={en ? 'es' : 'en'}
                 lang={en ? 'es' : 'en'}
                 aria-label={en ? 'Ver esta página en español' : 'View this page in English'}
@@ -167,7 +168,14 @@ const ld = {
           {menu.map((m) => <a href={u(m.url)}>{m.texto}</a>)}
           <a href={u('/contacto')}>{en ? 'Contact' : 'Contacto'}</a>
           <a href={u('/fotofono')}>{en ? 'The photophone' : 'El fotófono'}</a>
-          {traducida && (en ? <a href={ruta} hreflang="es" lang="es">En español</a> : <a href={enlace('en', ruta)} hreflang="en" lang="en">In English</a>)}
+          {
+            traducida &&
+              (en ? (
+                <a href={ruta} hreflang="es" lang="es" data-idioma="es">En español</a>
+              ) : (
+                <a href={enlace('en', ruta)} hreflang="en" lang="en" data-idioma="en">In English</a>
+              ))
+          }
         </nav>
       </div>
       <div class="envoltura pie-final">
@@ -219,6 +227,17 @@ const ld = {
       const w = window as any;
       if (!w.__fototoma) {
         w.__fototoma = true;
+
+        // idioma elegido en el menú: se guarda un año y el servidor deja de escoger por la ubicación.
+        // En fase de captura, para que la cookie exista antes de que el router pida la página.
+        window.addEventListener(
+          'click',
+          (e) => {
+            const a = (e.target as HTMLElement).closest<HTMLElement>('[data-idioma]');
+            if (a) document.cookie = `idioma=${a.dataset.idioma}; path=/; max-age=31536000; samesite=lax`;
+          },
+          true,
+        );
 
         const sala = () => document.getElementById('sala') as HTMLDialogElement | null;
         const cerrarSala = () => {
