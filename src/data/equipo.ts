@@ -78,8 +78,11 @@ export const DIRECTORES: Director[] = [
   },
 ];
 
+// Cada asociado con `foto` tiene tarjeta (inicio y /equipo) y perfil completo en /equipo/<id>.
 export interface Asociado {
+  id: string; // ruta del perfil: /equipo/<id>
   nombre: string; // tal cual lo escribe la persona (luci le, en minúsculas)
+  corta?: string; // una o dos líneas para la tarjeta
   instrumentos?: string;
   nota?: string;
   foto?: string; // src/assets/equipo/
@@ -92,7 +95,9 @@ export interface Asociado {
 // Músicos asociados. La idea es que crezca: cuerdas, vientos, voces, percusiones…
 export const ASOCIADOS: Asociado[] = [
   {
+    id: 'luci-le',
     nombre: 'luci le',
+    corta: 'Cantante de sesión y compositora. Voces y coros en español e inglés; su disco es Niña Flor.',
     instrumentos: 'Voz y arreglos vocales',
     foto: 'luci-le.jpg',
     bio: 'Cantante de sesión y arreglista vocal. Graba voces principales y coros en español e inglés, y escribe las armonías y texturas de voces de cada canción. Ha cantado pop, rock, jazz, baladas y música electrónica. Con Santiago hizo «Diostedé» y con Santiago y Martín, «Presagio». También compone: tiene un disco propio, Niña Flor, y ha hecho música para instalaciones de arte y para danza.',

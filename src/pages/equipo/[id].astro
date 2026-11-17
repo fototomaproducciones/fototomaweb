@@ -1,0 +1,161 @@
+---
+// Perfil completo de cada músico asociado (los que tienen foto). Se llega desde sus tarjetas.
+import Base from '../../layouts/Base.astro';
+import Foto from '../../components/Foto.astro';
+import { ASOCIADOS, type Asociado } from '../../data/equipo';
+
+export function getStaticPaths() {
+  return ASOCIADOS.filter((a) => a.foto).map((a) => ({ params: { id: a.id }, props: { a } }));
+}
+const { a } = Astro.props as { a: Asociado };
+const descripcion = `${a.nombre}, músico asociado de Fototoma Producciones. ${a.corta ?? a.instrumentos ?? ''}`.trim();
+---
+
+<Base titulo={a.nombre} descripcion={descripcion}>
+  <section class="seccion perfil">
+    <div class="envoltura">
+      <a class="volver enlace" href="/equipo#asociados">← Músicos asociados</a>
+      <div class="perfil-rejilla">
+        <figure class="perfil-foto">
+          <Foto src={`equipo/${a.foto}`} alt={a.nombre} sizes="(max-width: 860px) 90vw, 40vw" anchos={[480, 800, 1200]} prioridad />
+        </figure>
+        <div class="perfil-texto">
+          <p class="etq perfil-rol">Músico asociado{a.instrumentos && ` · ${a.instrumentos}`}</p>
+          <h1>{a.nombre}</h1>
+          {a.bio && <p class="perfil-bio">{a.bio}</p>}
+
+          {
+            a.obra && (
+              <div class="perfil-bloque">
+                <p class="etq">Obra</p>
+                <ul class="perfil-lista">
+                  {a.obra.map((o) => (
+                    <li>
+                      <a class="enlace" href={o.url} target="_blank" rel="noopener">
+                        {o.titulo}
+                      </a>
+                      {o.nota && <span class="gris"> · {o.nota}</span>}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
+          }
+
+          {
+            a.canciones && (
+              <div class="perfil-bloque">
+                <p class="etq">Canciones</p>
+                <ul class="perfil-lista">
+                  {a.canciones.map((c) => (
+                    <li>
+                      <a class="enlace" href={c.url} target="_blank" rel="noopener">
+                        {c.titulo}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
+          }
+
+          {
+            a.enlaces && (
+              <p class="perfil-enlaces">
+                {a.enlaces.map((e) => (
+                  <a class="enlace" href={e.url} target="_blank" rel="noopener">
+                    {e.texto} ↗
+                  </a>
+                ))}
+              </p>
+            )
+          }
+
+          <a class="boton flecha contratar" href="/contacto?tema=musico">Trabajar con {a.nombre}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .perfil {
+    padding-top: clamp(7rem, 12vw, 9rem);
+  }
+  .volver {
+    display: inline-block;
+    margin-bottom: 2.4rem;
+    font-size: 0.95rem;
+    color: var(--plata-2);
+  }
+  .perfil-rejilla {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: clamp(2.5rem, 6vw, 5.5rem);
+    align-items: start;
+  }
+  .perfil-foto {
+    margin: 0;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: var(--grafito);
+    position: sticky;
+    top: 100px;
+  }
+  .perfil-foto :global(picture),
+  .perfil-foto :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .perfil-rol {
+    color: var(--sol);
+  }
+  .perfil-texto h1 {
+    margin-bottom: 1.6rem;
+  }
+  .perfil-bio {
+    font-size: 1.15rem;
+    color: var(--plata);
+    max-width: 36em;
+  }
+  .perfil-bloque {
+    margin-top: 2.2rem;
+    padding-top: 1.4rem;
+    border-top: 1px solid var(--linea);
+  }
+  .perfil-lista {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .perfil-lista li {
+    padding: 0.25rem 0;
+  }
+  .gris {
+    color: var(--gris);
+  }
+  .perfil-enlaces {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.6rem;
+    margin-top: 2rem;
+    font-size: 0.95rem;
+    color: var(--plata-2);
+  }
+  .contratar {
+    margin-top: 2.4rem;
+  }
+  @media (max-width: 860px) {
+    .perfil-rejilla {
+      grid-template-columns: 1fr;
+    }
+    .perfil-foto {
+      position: relative;
+      top: auto;
+      max-width: 26rem;
+    }
+  }
+</style>

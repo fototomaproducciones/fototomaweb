@@ -8,6 +8,7 @@ import Escuchar from '../components/Escuchar.astro';
 import { OBRA, CATEGORIAS, NOMBRES, type Categoria } from '../data/obra';
 import simbolos from '../components/logo-simbolos.json';
 import { DIRECTORES, ASOCIADOS } from '../data/equipo';
+import AsociadoTarjeta from '../components/AsociadoTarjeta.astro';
 
 const fotogramas = [
   { img: 'mongolia-fotograma.jpg', pie: 'Los últimos nómadas de Mongolia · música y diseño sonoro de Martín Perea Tobón', pos: 'center 60%' },
@@ -304,19 +305,24 @@ const necesidades = [
             instrumentos tradicionales.
           </p>
         </div>
-        <ul class="asociados-lista">
-          {
-            ASOCIADOS.map((a) => (
-              <li>
-                <span class="asociado-nombre">{a.nombre}</span>
-                <span class="asociado-nota">{a.instrumentos ?? a.nota}</span>
-              </li>
-            ))
-          }
-          <li>
-            <a class="enlace" href="/contacto?tema=musico">¿Tocas y quieres sumarte? Escríbenos</a>
-          </li>
-        </ul>
+        <div>
+          <div class="asociados-tarjetas">
+            {ASOCIADOS.filter((a) => a.foto).map((a) => <AsociadoTarjeta a={a} />)}
+          </div>
+          <ul class="asociados-lista">
+            {
+              ASOCIADOS.filter((a) => !a.foto).map((a) => (
+                <li>
+                  <span class="asociado-nombre">{a.nombre}</span>
+                  <span class="asociado-nota">{a.instrumentos ?? a.nota}</span>
+                </li>
+              ))
+            }
+            <li>
+              <a class="enlace" href="/contacto?tema=musico">¿Tocas y quieres sumarte? Escríbenos</a>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </section>
@@ -953,6 +959,12 @@ const necesidades = [
     margin-top: clamp(4.5rem, 9vw, 7rem);
     padding-top: 2.8rem;
     border-top: 1px solid var(--linea);
+  }
+  .asociados-tarjetas {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+    gap: 2.5rem 2rem;
+    margin-bottom: 1rem;
   }
   .asociados-texto {
     color: var(--plata-2);
