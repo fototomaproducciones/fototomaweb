@@ -6,7 +6,6 @@ import Logo from '../components/Logo.astro';
 import Creditos from '../components/Creditos.astro';
 import Escuchar from '../components/Escuchar.astro';
 import { OBRA, CATEGORIAS, NOMBRES, type Categoria } from '../data/obra';
-import simbolos from '../components/logo-simbolos.json';
 import { DIRECTORES } from '../data/equipo';
 import Asociados from '../components/Asociados.astro';
 
@@ -59,7 +58,6 @@ function ejemplo(id: string) {
   const p = OBRA.find((x) => x.id === id)!;
   return { yt: p.video!, titulo: p.titulo, credito: `${p.rol} — ${p.quien.map((q) => NOMBRES[q]).join(' y ')}` };
 }
-const partes = (simbolos as Record<string, any[]>).parabola;
 const necesidades = [
   { texto: 'Una película', tema: 'cine' },
   { texto: 'Un documental', tema: 'cine' },
@@ -229,41 +227,22 @@ const necesidades = [
     </div>
   </section>
 
-  <!-- el nombre (papel) -->
-  <section class="seccion hueso fotofono">
-    <div class="envoltura fotofono-rejilla">
-      <figure class="fotofono-grabado rv">
-        <Foto src="fotofono/transmisor.jpg" alt="Grabado de 1880: un hombre habla hacia el transmisor del fotófono, que refleja un rayo de sol." sizes="(max-width: 820px) 100vw, 50vw" />
-        <figcaption class="pie-foto">El transmisor del fotófono · grabado de 1880</figcaption>
-      </figure>
-      <div class="fotofono-texto rv">
-        <p class="etq">El nombre</p>
-        <h2>Una voz que viajó en un <em>rayo de sol</em></h2>
-        <p>
-          En junio de 1880, Alexander Graham Bell y Charles Sumner Tainter mandaron una voz de un edificio a otro, en
-          Washington, sin cables. El sonido hacía vibrar un espejo delgado, el espejo movía un rayo de sol y, a unos 200
-          metros, un espejo parabólico con una celda de selenio volvía esa luz a sonido. Lo llamaron fotófono.
+  <!-- publicidad (papel) -->
+  <section class="seccion papel">
+    <div class="envoltura publi">
+      <div class="publi-texto rv">
+        <p class="etq">Para agencias y marcas</p>
+        <h2>Música para comerciales, <em>lista para la pauta</em></h2>
+        <p class="lead">
+          Versiones por duración, pistas separadas, mezcla para cada medio y una licencia de uso clara desde la propuesta.
         </p>
-        <p>Nuestro logo es ese espejo recibiendo la luz.</p>
-        <div class="fotofono-juego">
-          <svg class="espejo-vivo" viewBox="0 0 100 100" aria-hidden="true">
-            {
-              partes.map((q) =>
-                q[0] === 'stroke' ? (
-                  <path d={q[1]} fill="none" stroke="currentColor" stroke-width={q[2]} class={q[2] < 4 ? 'rayos' : 'espejo'} />
-                ) : (
-                  <circle cx={q[1][0]} cy={q[1][1]} r={q[1][2]} class="foco" />
-                ),
-              )
-            }
-            {partes.filter((q) => q[0] === 'stroke' && q[2] < 4).map((q) => <path d={q[1]} class="luz" pathLength="100" />)}
-          </svg>
-          <div>
-            <button class="boton lleno encender" aria-pressed="false">Encender el sol</button>
-            <p class="fotofono-nota">Así llegaba la voz al foco del espejo.</p>
-          </div>
+        <div class="botones">
+          <a class="boton lleno flecha" href="/publicidad">Cómo trabajamos con marcas</a>
+          <a class="boton" href="/contacto?tema=publicidad">Pedir una propuesta</a>
         </div>
-        <a class="enlace" href="/fotofono">La historia completa</a>
+      </div>
+      <div class="publi-pieza rv">
+        <ObraCard pieza={OBRA.find((p) => p.id === 'mazda-un-color')!} />
       </div>
     </div>
   </section>
@@ -311,24 +290,21 @@ const necesidades = [
     </div>
   </section>
 
-  <!-- publicidad (papel) -->
-  <section class="seccion papel">
-    <div class="envoltura publi">
-      <div class="publi-texto rv">
-        <p class="etq">Para agencias y marcas</p>
-        <h2>Música para comerciales, <em>lista para la pauta</em></h2>
-        <p class="lead">
-          Versiones por duración, pistas separadas, mezcla para cada medio y una licencia de uso clara desde la propuesta.
+  <!-- el nombre: solo una seña; la historia está en /fotofono -->
+  <section class="fotofono hueso">
+    <a class="envoltura fotofono-franja" href="/fotofono">
+      <figure class="fotofono-grabado">
+        <Foto src="fotofono/transmisor.jpg" alt="" sizes="9rem" anchos={[200, 320]} />
+      </figure>
+      <div class="fotofono-texto">
+        <p class="etq">El nombre</p>
+        <p class="fotofono-frase">
+          Fototoma viene del <em>fotófono</em>: en 1880, Bell y Tainter mandaron una voz por un rayo de sol. Nuestro logo
+          es el espejo que la recibía.
         </p>
-        <div class="botones">
-          <a class="boton lleno flecha" href="/publicidad">Cómo trabajamos con marcas</a>
-          <a class="boton" href="/contacto?tema=publicidad">Pedir una propuesta</a>
-        </div>
       </div>
-      <div class="publi-pieza rv">
-        <ObraCard pieza={OBRA.find((p) => p.id === 'mazda-un-color')!} />
-      </div>
-    </div>
+      <span class="fotofono-ir flecha">La historia</span>
+    </a>
   </section>
 
   <!-- cierre sobre imagen -->
@@ -390,15 +366,6 @@ const necesidades = [
         mostrar(b.dataset.pestana!);
       }),
     );
-
-    // encender el fotófono
-    const boton = document.querySelector<HTMLButtonElement>('.encender');
-    const juego = document.querySelector<HTMLElement>('.fotofono-juego');
-    boton?.addEventListener('click', () => {
-      const on = juego!.classList.toggle('encendido');
-      boton.setAttribute('aria-pressed', on ? 'true' : 'false');
-      boton.textContent = on ? 'Apagar' : 'Encender el sol';
-    });
 
     const fotos = [...document.querySelectorAll<HTMLElement>('.heroe-foto')];
     if (fotos.length < 2 || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -772,94 +739,73 @@ const necesidades = [
   }
 
 
-  /* fotófono */
-  .fotofono-rejilla {
+  /* fotófono: franja corta que lleva a /fotofono */
+  .fotofono {
+    border-top: 1px solid var(--linea-papel);
+  }
+  .fotofono-franja {
     display: grid;
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-    gap: clamp(2.5rem, 6vw, 6rem);
+    grid-template-columns: 9rem minmax(0, 1fr) auto;
+    gap: 2rem 2.6rem;
     align-items: center;
+    padding-block: 2.2rem;
+    color: var(--tinta);
+    text-decoration: none;
   }
   .fotofono-grabado {
     margin: 0;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
   }
   .fotofono-grabado :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     mix-blend-mode: multiply;
     filter: grayscale(1) contrast(1.15) sepia(0.12);
   }
-  .fotofono-grabado figcaption {
-    margin-top: 0.8rem;
+  .fotofono-texto .etq {
+    margin-bottom: 0.5rem;
+  }
+  .fotofono-frase {
+    margin: 0;
+    max-width: 40em;
+    font-family: var(--serif);
+    font-size: clamp(1.15rem, 1.8vw, 1.35rem);
+    line-height: 1.4;
     color: var(--tinta-2);
   }
-  .fotofono-texto h2 {
-    margin-bottom: 1.5rem;
-  }
-  .fotofono-texto p {
-    color: var(--tinta-2);
-    font-size: 1.08rem;
-  }
-  .fotofono-juego {
-    display: flex;
-    align-items: center;
-    gap: 1.6rem;
-    margin: 2rem 0;
-    padding: 1.2rem;
-    border: 1px solid var(--linea-papel);
-    background: var(--papel);
-  }
-  .espejo-vivo {
-    width: 110px;
-    height: 110px;
-    flex: none;
+  .fotofono-frase em {
     color: var(--tinta);
   }
-  .espejo-vivo .foco {
-    fill: var(--tinta);
-    transition: fill 0.5s;
+  .fotofono-ir {
+    display: inline-flex;
+    gap: 0.5rem;
+    font: 700 0.72rem/1 var(--sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--linea-papel);
+    transition:
+      color 0.25s,
+      border-color 0.25s;
   }
-  .espejo-vivo .luz {
-    fill: none;
-    stroke: var(--sol);
-    stroke-width: 2.6;
-    stroke-dasharray: 8 92;
-    stroke-dashoffset: 100;
-    opacity: 0;
+  .fotofono-franja:hover .fotofono-ir {
+    color: var(--sol-tinta);
+    border-color: var(--sol-tinta);
   }
-  .encendido .espejo-vivo .luz {
-    opacity: 1;
-    animation: viaja 1.4s linear infinite;
+  .fotofono-franja:hover .fotofono-ir::after {
+    translate: 4px 0;
   }
-  .encendido .espejo-vivo .luz:nth-of-type(2) {
-    animation-delay: -0.45s;
-  }
-  .encendido .espejo-vivo .foco {
-    fill: var(--sol-tinta);
-    animation: brilla 1.4s ease-in-out infinite;
-    transform-box: fill-box;
-    transform-origin: center;
-  }
-  @keyframes viaja {
-    to {
-      stroke-dashoffset: 0;
+  @media (max-width: 720px) {
+    .fotofono-franja {
+      grid-template-columns: 6rem minmax(0, 1fr);
+      gap: 1.2rem 1.4rem;
     }
-  }
-  @keyframes brilla {
-    50% {
-      scale: 1.35;
-    }
-  }
-  .fotofono-nota {
-    font-size: 0.9rem !important;
-    margin: 0.7rem 0 0;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .encendido .espejo-vivo .luz,
-    .encendido .espejo-vivo .foco {
-      animation: none;
-    }
-  }
-  @media (max-width: 820px) {
-    .fotofono-rejilla {
-      grid-template-columns: 1fr;
+    .fotofono-ir {
+      grid-column: 2;
+      justify-self: start;
     }
   }
 
