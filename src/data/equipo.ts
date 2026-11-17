@@ -79,14 +79,45 @@ export const DIRECTORES: Director[] = [
 ];
 
 export interface Asociado {
-  nombre: string;
+  nombre: string; // tal cual lo escribe la persona (luci le, en minúsculas)
   instrumentos?: string;
   nota?: string;
+  foto?: string; // src/assets/equipo/
+  bio?: string;
+  obra?: { titulo: string; nota?: string; url: string }[];
+  canciones?: { titulo: string; url: string }[];
+  enlaces?: { texto: string; url: string }[];
 }
 
 // Músicos asociados. La idea es que crezca: cuerdas, vientos, voces, percusiones…
 export const ASOCIADOS: Asociado[] = [
-  { nombre: 'luci le', nota: 'Con Santiago en «Diostedé» y con Santiago y Martín en «Presagio». Portafolio en camino.' },
+  {
+    nombre: 'luci le',
+    instrumentos: 'Voz y arreglos vocales',
+    foto: 'luci-le.jpg',
+    bio: 'Cantante de sesión y arreglista vocal. Graba voces principales y coros en español e inglés, y escribe las armonías y texturas de voces de cada canción. Ha cantado pop, rock, jazz, baladas y música electrónica. Con Santiago hizo «Diostedé» y con Santiago y Martín, «Presagio». También compone: tiene un disco propio, Niña Flor, y ha hecho música para instalaciones de arte y para danza.',
+    obra: [
+      { titulo: 'Niña Flor', nota: 'disco', url: 'https://www.youtube.com/playlist?list=OLAK5uy_kN_AO6Sde0I0KbFrAOpHAzz9g3u0RvehM' },
+      { titulo: 'Las aguas y las nieves', nota: 'música para una instalación de arte', url: 'https://soundcloud.com/user-957267843-410281611/sets/las-aguas-y-las-nieves' },
+      {
+        titulo: 'Reflejos',
+        nota: 'video de danza dirigido por Leo Carreño, con la bailarina Anjah Kihai',
+        url: 'https://drive.google.com/file/d/1PWMJBYnmTFEONN2WL9ViYVaMUm-43Eya/view',
+      },
+    ],
+    canciones: [
+      { titulo: 'Estudio para no morir de frío', url: 'https://on.soundcloud.com/JoRhIRmKGAPjNAie7W' },
+      { titulo: 'Alegra', url: 'https://on.soundcloud.com/YST4Vy6lbHCR31ZEqM' },
+      { titulo: 'Campanas Notre Dame', url: 'https://on.soundcloud.com/TNPhMm2BBltL5oRSn6' },
+      { titulo: 'extracción', url: 'https://on.soundcloud.com/yN42vwm2NVRu8ra7QK' },
+      { titulo: 'Vuoto-Cuerpo', url: 'https://on.soundcloud.com/sfyVYltAovJEzmkXQc' },
+      { titulo: 'Reflejos', url: 'https://on.soundcloud.com/pwZcKGx9X3JsDvs8P2' },
+    ],
+    enlaces: [
+      { texto: 'SoundCloud', url: 'https://soundcloud.com/lucileflor' },
+      { texto: 'Fiverr', url: 'https://www.fiverr.com/lucillexoxo/be-your-session-singer-and-custom-vocal-arranger' },
+    ],
+  },
 ];
 
 // Pistas para escuchar. Se cargan solo al dar play y siguen sonando al cambiar de página.

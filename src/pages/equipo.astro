@@ -87,8 +87,7 @@ const dev = import.meta.env.DEV;
   <section class="seccion carbon" id="asociados">
     <div class="envoltura asociados">
       <div class="rv">
-        <p class="etq">Músicos asociados</p>
-        <h2>Los que tocan</h2>
+        <h2>Músicos asociados</h2>
         <p class="lead">
           Una red de intérpretes que crece con cada proyecto: cuerdas, vientos, voces, percusiones e instrumentos
           tradicionales, para poder responder a cualquier música que pida una película o una campaña.
@@ -97,15 +96,61 @@ const dev = import.meta.env.DEV;
       <div class="rv">
         <ul class="asociados-lista">
           {
-            ASOCIADOS.map((a) => (
-              <li>
-                <span class="asociado-nombre">{a.nombre}</span>
-                <span class="gris">{a.instrumentos ?? a.nota}</span>
-              </li>
-            ))
+            ASOCIADOS.map((a) =>
+              a.foto ? (
+                <li class="asociado-ficha">
+                  <figure class="asociado-foto">
+                    <Foto src={`equipo/${a.foto}`} alt={a.nombre} sizes="(max-width: 860px) 40vw, 12rem" anchos={[320, 480, 640]} />
+                  </figure>
+                  <div>
+                    <span class="asociado-nombre">{a.nombre}</span>
+                    {a.instrumentos && <p class="asociado-rol">{a.instrumentos}</p>}
+                    {a.bio && <p class="asociado-bio">{a.bio}</p>}
+                    {a.obra && (
+                      <ul class="perfil-lista asociado-obra">
+                        {a.obra.map((o) => (
+                          <li>
+                            <a class="enlace" href={o.url} target="_blank" rel="noopener">
+                              {o.titulo}
+                            </a>
+                            {o.nota && <span class="gris"> · {o.nota}</span>}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    {a.canciones && (
+                      <p class="asociado-canciones">
+                        <span class="gris">Canciones: </span>
+                        {a.canciones.map((c, j) => (
+                          <>
+                            <a class="enlace" href={c.url} target="_blank" rel="noopener">
+                              {c.titulo}
+                            </a>
+                            {j < a.canciones!.length - 1 && <span class="gris">, </span>}
+                          </>
+                        ))}
+                      </p>
+                    )}
+                    {a.enlaces && (
+                      <p class="perfil-enlaces asociado-enlaces">
+                        {a.enlaces.map((e) => (
+                          <a class="enlace" href={e.url} target="_blank" rel="noopener">
+                            {e.texto} ↗
+                          </a>
+                        ))}
+                      </p>
+                    )}
+                  </div>
+                </li>
+              ) : (
+                <li>
+                  <span class="asociado-nombre">{a.nombre}</span>
+                  <span class="gris">{a.instrumentos ?? a.nota}</span>
+                </li>
+              ),
+            )
           }
         </ul>
-        {dev && <p class="pendiente">PENDIENTE: portafolio e instrumentos de luci le</p>}
         <div class="sumate">
           <h3>¿Tocas y quieres trabajar con nosotros?</h3>
           <p>Cuéntanos qué instrumentos tocas, qué músicas conoces y mándanos grabaciones o videos.</p>
@@ -209,7 +254,7 @@ const dev = import.meta.env.DEV;
 
   .asociados {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
     gap: 3rem 5rem;
   }
   .asociados h2 {
@@ -233,6 +278,68 @@ const dev = import.meta.env.DEV;
     font-family: var(--serif);
     font-size: 2.2rem;
     line-height: 1.1;
+  }
+  .asociados-lista .asociado-ficha {
+    display: grid;
+    grid-template-columns: minmax(0, 11rem) minmax(0, 1fr);
+    gap: 1.6rem;
+    align-items: start;
+    justify-content: stretch;
+    padding: 1.6rem 0;
+  }
+  .asociado-foto {
+    position: relative;
+    margin: 0;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: var(--grafito);
+  }
+  .asociado-foto :global(picture),
+  .asociado-foto :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .asociado-rol {
+    color: var(--sol);
+    font-size: var(--t-etq);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin: 0.5rem 0 0.9rem;
+  }
+  .asociado-bio {
+    color: var(--plata-2);
+    font-size: 0.98rem;
+    margin: 0;
+  }
+  .asociado-obra {
+    margin: 1.2rem 0 0;
+    padding-top: 1rem;
+    border-top: 1px solid var(--linea);
+    font-size: 0.95rem;
+  }
+  .asociados-lista .asociado-obra li {
+    display: block;
+    padding: 0.3rem 0;
+    border: 0;
+  }
+  .asociado-canciones {
+    margin: 0.8rem 0 0;
+    font-size: 0.95rem;
+    line-height: 1.8;
+  }
+  .asociado-enlaces {
+    margin-top: 1rem;
+  }
+  @media (max-width: 520px) {
+    .asociados-lista .asociado-ficha {
+      grid-template-columns: 1fr;
+    }
+    .asociado-foto {
+      max-width: 15rem;
+    }
   }
   .sumate {
     margin-top: 3rem;
