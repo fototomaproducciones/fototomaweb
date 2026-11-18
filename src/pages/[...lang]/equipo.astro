@@ -4,6 +4,7 @@ import { DIRECTORES, director } from '../../data/equipo';
 import { dePersona, enIdioma } from '../../data/obra';
 import Foto from '../../components/Foto.astro';
 import Asociados from '../../components/Asociados.astro';
+import Discografia from '../../components/Discografia.astro';
 import { IDIOMAS, idioma, enlace, juntar } from '../../i18n';
 
 export function getStaticPaths() {
@@ -55,20 +56,23 @@ const dev = import.meta.env.DEV;
                 <p class="perfil-bio">{b}</p>
               ))}
 
-              {d.discos && (
+              {d.discografia && (
                 <div class="perfil-bloque">
-                  <p class="etq">{en ? 'Albums' : 'Discos'}</p>
+                  <p class="etq">{en ? 'Records · press play' : 'Discos · dale play'}</p>
+                  <Discografia discos={d.discografia} nombre={d.nombre} />
+                </div>
+              )}
+
+              {d.colaboraciones && (
+                <div class="perfil-bloque">
+                  <p class="etq">{en ? 'Collaborations' : 'Colaboraciones'}</p>
                   <ul class="perfil-lista">
-                    {d.discos.map((x) => (
+                    {d.colaboraciones.map((x) => (
                       <li>
-                        {x.url ? (
-                          <a class="enlace" href={x.url} target="_blank" rel="noopener">
-                            {x.titulo}
-                          </a>
-                        ) : (
-                          x.titulo
-                        )}
-                        {x.anio && <span class="gris"> · {x.anio}</span>}
+                        <a class="enlace" href={x.url} target="_blank" rel="noopener">
+                          {x.titulo}
+                        </a>
+                        <span class="gris"> · {x.nota}</span>
                       </li>
                     ))}
                   </ul>

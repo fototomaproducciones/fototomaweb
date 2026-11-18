@@ -1,0 +1,223 @@
+---
+// Discos y sencillos de un codirector. Cada pista suena en el tocadiscos de abajo (Base.astro)
+// y «Siguiente» avanza dentro del mismo disco.
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { TIPOS_DISCO, type Disco } from '../data/equipo';
+import { idioma } from '../i18n';
+import Foto from './Foto.astro';
+
+interface Props {
+  discos: Disco[];
+  nombre: string;
+}
+const { discos, nombre } = Astro.props;
+const en = idioma(Astro.url) === 'en';
+const imagenes = import.meta.glob<{ default: ImageMetadata }>('/src/assets/**/*.jpg', { eager: true });
+
+const lista = await Promise.all(
+  discos.map(async (d) => {
+    const meta = imagenes[`/src/assets/${d.img}`]?.default;
+    if (!meta) throw new Error(`No existe la imagen src/assets/${d.img}`);
+    const mini = (await getImage({ src: meta, width: 160, height: 160, format: 'webp', quality: 70 })).src;
+    const autor = d.como ?? nombre;
+    const pistas = d.pistas.map((p) => ({
+      titulo: p.titulo,
+      quien: p.con ? `${autor} ${en ? 'with' : 'con'} ${p.con}` : autor,
+      tipo: p.tipo,
+      id: p.id,
+      url: p.url,
+      img: mini,
+      clave: p.id ?? p.url!,
+    }));
+    return { ...d, datos: pistas };
+  }),
+);
+---
+
+<div class="discografia">
+  {
+    lista.map((d) => (
+      <article class="lp" data-lista={JSON.stringify(d.datos)}>
+        <button class="lp-tapa" data-pista={JSON.stringify(d.datos[0])} aria-label={en ? `Play ${d.titulo}` : `Escuchar ${d.titulo}`}>
+          <Foto src={d.img} sizes="140px" anchos={[160, 280]} />
+          <span class="lp-play" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M8 5.5v13l11-6.5z" fill="currentColor" />
+            </svg>
+          </span>
+        </button>
+        <div class="lp-texto">
+          <p class="lp-tipo">
+            {TIPOS_DISCO[d.tipo][en ? 1 : 0]}
+            {d.anio && ` · ${d.anio}`}
+            {d.como && <span> · {en ? 'as' : 'como'} {d.como}</span>}
+          </p>
+          <h3 class="lp-titulo serif">{d.titulo}</h3>
+          {d.nota && <p class="lp-nota">{d.nota}</p>}
+          {d.datos.length > 1 && (
+            <ol class:list={['lp-pistas', { larga: d.datos.length > 5 }]}>
+              {d.datos.map((p, i) => (
+                <li>
+                  <button class="lp-pista" data-pista={JSON.stringify(p)}>
+                    <span class="lp-n">{String(i + 1).padStart(2, '0')}</span>
+                    <span class="lp-nombre">{p.titulo}</span>
+                    {d.pistas[i].con && <span class="lp-con">{en ? 'with' : 'con'} {d.pistas[i].con}</span>}
+                  </button>
+                </li>
+              ))}
+            </ol>
+          )}
+          {d.enlaces && (
+            <p class="lp-enlaces">
+              {d.enlaces.map((e) => (
+                <a class="enlace" href={e.url} target="_blank" rel="noopener">
+                  {e.texto} ↗
+                </a>
+              ))}
+            </p>
+          )}
+        </div>
+      </article>
+    ))
+  }
+</div>
+
+<style>
+  .discografia {
+    display: grid;
+    gap: 1.8rem;
+    margin: 0.4rem 0 1rem;
+  }
+  .lp {
+    display: grid;
+    grid-template-columns: 8.75rem minmax(0, 1fr);
+    gap: 1.3rem;
+    align-items: start;
+  }
+  .lp-tapa {
+    all: unset;
+    cursor: pointer;
+    position: relative;
+    aspect-ratio: 1;
+    width: 100%;
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.4);
+  }
+  .lp-tapa:focus-visible {
+    outline: 2px solid var(--sol);
+    outline-offset: 4px;
+  }
+  .lp-tapa :global(picture),
+  .lp-tapa :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .lp-play {
+    position: absolute;
+    left: 0.5rem;
+    bottom: 0.5rem;
+    width: 2.3rem;
+    height: 2.3rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: rgba(20, 18, 15, 0.72);
+    color: var(--plata);
+    backdrop-filter: blur(4px);
+    transition:
+      background 0.3s,
+      color 0.3s;
+  }
+  .lp-play svg {
+    width: 0.85rem;
+    margin-left: 2px;
+  }
+  .lp-tapa:hover .lp-play,
+  .lp-tapa.sonando .lp-play {
+    background: var(--sol);
+    color: var(--tinta);
+  }
+  .lp-tipo {
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gris);
+    margin: 0 0 0.2rem;
+  }
+  .lp-titulo {
+    font-size: 1.45rem;
+    line-height: 1.15;
+    margin: 0 0 0.35rem;
+  }
+  .lp-nota {
+    font-size: 0.92rem;
+    color: var(--plata-2);
+    margin: 0 0 0.5rem;
+  }
+  .lp-pistas {
+    list-style: none;
+    margin: 0.3rem 0 0.6rem;
+    padding: 0;
+  }
+  .lp-pistas.larga {
+    columns: 2 13rem;
+    column-gap: 1.5rem;
+  }
+  .lp-pista {
+    all: unset;
+    cursor: pointer;
+    display: flex;
+    gap: 0.6rem;
+    align-items: baseline;
+    max-width: 100%;
+    padding: 0.18rem 0;
+    font-size: 0.95rem;
+    color: var(--plata);
+    break-inside: avoid;
+  }
+  .lp-pista:hover .lp-nombre,
+  .lp-pista:focus-visible .lp-nombre {
+    color: var(--sol);
+  }
+  .lp-pista:focus-visible {
+    outline: 1px solid var(--sol);
+    outline-offset: 2px;
+  }
+  .lp-pista.sonando .lp-nombre,
+  .lp-pista.sonando .lp-n {
+    color: var(--sol);
+  }
+  .lp-n {
+    font-size: 0.75rem;
+    color: var(--gris);
+    font-variant-numeric: tabular-nums;
+  }
+  .lp-con {
+    font-size: 0.8rem;
+    color: var(--gris);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+  .lp-nombre {
+    flex: none;
+  }
+  .lp-enlaces {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 1.2rem;
+    margin: 0.2rem 0 0;
+    font-size: 0.88rem;
+    color: var(--plata-2);
+  }
+  @media (max-width: 480px) {
+    .lp {
+      grid-template-columns: 6.5rem minmax(0, 1fr);
+      gap: 1rem;
+    }
+  }
+</style>
