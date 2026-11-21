@@ -9,7 +9,7 @@ const HISPANOS = new Set([
   'CO', 'ES', 'MX', 'AR', 'PE', 'VE', 'CL', 'EC', 'GT', 'CU', 'BO', 'DO', 'HN', 'PY', 'SV', 'NI', 'CR', 'PA', 'UY', 'PR', 'GQ',
 ]);
 // Páginas que existen en los dos idiomas (sin /en)
-const TRADUCIDAS = /^\/(?:obra|servicios|publicidad|equipo(?:\/[\w-]+)?|contacto|fotofono)?$/;
+const TRADUCIDAS = /^\/(?:obra|servicios(?:\/[\w-]+)?|publicidad|equipo(?:\/[\w-]+)?|contacto|fotofono)?$/;
 // Buscadores y vistas previas de enlaces: no se redirigen, para que vean e indexen las dos versiones
 const ROBOT = /bot|crawl|spider|slurp|facebookexternalhit|whatsapp|telegram|preview|lighthouse|headless/i;
 

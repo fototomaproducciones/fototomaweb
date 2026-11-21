@@ -18,6 +18,7 @@ interface Props {
   cabeceraSobreFoto?: boolean;
   imagen?: string; // imagen para compartir (en public/)
   traducida?: boolean; // false: la página existe solo en español (marca, 404)
+  ld?: Record<string, unknown>; // datos estructurados propios de la página
 }
 const lang = idioma(Astro.url);
 const en = lang === 'en';
@@ -30,12 +31,13 @@ const {
   cabeceraSobreFoto = false,
   imagen = '/og.jpg',
   traducida = true,
+  ld: ldPagina,
 } = Astro.props;
 const tituloCompleto = titulo
   ? `${titulo} · Fototoma Producciones`
   : en
-    ? 'Fototoma Producciones · Music for the picture'
-    : 'Fototoma Producciones · Música para la imagen';
+    ? 'Fototoma Producciones · Music production for film, advertising and media'
+    : 'Fototoma Producciones · Productora de música para cine, publicidad y medios';
 // al construir, las páginas salen como obra.html, pero se publican como /obra
 const limpia = limpiar(Astro.url.pathname);
 const ruta = sinIdioma(limpia); // la ruta sin /en, para marcar el menú
@@ -50,16 +52,42 @@ const menu = [
   { url: '/equipo', texto: en ? 'Team' : 'Equipo' },
 ];
 const dev = import.meta.env.DEV;
+// Datos estructurados (SEO, 21 nov 2026): la productora como servicio profesional con su catálogo, y el sitio.
+const abs = (r: string) => new URL(enlace(lang, r), Astro.site).href;
 const ld = {
   '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: 'Fototoma Producciones',
-  description: en ? 'Music production company for film, TV and media.' : 'Productora de música para medios audiovisuales.',
-  url: Astro.site?.href,
-  email: CORREO,
-  logo: new URL('/marca/fototoma-simbolo-negro.png', Astro.site).href,
-  areaServed: 'CO',
-  founder: ['Martín Perea Tobón', 'Santiago García', 'Juan Rizoma'].map((n) => ({ '@type': 'Person', name: n })),
+  '@graph': [
+    {
+      '@type': ['Organization', 'ProfessionalService'],
+      '@id': new URL('/#fototoma', Astro.site).href,
+      name: 'Fototoma Producciones',
+      alternateName: 'Fototoma',
+      description: en
+        ? 'Music production company for film, documentary, series, advertising and media: original music, sound design, mixing and live sessions.'
+        : 'Productora de música para cine, documental, series, publicidad y medios: música original, diseño sonoro, mezcla y sesiones en vivo.',
+      url: Astro.site?.href,
+      email: CORREO,
+      logo: new URL('/marca/fototoma-simbolo-negro.png', Astro.site).href,
+      image: new URL('/og.jpg', Astro.site).href,
+      address: { '@type': 'PostalAddress', addressLocality: 'Bogotá', addressCountry: 'CO' },
+      areaServed: [{ '@type': 'Country', name: 'Colombia' }],
+      knowsLanguage: ['es', 'en'],
+      knowsAbout: en
+        ? ['Film scoring', 'Original music', 'Sound design', 'Foley', 'Dialogue editing', 'Mixing and mastering', 'Music supervision', 'Jingles', 'Sonic branding', 'Live sessions', 'Music production', 'Podcast production']
+        : ['Música para cine', 'Música original', 'Diseño sonoro', 'Foley', 'Edición de diálogos', 'Mezcla y masterización', 'Supervisión musical', 'Jingles', 'Identidad sonora', 'Sesiones en vivo', 'Producción musical', 'Podcast'],
+      founder: ['Martín Perea Tobón', 'Santiago García', 'Juan Rizoma'].map((n) => ({ '@type': 'Person', name: n })),
+      hasOfferCatalog: {
+        '@type': 'OfferCatalog',
+        name: en ? 'Music and sound services' : 'Servicios de música y sonido',
+        itemListElement: [
+          [en ? 'Music and sound for film, series and documentary' : 'Música y sonido para cine, series y documental', '/servicios/cine'],
+          [en ? 'Music for advertising' : 'Música para publicidad', '/publicidad'],
+          [en ? 'Live sessions, music production and podcasts' : 'Sesiones en vivo, producción musical y podcast', '/servicios/sesiones'],
+        ].map(([name, r]) => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name, url: abs(r) } })),
+      },
+    },
+    { '@type': 'WebSite', name: 'Fototoma Producciones', alternateName: 'Fototoma', url: Astro.site?.href, inLanguage: ['es-CO', 'en'] },
+  ],
 };
 ---
 
@@ -100,6 +128,7 @@ const ld = {
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <script type="application/ld+json" set:html={JSON.stringify(ld)} />
+    {ldPagina && <script type="application/ld+json" set:html={JSON.stringify({ '@context': 'https://schema.org', ...ldPagina })} />}
     <ClientRouter fallback="swap" />
   </head>
   <body>
@@ -179,7 +208,7 @@ const ld = {
         </nav>
       </div>
       <div class="envoltura pie-final">
-        <span>© {new Date().getFullYear()} Fototoma Producciones</span>
+        <span>© {new Date().getFullYear()} Fototoma Producciones · {en ? 'Picture and documentary with' : 'Imagen y documental con'} <a href="https://dialmedio.org" rel="noopener">Dial Medio</a></span>
         <span>{en ? 'Engravings of Bell and Tainter’s photophone, 1880 · public domain' : 'Grabados del fotófono de Bell y Tainter, 1880 · dominio público'}</span>
       </div>
     </footer>

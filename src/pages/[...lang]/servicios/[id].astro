@@ -1,0 +1,179 @@
+---
+// Página propia de un servicio (SEO, 21 nov 2026): /servicios/cine y /servicios/sesiones, en español y en inglés.
+// Publicidad ya tiene la suya en /publicidad. Datos en src/data/servicios.ts.
+import Base from '../../../layouts/Base.astro';
+import Foto from '../../../components/Foto.astro';
+import { IDIOMAS, idioma, enlace } from '../../../i18n';
+import { BLOQUES_ES, BLOQUES_EN, PASOS_ES, PASOS_EN, PAGINAS, type Pagina } from '../../../data/servicios';
+
+export function getStaticPaths() {
+  return IDIOMAS().flatMap(({ params }) => PAGINAS.map((p) => ({ params: { ...params, id: p.id }, props: { p } })));
+}
+const lang = idioma(Astro.url);
+const en = lang === 'en';
+const u = (r: string) => enlace(lang, r);
+const abs = (r: string) => new URL(u(r), Astro.site).href;
+const { p } = Astro.props as { p: Pagina };
+const b = (en ? BLOQUES_EN : BLOQUES_ES).find((x) => x.id === p.id)!;
+const pasos = en ? PASOS_EN : PASOS_ES;
+const preguntas = p.preguntas[lang];
+
+const otros = [
+  { url: '/servicios/cine', texto: en ? 'Film, series and documentary' : 'Cine, series y documental', id: 'cine' },
+  { url: '/publicidad', texto: en ? 'Advertising and brands' : 'Publicidad y marcas', id: 'publicidad' },
+  { url: '/servicios/sesiones', texto: en ? 'Live sessions, albums and podcasts' : 'Sesiones, discos y podcasts', id: 'sesiones' },
+].filter((o) => o.id !== p.id);
+
+const ld = {
+  '@graph': [
+    {
+      '@type': 'Service',
+      name: p.titulo[lang],
+      serviceType: b.etq,
+      description: p.descripcion[lang],
+      url: abs(`/servicios/${p.id}`),
+      provider: { '@id': new URL('/#fototoma', Astro.site).href },
+      areaServed: [{ '@type': 'Country', name: 'Colombia' }],
+      inLanguage: en ? 'en' : 'es',
+      hasOfferCatalog: {
+        '@type': 'OfferCatalog',
+        name: b.titulo,
+        itemListElement: b.servicios.map((s) => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name: s.nombre, description: s.texto } })),
+      },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: en ? 'Home' : 'Inicio', item: abs('/') },
+        { '@type': 'ListItem', position: 2, name: en ? 'Services' : 'Servicios', item: abs('/servicios') },
+        { '@type': 'ListItem', position: 3, name: p.h1[lang], item: abs(`/servicios/${p.id}`) },
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: preguntas.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })),
+    },
+  ],
+};
+---
+
+<Base titulo={p.titulo[lang]} descripcion={p.descripcion[lang]} ld={ld}>
+  <section class="seccion">
+    <div class="envoltura">
+      <nav class="migas" aria-label={en ? 'Breadcrumb' : 'Ruta'}>
+        <a href={u('/')}>{en ? 'Home' : 'Inicio'}</a> <span aria-hidden="true">/</span> <a href={u('/servicios')}>{en ? 'Services' : 'Servicios'}</a>
+      </nav>
+      <p class="etq">{b.etq}</p>
+      <h1>{p.h1[lang]}</h1>
+      {p.parrafos[lang].map((t, i) => <p class:list={['intro', { lead: i === 0 }]}>{t}</p>)}
+      <p class="acciones"><a class="boton lleno flecha" href={u('/contacto')}>{en ? 'Tell us about a project' : 'Contarnos un proyecto'}</a></p>
+    </div>
+  </section>
+
+  <section class="seccion bloque">
+    <div class="envoltura">
+      <figure class="bloque-foto marco rv">
+        <Foto src={`obra/${b.img}`} sizes="100vw" anchos={[800, 1280, 1920]} prioridad />
+        <figcaption class="pie-foto">{b.pie}</figcaption>
+      </figure>
+      <div class="bloque-cabeza rv">
+        <p class="etq">{en ? 'What we do' : 'Qué hacemos'}</p>
+        <h2>{b.titulo}</h2>
+      </div>
+      <dl class="servicios">
+        {b.servicios.map((s) => (
+          <div class="servicio rv">
+            <dt>{s.nombre}</dt>
+            <dd>{s.texto}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <section class="seccion papel" id="preguntas">
+    <div class="envoltura preguntas">
+      <div class="rv">
+        <p class="etq">{en ? 'Questions' : 'Preguntas frecuentes'}</p>
+        <h2>{en ? 'What people usually ask us' : 'Lo que suelen preguntarnos'}</h2>
+      </div>
+      <div class="lista rv">
+        {preguntas.map(([q, a], i) => (
+          <details open={i === 0}>
+            <summary>{q}</summary>
+            <p>{a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="seccion carbon" id="proceso">
+    <div class="envoltura">
+      <div class="cabeza-seccion rv">
+        <div>
+          <p class="etq">{en ? 'How we work' : 'Cómo trabajamos'}</p>
+          <h2>{en ? 'From the first conversation to delivery' : 'De la primera conversación a la entrega'}</h2>
+        </div>
+      </div>
+      <ol class="pasos">
+        {pasos.map((x) => (
+          <li class="paso rv">
+            <h3>{x.nombre}</h3>
+            <p>{x.texto}</p>
+          </li>
+        ))}
+      </ol>
+      <div class="otros rv">
+        <p class="etq">{en ? 'Other services' : 'Otros servicios'}</p>
+        {otros.map((o) => <a class="enlace" href={u(o.url)}>{o.texto}</a>)}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .migas { margin: 0 0 1.4rem; font-size: 0.9rem; color: var(--plata-2); }
+  .migas a { color: inherit; }
+  h1 { max-width: 14em; margin-bottom: 1.6rem; }
+  .intro { max-width: 44rem; margin: 0 0 1.2rem; }
+  .intro:not(.lead) { color: var(--plata-2); }
+  .acciones { margin-top: 2rem; }
+  .bloque-foto { position: relative; margin: 0 0 clamp(2.5rem, 5vw, 4rem); aspect-ratio: 21 / 9; overflow: hidden; background: var(--grafito); }
+  .bloque-foto img { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.8); }
+  .bloque-foto::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0, 0, 0, 0.55), transparent 35%); }
+  .bloque-foto figcaption { position: absolute; left: 1rem; bottom: 0.8rem; z-index: 1; }
+  @media (max-width: 700px) { .bloque-foto { aspect-ratio: 16 / 10; } }
+  .bloque-cabeza { max-width: 44rem; margin-bottom: 3rem; }
+  .servicios { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 4rem; margin: 0; }
+  .servicio { padding: 1.6rem 0; border-top: 1px solid var(--linea); }
+  .servicio dt { font-family: var(--serif); font-size: 1.45rem; margin-bottom: 0.5rem; }
+  .servicio dd { margin: 0; color: var(--plata-2); }
+  @media (max-width: 760px) { .servicios { grid-template-columns: 1fr; } }
+
+  .preguntas { display: grid; gap: 2rem 4rem; }
+  @media (min-width: 900px) { .preguntas { grid-template-columns: 1fr 1.4fr; } }
+  .lista { border-top: 1px solid var(--linea-papel); }
+  .lista details { border-bottom: 1px solid var(--linea-papel); }
+  .lista summary { cursor: pointer; list-style: none; padding: 1.1rem 2.2rem 1.1rem 0; position: relative; font-family: var(--serif); font-size: 1.3rem; line-height: 1.3; }
+  .lista summary::-webkit-details-marker { display: none; }
+  .lista summary::after { content: '+'; position: absolute; right: 0.3rem; top: 50%; transform: translateY(-50%); color: var(--sol-tinta); font-size: 1.4rem; transition: transform 0.25s; }
+  .lista details[open] summary::after { transform: translateY(-50%) rotate(45deg); }
+  .lista details p { margin: 0 0 1.3rem; max-width: 40rem; color: var(--tinta-2); }
+
+  .pasos { list-style: none; padding: 0; margin: 0 0 3.5rem; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2rem; }
+  .paso { position: relative; padding-top: 1.6rem; }
+  .paso::before { content: ''; position: absolute; top: 0; left: 0; right: -2rem; height: 1px; background: var(--linea); }
+  .paso::after { content: ''; position: absolute; top: -3px; left: 0; width: 7px; height: 7px; border-radius: 50%; background: var(--sol); }
+  .paso:last-child::before { right: 0; }
+  .paso h3 { font-size: 1.3rem; margin-bottom: 0.6rem; }
+  .paso p { color: var(--plata-2); font-size: 0.95rem; margin: 0; }
+  @media (max-width: 980px) {
+    .pasos { grid-template-columns: 1fr; gap: 0; }
+    .paso { padding: 0 0 2rem 1.8rem; }
+    .paso::before { top: 0; bottom: 0; left: 3px; right: auto; width: 1px; height: auto; }
+    .paso::after { top: 0.45rem; left: 0; }
+  }
+  .otros { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.6rem 2rem; }
+  .otros .etq { width: 100%; margin: 0; }
+</style>

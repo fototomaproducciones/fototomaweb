@@ -1,7 +1,8 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Foto from '../../components/Foto.astro';
-import { IDIOMAS, idioma, enlace, juntar } from '../../i18n';
+import { IDIOMAS, idioma, enlace } from '../../i18n';
+import { BLOQUES_ES, BLOQUES_EN, PASOS_ES, PASOS_EN, PAGINAS } from '../../data/servicios';
 
 export function getStaticPaths() {
   return IDIOMAS();
@@ -10,224 +11,17 @@ const lang = idioma(Astro.url);
 const en = lang === 'en';
 const u = (r: string) => enlace(lang, r);
 
-const BLOQUES_ES = [
-  {
-    id: 'cine',
-    etq: 'Cine, series y documental',
-    titulo: 'Música y sonido para películas, series y documentales',
-    img: 'mongolia-fotograma.jpg',
-    pie: 'Los últimos nómadas de Mongolia · música y diseño sonoro de Martín Perea Tobón',
-    servicios: [
-      {
-        nombre: 'Música original',
-        texto:
-          'Composición a la imagen: temas, ambientes musicales y piezas sincronizadas con el corte. Grabamos con músicos reales y entregamos partituras cuando hacen falta.',
-      },
-      {
-        nombre: 'Diseño sonoro',
-        texto:
-          'Ambientes, efectos, foley y texturas: el sonido de los lugares, los objetos y los movimientos de cada escena.',
-      },
-      {
-        nombre: 'Edición de diálogos y mezcla final',
-        texto:
-          'Limpieza de diálogos, edición de sonido directo y mezcla para sala de cine, televisión o plataformas, con las especificaciones de cada una.',
-      },
-      {
-        nombre: 'Supervisión musical',
-        texto:
-          'Si la película necesita canciones que ya existen, ayudamos a escogerlas, a pedir los permisos y a llevar el registro de la música usada.',
-      },
-      {
-        nombre: 'Animación y videojuegos',
-        texto: 'Música y efectos que siguen el movimiento cuadro a cuadro, y música por capas para juegos.',
-      },
-      {
-        nombre: 'Desde el rodaje',
-        texto:
-          'Martín también es realizador: podemos sumarnos desde el guion o el rodaje para pensar la música junto con los planos, o registrar sonido y música en campo.',
-      },
-    ],
-  },
-  {
-    id: 'publicidad',
-    etq: 'Publicidad y marcas',
-    titulo: 'Música para comerciales, campañas y contenido de marca',
-    img: 'x_8pQ2hT2iE.jpg',
-    pie: 'Mazda — Un color',
-    servicios: [
-      { nombre: 'Música original y jingles', texto: 'Compuesta para la idea y el ritmo del corte, con letra cuando la campaña la pide.' },
-      { nombre: 'Diseño sonoro', texto: 'Sonido de producto, transiciones y ambientes, hechos a la medida del corte.' },
-      { nombre: 'Identidad sonora', texto: 'Logo sonoro y un sistema de música para que la marca suene igual en todos sus canales.' },
-      {
-        nombre: 'Versiones y entregables',
-        texto: 'Cortes de 6, 10, 15, 20, 30 y 60 segundos, pistas separadas para la posproducción y mezclas para cada medio.',
-      },
-    ],
-    enlace: { url: '/publicidad', texto: 'Cómo trabajamos con agencias y marcas' },
-  },
-  {
-    id: 'sesiones',
-    etq: 'Artistas, sesiones y medios',
-    titulo: 'Sesiones en vivo, discos, videoclips y podcasts',
-    img: 'yfccCqJFOZU.jpg',
-    pie: 'Noisesion · La Noise',
-    servicios: [
-      {
-        nombre: 'Sesiones en vivo',
-        texto:
-          'Grabación multipista y filmación de bandas y solistas en vivo, con la mezcla y el video entregados juntos. Juan ha grabado series como Noisesion y Sesiones Macarena 360.',
-      },
-      {
-        nombre: 'Producción musical y arreglos',
-        texto: 'Producción de discos y sencillos, arreglos para ensambles y orquesta, y dirección de grabaciones.',
-      },
-      { nombre: 'Videoclips', texto: 'Idea, rodaje, cámara, dron y montaje, con la música en el centro.' },
-      {
-        nombre: 'Podcast y radio',
-        texto: 'Grabación, edición y mezcla de voz, música para el programa, cortinas y locución.',
-      },
-      { nombre: 'Mezcla y masterización', texto: 'Para discos, sesiones y piezas audiovisuales, al nivel que pide cada plataforma.' },
-    ],
-  },
-];
-
-
-const BLOQUES_EN: typeof BLOQUES_ES = [
-  {
-    id: 'cine',
-    etq: 'Film, series and documentary',
-    titulo: 'Music and sound for films, series and documentaries',
-    img: 'mongolia-fotograma.jpg',
-    pie: 'The last nomads of Mongolia · music and sound design by Martín Perea Tobón',
-    servicios: [
-      {
-        nombre: 'Original music',
-        texto:
-          'Composing to picture: themes, musical atmospheres and cues synced to the cut. We record with real musicians and deliver sheet music when it is needed.',
-      },
-      {
-        nombre: 'Sound design',
-        texto: 'Ambiences, effects, foley and textures: the sound of the places, objects and movements in each scene.',
-      },
-      {
-        nombre: 'Dialogue editing and final mix',
-        texto:
-          'Dialogue cleanup, production sound editing and mixing for cinema, television or streaming, to each one’s delivery specs.',
-      },
-      {
-        nombre: 'Music supervision',
-        texto:
-          'If the film needs existing songs, we help choose them, clear the rights and keep the cue sheet of the music used.',
-      },
-      {
-        nombre: 'Animation and video games',
-        texto: 'Music and effects that follow the movement frame by frame, and layered, adaptive music for games.',
-      },
-      {
-        nombre: 'From the shoot',
-        texto:
-          'Martín is also a filmmaker: we can join at the script or shooting stage to think about the music together with the shots, or record sound and music in the field.',
-      },
-    ],
-  },
-  {
-    id: 'publicidad',
-    etq: 'Advertising and brands',
-    titulo: 'Music for commercials, campaigns and branded content',
-    img: 'x_8pQ2hT2iE.jpg',
-    pie: 'Mazda — Un color',
-    servicios: [
-      { nombre: 'Original music and jingles', texto: 'Written for the idea and the rhythm of the cut, with lyrics when the campaign calls for them.' },
-      { nombre: 'Sound design', texto: 'Product sounds, transitions and ambiences, made to fit the cut.' },
-      { nombre: 'Sonic identity', texto: 'A sound logo and a music system so the brand sounds the same on every channel.' },
-      {
-        nombre: 'Versions and deliverables',
-        texto: 'Cutdowns of 6, 10, 15, 20, 30 and 60 seconds, stems for post-production and mixes for each medium.',
-      },
-    ],
-    enlace: { url: '/publicidad', texto: 'How we work with agencies and brands' },
-  },
-  {
-    id: 'sesiones',
-    etq: 'Artists, sessions and media',
-    titulo: 'Live sessions, albums, music videos and podcasts',
-    img: 'yfccCqJFOZU.jpg',
-    pie: 'Noisesion · La Noise',
-    servicios: [
-      {
-        nombre: 'Live sessions',
-        texto:
-          'Multitrack recording and filming of bands and solo artists live, with the mix and the video delivered together. Juan has recorded series such as Noisesion and Sesiones Macarena 360.',
-      },
-      {
-        nombre: 'Music production and arranging',
-        texto: 'Producing albums and singles, arrangements for ensembles and orchestra, and directing recording sessions.',
-      },
-      { nombre: 'Music videos', texto: 'Concept, shoot, camera, drone and editing, with the music at the center.' },
-      {
-        nombre: 'Podcasts and radio',
-        texto: 'Voice recording, editing and mixing, music for the show, stingers and voice-over.',
-      },
-      { nombre: 'Mixing and mastering', texto: 'For albums, sessions and audiovisual pieces, to the level each platform requires.' },
-    ],
-  },
-];
 const bloques = en ? BLOQUES_EN : BLOQUES_ES;
-const PASOS_ES = [
-  {
-    nombre: 'Conversación',
-    texto: 'Nos cuentas el proyecto y nos mandas lo que tengas: guion, corte, referencias. Preguntamos lo necesario.',
-  },
-  {
-    nombre: 'Propuesta',
-    texto: 'Te mandamos alcance, equipo, tiempos y valor. Si el proyecto lo pide, una primera maqueta corta.',
-  },
-  {
-    nombre: 'Maquetas',
-    texto: 'Bocetos sobre la imagen para acordar el tono antes de grabar. Aquí se hacen los cambios grandes.',
-  },
-  {
-    nombre: 'Grabación y producción',
-    texto: 'Convocamos a los músicos asociados que pida la música, grabamos y hacemos el diseño sonoro.',
-  },
-  {
-    nombre: 'Mezcla y entrega',
-    texto: 'Mezcla para cada medio, pistas separadas, partituras si aplica, y la licencia o cesión de derechos por escrito.',
-  },
-];
-const PASOS_EN: typeof PASOS_ES = [
-  {
-    nombre: 'Conversation',
-    texto: 'You tell us about the project and send whatever you have: script, cut, references. We ask what we need to know.',
-  },
-  {
-    nombre: 'Proposal',
-    texto: 'We send you scope, team, timeline and fee. If the project calls for it, a short first demo.',
-  },
-  {
-    nombre: 'Demos',
-    texto: 'Sketches over the picture to agree on the tone before recording. This is where the big changes happen.',
-  },
-  {
-    nombre: 'Recording and production',
-    texto: 'We bring in the associate musicians the music needs, record, and do the sound design.',
-  },
-  {
-    nombre: 'Mix and delivery',
-    texto: 'Mixes for each medium, stems, sheet music if needed, and the license or rights assignment in writing.',
-  },
-];
 const pasos = en ? PASOS_EN : PASOS_ES;
 
 ---
 
 <Base
-  titulo={en ? 'Services' : 'Servicios'}
+  titulo={en ? 'Original music, sound design and mixing services' : 'Servicios de música original, diseño sonoro y mezcla'}
   descripcion={
     en
-      ? 'Original music, sound design, mixing, music supervision, advertising, live sessions, music production and podcasts.'
-      : 'Música original, diseño sonoro, mezcla, supervisión musical, publicidad, sesiones en vivo, producción musical y podcast.'
+      ? 'Original music, sound design, mixing, music supervision, music for advertising, live sessions, music production and podcasts. Music production company based in Bogotá, Colombia.'
+      : 'Música original, diseño sonoro, mezcla, supervisión musical, música para publicidad, sesiones en vivo, producción musical y podcast. Productora de música en Bogotá.'
   }
 >
   <section class="seccion">
@@ -258,7 +52,7 @@ const pasos = en ? PASOS_EN : PASOS_ES;
           </figure>
           <div class="bloque-cabeza rv">
             <p class="etq">{b.etq}</p>
-            <h2>{b.titulo}</h2>
+            <h2>{PAGINAS.some((p) => p.id === b.id) ? <a class="titulo-enlace" href={u(`/servicios/${b.id}`)}>{b.titulo}</a> : b.titulo}</h2>
           </div>
           <dl class="servicios">
             {b.servicios.map((s) => (
@@ -268,10 +62,16 @@ const pasos = en ? PASOS_EN : PASOS_ES;
               </div>
             ))}
           </dl>
-          {b.enlace && (
+          {b.enlace ? (
             <p class="bloque-enlace">
               <a class="boton lleno flecha" href={u(b.enlace.url)}>
                 {b.enlace.texto}
+              </a>
+            </p>
+          ) : PAGINAS.some((p) => p.id === b.id) && (
+            <p class="bloque-enlace">
+              <a class="boton flecha" href={u(`/servicios/${b.id}`)}>
+                {en ? 'More about this service' : 'Más sobre este servicio'}
               </a>
             </p>
           )}
@@ -388,6 +188,8 @@ const pasos = en ? PASOS_EN : PASOS_ES;
       grid-template-columns: 1fr;
     }
   }
+  .titulo-enlace { color: inherit; text-decoration: none; }
+  .titulo-enlace:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.12em; }
   .bloque-enlace {
     margin: 2.5rem 0 0;
   }
