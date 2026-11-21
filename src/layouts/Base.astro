@@ -6,6 +6,7 @@ import '@fontsource/lato/700.css';
 import '../styles/global.css';
 import serifUrl from '@fontsource-variable/newsreader/files/newsreader-latin-opsz-normal.woff2?url';
 import latoUrl from '@fontsource/lato/files/lato-latin-400-normal.woff2?url';
+import Musica from '../components/Musica.astro';
 import { ClientRouter } from 'astro:transitions';
 import Logo from '../components/Logo.astro';
 import { CORREO } from '../data/equipo';
@@ -254,6 +255,9 @@ const ld = {
         </a>
       )
     }
+
+    {/* música de fondo (21 nov 2026), la misma de dialmedio.org; fuera de /marca y /og como WhatsApp */}
+    {ruta !== '/marca' && ruta !== '/og' && <Musica en={en} />}
 
     <!-- reproductor: abre los videos en grande sin salir de la página -->
     <dialog class="sala" id="sala" aria-label={en ? 'Video player' : 'Reproductor de video'}>
